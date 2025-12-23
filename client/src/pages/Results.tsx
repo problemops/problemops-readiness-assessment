@@ -7,6 +7,11 @@ import { Download, Home, TrendingUp, AlertTriangle, BarChart3, CheckCircle2 } fr
 import { motion } from "framer-motion";
 import { SlidePDFGenerator } from "@/lib/pdfGenerator";
 import PriorityMatrix from "@/components/PriorityMatrix";
+import { FourCsChart } from "@/components/FourCsChart";
+import { ProblemOpsPrinciples } from "@/components/ProblemOpsPrinciples";
+import { calculate4CsScores, getRecommendedDeliverables } from "@/lib/fourCsScoring";
+import { generateTrainingPlan, getTrainingPriorities } from "@/lib/problemOpsTrainingPlan";
+import { generateTeamNarrative as generateEnhancedNarrative, type CompanyContext } from "@/lib/companyAnalysis";
 
 const DRIVER_NAMES: Record<string, string> = {
   trust: "Trust",
@@ -74,6 +79,28 @@ export default function Results() {
       const roi = projectedSavings / interventionCost;
       const paybackMonths = (interventionCost / projectedSavings) * 12;
 
+      // Calculate 4 C's scores
+      const driverScoresMap: Record<string, number> = {};
+      drivers.forEach(d => {
+        driverScoresMap[d.name] = d.value;
+      });
+      const fourCsAnalysis = calculate4CsScores(driverScoresMap);
+      const trainingPlan = generateTrainingPlan(fourCsAnalysis);
+      const trainingPriorities = getTrainingPriorities(fourCsAnalysis);
+      const recommendedDeliverables = getRecommendedDeliverables(fourCsAnalysis);
+      
+      // Generate enhanced narrative
+      const companyContext: CompanyContext = {
+        name: parsed.companyInfo.name || '',
+        website: parsed.companyInfo.website || '',
+        team: parsed.companyInfo.team || '',
+      };
+      const enhancedNarrative = generateEnhancedNarrative(
+        driverScoresMap,
+        companyContext,
+        fourCsAnalysis.scores
+      );
+      
       setResults({
         drivers,
         readinessScore,
@@ -86,6 +113,11 @@ export default function Results() {
         interventionCost,
         companyInfo: parsed.companyInfo,
         answers: parsed.answers,
+        fourCsAnalysis,
+        trainingPlan,
+        trainingPriorities,
+        recommendedDeliverables,
+        enhancedNarrative,
       });
     } else {
       navigate('/');
@@ -531,6 +563,13 @@ export default function Results() {
 
         <Separator />
 
+        {/* 4 C's Framework Analysis */}
+        <section>
+          <FourCsChart analysis={results.fourCsAnalysis} />
+        </section>
+
+        <Separator />
+
         {/* Team Narrative */}
         <section>
           <h2 className="text-3xl font-bold mb-6">Your Team's Story</h2>
@@ -538,7 +577,7 @@ export default function Results() {
             <CardContent className="pt-6">
               <div className="prose prose-lg max-w-none">
                 <p className="text-foreground/90 leading-relaxed">
-                  {generateTeamNarrative(results)}
+                  {results.enhancedNarrative}
                 </p>
               </div>
             </CardContent>
@@ -546,6 +585,119 @@ export default function Results() {
         </section>
 
         <Separator />
+
+        {/* ProblemOps Principles */}
+        <section>
+          <ProblemOpsPrinciples />
+        </section>
+
+        <Separator />
+
+        {/* Training Plan */}
+        <section>
+          <h2 className="text-3xl font-bold mb-6">Your ProblemOps Training Plan</h2>
+          
+          {/* Training Priorities */}
+          {results.trainingPriorities.length > 0 && (
+            <Card className="mb-6 bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800">
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-amber-600" />
+                  Priority Focus Areas
+                </h3>
+                <div className="space-y-3">
+                  {results.trainingPriorities.map((priority: any, index: number) => (
+                    <div key={index} className="flex items-start gap-3">
+                      <div className={`px-2 py-1 rounded text-xs font-bold ${
+                        priority.urgency === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                        priority.urgency === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                        'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                      }`}>
+                        {priority.urgency.toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="font-semibold">{priority.area}</div>
+                        <div className="text-sm text-muted-foreground">{priority.reason}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Training Modules */}
+          <div className="grid gap-6">
+            {Object.entries(results.trainingPlan)
+              .filter(([key]) => key !== 'priorities')
+              .map(([key, module]: [string, any]) => (
+                <Card key={key}>
+                  <CardHeader>
+                    <CardTitle className="text-xl">{module.title}</CardTitle>
+                    <p className="text-sm text-muted-foreground mt-2">{module.description}</p>
+                    <div className="text-sm font-medium text-primary mt-2">Duration: {module.duration}</div>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div>
+                      <h4 className="font-semibold mb-3">Exercises</h4>
+                      <ul className="space-y-2">
+                        {module.exercises.map((exercise: string, index: number) => (
+                          <li key={index} className="flex items-start gap-3 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                            <span>{exercise}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-3">Deliverables</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {module.deliverables.map((deliverable: string, index: number) => (
+                          <span key={index} className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
+                            {deliverable}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+          </div>
+        </section>
+
+        <Separator />
+
+        {/* Recommended Deliverables */}
+        {Object.keys(results.recommendedDeliverables).length > 0 && (
+          <>
+            <section>
+              <h2 className="text-3xl font-bold mb-6">Recommended ProblemOps Deliverables</h2>
+              <Card>
+                <CardContent className="pt-6">
+                  <p className="text-muted-foreground mb-6">
+                    Based on your 4 C's scores, these are the specific ProblemOps artifacts your team should focus on creating:
+                  </p>
+                  <div className="space-y-6">
+                    {Object.entries(results.recommendedDeliverables).map(([category, deliverables]: [string, any]) => (
+                      <div key={category}>
+                        <h3 className="text-lg font-semibold mb-3">{category}</h3>
+                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          {deliverables.map((deliverable: string, index: number) => (
+                            <li key={index} className="flex items-start gap-2 text-sm">
+                              <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                              <span>{deliverable}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
+            <Separator />
+          </>
+        )}
 
         {/* Next Steps */}
         <section>

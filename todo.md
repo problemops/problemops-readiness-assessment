@@ -63,3 +63,15 @@
 - [x] Add quadrant labels and color coding
 - [x] Integrate into Results page
 - [x] Test priority matrix visualization
+
+## 4 C's Framework & ProblemOps Integration
+- [x] Map drivers to 4 C's (Criteria, Commitment, Collaboration, Change)
+- [x] Calculate percentage scores for each of the 4 C's
+- [x] Show 4 C's scores with gap from 85% target
+- [x] Visualize 4 C's performance on Results page
+- [x] Add ProblemOps Principles section explaining core framework
+- [x] Build detailed training plan organized by 4 C's
+- [x] Map 4 C's scores to recommended ProblemOps deliverables
+- [x] Integrate company website analysis for business context
+- [x] Generate qualitative team narrative with company insights
+- [x] Test complete 4 C's integration
