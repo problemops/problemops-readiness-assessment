@@ -14,6 +14,44 @@ type CompanyInfo = {
   team: string;
 };
 
+type FourCsAnalysis = {
+  scores: {
+    criteria: number;
+    commitment: number;
+    collaboration: number;
+    change: number;
+  };
+  gaps: {
+    criteria: number;
+    commitment: number;
+    collaboration: number;
+    change: number;
+  };
+  target: number;
+};
+
+type TrainingModule = {
+  title: string;
+  description: string;
+  exercises: string[];
+  deliverables: string[];
+  duration: string;
+};
+
+type TrainingPlan = {
+  criteria: TrainingModule;
+  commitment: TrainingModule;
+  collaboration: TrainingModule;
+  change: TrainingModule;
+  priorities: string[];
+};
+
+type TrainingPriority = {
+  area: string;
+  reason: string;
+  urgency: 'high' | 'medium' | 'low';
+};
+
 type AssessmentData = {
   drivers: Driver[];
   teamSize: number;
@@ -26,6 +64,11 @@ type AssessmentData = {
   paybackMonths: number;
   companyInfo: CompanyInfo;
   assessmentAnswers: Record<number, number>;
+  fourCsAnalysis?: FourCsAnalysis;
+  trainingPlan?: TrainingPlan;
+  trainingPriorities?: TrainingPriority[];
+  recommendedDeliverables?: Record<string, string[]>;
+  enhancedNarrative?: string;
 };
 
 const PAGE_WIDTH = 210; // A4 width in mm
@@ -457,6 +500,12 @@ export class SlidePDFGenerator {
   }
 
   private generateNarrativeText(): string {
+    // Use enhanced narrative if available
+    if (this.data.enhancedNarrative) {
+      return this.data.enhancedNarrative;
+    }
+    
+    // Fallback to basic narrative
     const { drivers, readinessScore, companyInfo } = this.data;
     
     const strengths = drivers.filter(d => d.value >= 5.5).map(d => d.name);
@@ -660,18 +709,149 @@ export class SlidePDFGenerator {
     this.addFooter(17);
   }
 
+  // Page: 4 C's Framework Analysis
+  private generateFourCsPage() {
+    if (!this.data.fourCsAnalysis) return;
+    
+    this.addPage();
+    this.setTitle('The 4 C\'s of ProblemOps');
+    this.setSubtitle('Criteria, Commitment, Collaboration, Change', 45);
+    
+    let y = 70;
+    
+    const { scores, gaps, target } = this.data.fourCsAnalysis;
+    const targetPercent = target * 100;
+    
+    // Intro text
+    const intro = 'The ProblemOps framework organizes team effectiveness into four interconnected capabilities. Your scores in each area reveal where your team excels and where focused improvement will yield the greatest impact.';
+    y = this.setBody(intro, y) + 10;
+    
+    // 4 C's scores
+    const fourCs = [
+      { name: 'Criteria', score: scores.criteria, gap: gaps.criteria, desc: 'Clear problem definition and shared language' },
+      { name: 'Commitment', score: scores.commitment, gap: gaps.commitment, desc: 'Aligned goals and strategic clarity' },
+      { name: 'Collaboration', score: scores.collaboration, gap: gaps.collaboration, desc: 'Trust, safety, and knowledge sharing' },
+      { name: 'Change', score: scores.change, gap: gaps.change, desc: 'Adaptive coordination and execution' }
+    ];
+    
+    fourCs.forEach((c) => {
+      const scorePercent = c.score * 100;
+      const gapPercent = c.gap * 100;
+      
+      // C name and score
+      this.doc.setFontSize(14);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text(c.name, MARGIN, y);
+      
+      this.doc.setFontSize(16);
+      this.doc.setTextColor(37, 99, 235);
+      this.doc.text(`${scorePercent.toFixed(0)}%`, MARGIN + 50, y);
+      this.doc.setTextColor(0, 0, 0);
+      
+      y += 6;
+      
+      // Description
+      this.doc.setFontSize(10);
+      this.doc.setFont('helvetica', 'normal');
+      this.doc.setTextColor(100, 100, 100);
+      this.doc.text(c.desc, MARGIN, y);
+      this.doc.setTextColor(0, 0, 0);
+      
+      y += 6;
+      
+      // Progress bar
+      const barWidth = CONTENT_WIDTH - 60;
+      const barHeight = 8;
+      
+      // Background
+      this.doc.setFillColor(240, 240, 240);
+      this.doc.roundedRect(MARGIN, y, barWidth, barHeight, 2, 2, 'F');
+      
+      // Fill
+      const fillWidth = (scorePercent / 100) * barWidth;
+      const color = scorePercent >= targetPercent ? [34, 197, 94] : scorePercent >= 70 ? [251, 191, 36] : [239, 68, 68];
+      this.doc.setFillColor(color[0], color[1], color[2]);
+      this.doc.roundedRect(MARGIN, y, fillWidth, barHeight, 2, 2, 'F');
+      
+      // Target line
+      const targetX = MARGIN + (targetPercent / 100) * barWidth;
+      this.doc.setDrawColor(100, 100, 100);
+      this.doc.setLineWidth(0.5);
+      this.doc.line(targetX, y - 2, targetX, y + barHeight + 2);
+      
+      // Gap text
+      this.doc.setFontSize(9);
+      this.doc.setTextColor(100, 100, 100);
+      this.doc.text(`Gap to target: ${gapPercent.toFixed(0)}%`, MARGIN + barWidth + 5, y + 5);
+      this.doc.setTextColor(0, 0, 0);
+      
+      y += barHeight + 15;
+    });
+    
+    this.addFooter(4);
+  }
+  
+  // Page: ProblemOps Principles
+  private generateProblemOpsPrinciples() {
+    this.addPage();
+    this.setTitle('ProblemOps Principles');
+    this.setSubtitle('A framework for continuous team improvement', 45);
+    
+    let y = 70;
+    
+    const principles = [
+      {
+        title: '1. Shared Language Creates Shared Understanding',
+        text: 'Teams that develop common vocabulary and mental models can communicate more efficiently and make better collective decisions.'
+      },
+      {
+        title: '2. Problems Are Opportunities for Alignment',
+        text: 'Every challenge is a chance to clarify goals, surface assumptions, and build stronger team agreements.'
+      },
+      {
+        title: '3. Process Follows People',
+        text: 'Effective systems emerge from understanding how people actually work, not from imposing rigid frameworks.'
+      },
+      {
+        title: '4. Continuous Learning Over Perfect Planning',
+        text: 'Teams improve through rapid experimentation and reflection, not exhaustive upfront analysis.'
+      },
+      {
+        title: '5. Transparency Builds Trust',
+        text: 'Making work visible and sharing context openly creates psychological safety and enables better coordination.'
+      }
+    ];
+    
+    principles.forEach((p) => {
+      this.doc.setFontSize(12);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text(p.title, MARGIN, y);
+      y += 8;
+      
+      this.doc.setFontSize(11);
+      this.doc.setFont('helvetica', 'normal');
+      const lines = this.doc.splitTextToSize(p.text, CONTENT_WIDTH);
+      this.doc.text(lines, MARGIN, y);
+      y += (lines.length * 6) + 10;
+    });
+    
+    this.addFooter(13);
+  }
+
   public generate(): jsPDF {
     this.generateCoverPage();
     this.generateCompanyOverview();
     this.generateExecutiveSummary();
+    this.generateFourCsPage();
     this.generateDriverOverview();
     
     // Individual driver pages
     this.data.drivers.forEach((driver, index) => {
-      this.generateDriverPage(driver, 5 + index);
+      this.generateDriverPage(driver, 6 + index);
     });
     
     this.generateTeamNarrative();
+    this.generateProblemOpsPrinciples();
     this.generateTrainingPlan();
     this.generateNextSteps();
     
@@ -679,6 +859,7 @@ export class SlidePDFGenerator {
   }
 
   public download(filename: string = 'team-readiness-assessment.pdf') {
+    this.generate();
     this.doc.save(filename);
   }
 }

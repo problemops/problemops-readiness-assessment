@@ -154,6 +154,11 @@ export default function Results() {
         paybackMonths: results.paybackMonths,
         companyInfo: results.companyInfo,
         assessmentAnswers: results.answers,
+        fourCsAnalysis: results.fourCsAnalysis,
+        trainingPlan: results.trainingPlan,
+        trainingPriorities: results.trainingPriorities,
+        recommendedDeliverables: results.recommendedDeliverables,
+        enhancedNarrative: results.enhancedNarrative,
       };
       
       const generator = new SlidePDFGenerator(pdfData);
