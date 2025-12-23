@@ -240,6 +240,8 @@ export default function Home() {
       ...d,
       value: scores[d.id] || d.value
     })));
+    setIsAssessmentOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const generateReport = async () => {
