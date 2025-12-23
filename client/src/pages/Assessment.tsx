@@ -208,21 +208,17 @@ export default function Assessment() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground py-4 px-6 sticky top-0 z-20 shadow-lg">
+      <header className="bg-primary text-primary-foreground p-5 sticky top-0 z-20 shadow-lg">
         <div className="container mx-auto max-w-5xl">
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <img 
-                src="/problemops-icon.svg" 
-                alt="ProblemOps" 
-                className="h-10 md:h-12 cursor-pointer hover:opacity-90 transition-opacity"
-                onClick={() => window.location.href = '/'}
-              />
-              <div>
-                <h1 className="text-xl md:text-2xl font-bold">Team Readiness Assessment</h1>
-
-              </div>
-            </div>
+            <img 
+              src="/problemops-icon.svg" 
+              alt="ProblemOps" 
+              className="h-10 md:h-12 cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={() => window.location.href = '/'}
+            />
+            <h1 className="text-2xl md:text-4xl font-bold absolute left-1/2 transform -translate-x-1/2">Team ProblemOps Readiness Assessment</h1>
+            <div className="w-10 md:w-12"></div>
             {currentStep > 0 && (
               <div className="text-right">
                 <div className="text-3xl font-bold">{Object.keys(answers).length}/{totalQuestions}</div>
