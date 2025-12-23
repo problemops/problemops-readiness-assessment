@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { TRAINING_OPTIONS } from "@/lib/trainingRecommendations";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -370,21 +371,21 @@ export default function Assessment() {
                       <RadioGroupItem value="half-day" id="half-day" className="mt-1" />
                       <Label htmlFor="half-day" className="flex-1 cursor-pointer">
                         <div className="font-semibold">Half Day Workshop</div>
-                        <div className="text-sm text-muted-foreground">$2,000 - Focus on your #1 critical area</div>
+                        <div className="text-sm text-muted-foreground">${TRAINING_OPTIONS['half-day'].cost.toLocaleString()} - Focus on your #1 critical area</div>
                       </Label>
                     </div>
                     <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
                       <RadioGroupItem value="full-day" id="full-day" className="mt-1" />
                       <Label htmlFor="full-day" className="flex-1 cursor-pointer">
                         <div className="font-semibold">Full Day Workshop</div>
-                        <div className="text-sm text-muted-foreground">$3,500 - Focus on your top 2 critical areas</div>
+                        <div className="text-sm text-muted-foreground">${TRAINING_OPTIONS['full-day'].cost.toLocaleString()} - Focus on your top 2 critical areas</div>
                       </Label>
                     </div>
                     <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
                       <RadioGroupItem value="month-long" id="month-long" className="mt-1" />
                       <Label htmlFor="month-long" className="flex-1 cursor-pointer">
                         <div className="font-semibold">Month-Long Engagement</div>
-                        <div className="text-sm text-muted-foreground">$25,000 - Comprehensive training across all areas</div>
+                        <div className="text-sm text-muted-foreground">${TRAINING_OPTIONS['month-long'].cost.toLocaleString()} - Comprehensive training across all areas</div>
                       </Label>
                     </div>
                     <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
