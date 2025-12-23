@@ -391,3 +391,9 @@
 - [x] Update input field text color (added text-black to Input component)
 - [x] Update label text color to black
 - [x] Ensure sufficient contrast for readability
+
+## Training Type Description Color Fix
+
+- [x] Change training type descriptions to placeholder text color (text-muted-foreground)
+- [x] Ensure descriptions are left-aligned
+- [x] Vertically center radio button in training type boxes
