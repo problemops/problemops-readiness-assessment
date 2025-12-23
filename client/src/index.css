@@ -50,9 +50,9 @@
 */
 
 :root {
-  /* Electric Blue - Primary Action/Trust */
-  --primary: oklch(0.55 0.2 260); /* #2563EB approx */
-  --primary-foreground: oklch(1 0 0);
+  /* ProblemOps Brand - Warm Brown #64563A */
+  --primary: oklch(0.4595 0.0458 84.16);
+  --primary-foreground: oklch(1 0 0); /* White #FFFFFF */
 
   /* Signal Orange - Dysfunction/Warning */
   --destructive: oklch(0.65 0.2 40); /* #F97316 approx */
@@ -79,7 +79,7 @@
   
   --border: oklch(0.9 0 0);
   --input: oklch(0.9 0 0);
-  --ring: oklch(0.55 0.2 260); /* Match primary */
+  --ring: oklch(0.4595 0.0458 84.16); /* Match primary */
 
   /* Charts */
   --chart-1: oklch(0.55 0.2 260); /* Blue */
@@ -97,7 +97,7 @@
   --sidebar-accent: oklch(0.94 0 0);
   --sidebar-accent-foreground: oklch(0.15 0 0);
   --sidebar-border: oklch(0.9 0 0);
-  --sidebar-ring: oklch(0.55 0.2 260);
+  --sidebar-ring: oklch(0.4595 0.0458 84.16);
 }
 
 .dark {
@@ -111,7 +111,7 @@
   --popover: oklch(0.15 0 0);
   --popover-foreground: oklch(1 0 0);
   
-  --primary: oklch(0.6 0.2 260);
+  --primary: oklch(0.52 0.0458 84.16); /* Lighter for dark mode */
   --primary-foreground: oklch(1 0 0);
   
   --secondary: oklch(0.25 0 0);
@@ -128,7 +128,7 @@
   
   --border: oklch(0.3 0 0);
   --input: oklch(0.3 0 0);
-  --ring: oklch(0.6 0.2 260);
+  --ring: oklch(0.52 0.0458 84.16);
   
   --chart-1: oklch(0.6 0.2 260);
   --chart-2: oklch(0.65 0.2 40);
@@ -138,12 +138,12 @@
   
   --sidebar: oklch(0.12 0 0);
   --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.6 0.2 260);
+  --sidebar-primary: oklch(0.52 0.0458 84.16);
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.25 0 0);
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(0.3 0 0);
-  --sidebar-ring: oklch(0.6 0.2 260);
+  --sidebar-ring: oklch(0.52 0.0458 84.16);
 }
 
 @layer base {

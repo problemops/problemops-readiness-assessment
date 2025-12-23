@@ -285,14 +285,22 @@ export default function Results() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground py-6 px-6 shadow-lg">
+      <header className="bg-primary text-primary-foreground py-4 px-6 shadow-lg">
         <div className="container mx-auto max-w-6xl">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold">Assessment Results</h1>
-              <p className="text-sm opacity-90 mt-1">
-                {results.companyInfo.name}{results.companyInfo.team ? ` - ${results.companyInfo.team}` : ''}
-              </p>
+            <div className="flex items-center gap-4">
+              <img 
+                src="/problemops-logo.png" 
+                alt="ProblemOps - Making change together" 
+                className="h-10 md:h-12 cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => setLocation('/')}
+              />
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold">Assessment Results</h1>
+                <p className="text-sm opacity-90 mt-1">
+                  {results.companyInfo.name}{results.companyInfo.team ? ` - ${results.companyInfo.team}` : ''}
+                </p>
+              </div>
             </div>
             <div className="flex gap-3">
               <Button 

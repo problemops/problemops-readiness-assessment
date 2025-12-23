@@ -207,16 +207,24 @@ export default function Assessment() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground py-6 px-6 sticky top-0 z-20 shadow-lg">
+      <header className="bg-primary text-primary-foreground py-4 px-6 sticky top-0 z-20 shadow-lg">
         <div className="container mx-auto max-w-5xl">
           <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold">ProblemOps Team Readiness Assessment</h1>
-              <p className="text-sm opacity-90 mt-1">
-                {currentStep === 0 
-                  ? "Tell us about your team" 
-                  : "Evaluate your team across 7 key drivers"}
-              </p>
+            <div className="flex items-center gap-4">
+              <img 
+                src="/problemops-logo.png" 
+                alt="ProblemOps - Making change together" 
+                className="h-10 md:h-12 cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => window.location.href = '/'}
+              />
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold">Team Readiness Assessment</h1>
+                <p className="text-sm opacity-90 mt-1">
+                  {currentStep === 0 
+                    ? "Tell us about your team" 
+                    : "Evaluate your team across 7 key drivers"}
+                </p>
+              </div>
             </div>
             {currentStep > 0 && (
               <div className="text-right">
