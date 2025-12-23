@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate } from 'react-router-dom';
 import { trpc } from "@/lib/trpc";
 import { TRAINING_OPTIONS } from "@/lib/trainingRecommendations";
 import { Button } from "@/components/ui/button";
@@ -8,8 +8,10 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { CheckCircle2, Circle, Loader2 } from "lucide-react";
+import { CheckCircle2, Circle, Loader2, Keyboard } from "lucide-react";
 import { motion } from "framer-motion";
+import { SkipLink } from "@/components/SkipLink";
+import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
 
 const SCALE_LABELS = [
   { value: 1, label: "Strongly Disagree" },
@@ -108,13 +110,25 @@ const DRIVER_SECTIONS = [
   },
 ];
 
+// Get all question IDs in order
+const ALL_QUESTION_IDS = DRIVER_SECTIONS.flatMap(s => s.questions.map(q => q.id));
+
 export default function Assessment() {
-  const [, setLocation] = useLocation();
-  const createAssessment = trpc.assessment.create.useMutation();
+  const navigate = useNavigate();
+  const createAssessment = trpc.assessment.create.useMutation({
+    onSuccess: (data) => {
+      console.log('!!! MUTATION ON SUCCESS !!!', data);
+    },
+    onError: (error) => {
+      console.error('!!! MUTATION ON ERROR !!!', error);
+    },
+  });
   
-  const [currentStep, setCurrentStep] = useState(0); // 0 = company info, 1-7 = driver sections
+  const [currentStep, setCurrentStep] = useState(0); // 0 = company info, 1 = assessment
   const [openSection, setOpenSection] = useState<string>("trust");
   const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [focusedQuestionId, setFocusedQuestionId] = useState<number | null>(null);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const [companyInfo, setCompanyInfo] = useState<{
     name: string;
     email: string;
@@ -133,13 +147,64 @@ export default function Assessment() {
     trainingType: 'not-sure'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Refs for focus management
+  const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+  const mainContentRef = useRef<HTMLElement>(null);
+  const companyNameRef = useRef<HTMLInputElement>(null);
+  
+  // Aria live region for announcements
+  const [announcement, setAnnouncement] = useState("");
 
   const totalQuestions = 35;
   const progress = (Object.keys(answers).length / totalQuestions) * 100;
 
-  const handleAnswer = (questionId: number, value: number) => {
+  // Announce progress changes
+  useEffect(() => {
+    const answered = Object.keys(answers).length;
+    if (answered > 0 && answered % 5 === 0) {
+      setAnnouncement(`${answered} of ${totalQuestions} questions completed`);
+    }
+  }, [answers]);
+
+  const handleAnswer = useCallback((questionId: number, value: number, autoAdvance = true) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
-  };
+    
+    if (autoAdvance) {
+      // Find next unanswered question
+      const currentIndex = ALL_QUESTION_IDS.indexOf(questionId);
+      const nextQuestionId = ALL_QUESTION_IDS[currentIndex + 1];
+      
+      if (nextQuestionId) {
+        // Find which section this question belongs to
+        const nextSection = DRIVER_SECTIONS.find(s => 
+          s.questions.some(q => q.id === nextQuestionId)
+        );
+        
+        if (nextSection && nextSection.id !== openSection) {
+          setOpenSection(nextSection.id);
+        }
+        
+        // Focus next question after a brief delay for DOM update
+        setTimeout(() => {
+          setFocusedQuestionId(nextQuestionId);
+          const nextRef = questionRefs.current[nextQuestionId];
+          if (nextRef) {
+            nextRef.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const firstButton = nextRef.querySelector('button[role="radio"]') as HTMLElement;
+            firstButton?.focus();
+          }
+        }, 100);
+      } else {
+        // All questions answered, focus submit button
+        setTimeout(() => {
+          submitButtonRef.current?.focus();
+          setAnnouncement("Assessment complete! Press Enter to view results.");
+        }, 100);
+      }
+    }
+  }, [openSection]);
 
   // Check if a section is complete
   const isSectionComplete = (section: typeof DRIVER_SECTIONS[0]) => {
@@ -153,7 +218,6 @@ export default function Assessment() {
       const currentSection = DRIVER_SECTIONS[currentSectionIndex];
       
       if (currentSection && isSectionComplete(currentSection)) {
-        // Wait a moment, then open next section
         const nextSection = DRIVER_SECTIONS[currentSectionIndex + 1];
         if (nextSection) {
           setTimeout(() => {
@@ -164,21 +228,148 @@ export default function Assessment() {
     }
   }, [answers, openSection, currentStep]);
 
+  // Keyboard shortcuts handler
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Handle Enter key for form submission (works from any input)
+      if (e.key === 'Enter' && currentStep === 0) {
+        const target = e.target as HTMLElement;
+        // Don't interfere with buttons or radio buttons
+        if (target.tagName !== 'BUTTON' && target.getAttribute('role') !== 'radio') {
+          e.preventDefault();
+          handleStartAssessment();
+          return;
+        }
+      }
+      
+      // Don't handle other shortcuts when typing in text inputs
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' && target.getAttribute('type') !== 'radio') {
+        return;
+      }
+
+      // ? - Show keyboard shortcuts
+      if (e.key === '?' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setShowShortcuts(true);
+        return;
+      }
+
+      // Escape - Close dialogs
+      if (e.key === 'Escape') {
+        setShowShortcuts(false);
+        return;
+      }
+
+      // Assessment-specific shortcuts (only when in assessment mode)
+      if (currentStep === 1) {
+        // Number keys 1-7 for rating
+        if (/^[1-7]$/.test(e.key) && focusedQuestionId) {
+          e.preventDefault();
+          const rating = parseInt(e.key);
+          handleAnswer(focusedQuestionId, rating, true);
+          return;
+        }
+
+        // N or J - Next question
+        if ((e.key === 'n' || e.key === 'j') && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          navigateQuestion('next');
+          return;
+        }
+
+        // P or K - Previous question
+        if ((e.key === 'p' || e.key === 'k') && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          navigateQuestion('prev');
+          return;
+        }
+
+        // Ctrl+Enter - Submit
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          if (allSectionsComplete) {
+            handleSubmit();
+          }
+          return;
+        }
+
+        // Ctrl+Shift+R - Jump to Results button
+        if (e.key === 'r' && (e.ctrlKey || e.metaKey) && e.shiftKey) {
+          e.preventDefault();
+          submitButtonRef.current?.focus();
+          return;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentStep, focusedQuestionId, answers]);
+
+  const navigateQuestion = (direction: 'next' | 'prev') => {
+    const currentIndex = focusedQuestionId 
+      ? ALL_QUESTION_IDS.indexOf(focusedQuestionId)
+      : -1;
+    
+    let targetIndex: number;
+    if (direction === 'next') {
+      targetIndex = currentIndex < ALL_QUESTION_IDS.length - 1 ? currentIndex + 1 : currentIndex;
+    } else {
+      targetIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+    }
+    
+    const targetQuestionId = ALL_QUESTION_IDS[targetIndex];
+    
+    // Find which section this question belongs to
+    const targetSection = DRIVER_SECTIONS.find(s => 
+      s.questions.some(q => q.id === targetQuestionId)
+    );
+    
+    if (targetSection && targetSection.id !== openSection) {
+      setOpenSection(targetSection.id);
+    }
+    
+    setTimeout(() => {
+      setFocusedQuestionId(targetQuestionId);
+      const targetRef = questionRefs.current[targetQuestionId];
+      if (targetRef) {
+        targetRef.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const firstButton = targetRef.querySelector('button[role="radio"]') as HTMLElement;
+        firstButton?.focus();
+      }
+    }, 100);
+  };
+
   const handleStartAssessment = () => {
     if (companyInfo.name.trim() && companyInfo.teamSize.trim() && companyInfo.avgSalary.trim()) {
       setCurrentStep(1);
+      // Focus first question after transition
+      setTimeout(() => {
+        setFocusedQuestionId(1);
+        const firstRef = questionRefs.current[1];
+        if (firstRef) {
+          firstRef.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const firstButton = firstRef.querySelector('button[role="radio"]') as HTMLElement;
+          firstButton?.focus();
+        }
+        setAnnouncement("Assessment started. Use number keys 1-7 to rate each question. Press N for next, P for previous.");
+      }, 500);
     }
   };
 
   const handleSubmit = async () => {
+    console.log('!!! HANDLE SUBMIT CALLED !!!');
+    console.log('Current URL:', window.location.href);
     const allAnswered = DRIVER_SECTIONS.every(section => isSectionComplete(section));
     
     if (!allAnswered) {
-      alert('Please answer all questions before submitting.');
+      setAnnouncement('Please answer all questions before submitting.');
       return;
     }
     
     setIsSubmitting(true);
+    setAnnouncement('Generating your results...');
     
     try {
       const driverScores: Record<string, number> = {};
@@ -193,23 +384,38 @@ export default function Assessment() {
       console.log('Company Info:', companyInfo);
       console.log('Driver Scores:', driverScores);
       console.log('Answers count:', Object.keys(answers).length);
-      console.log('Full payload:', { companyInfo, scores: driverScores, answers });
       
-      const result = await createAssessment.mutateAsync({
-        companyInfo,
-        scores: driverScores,
-        answers,
-      });
+      const result = await Promise.race([
+        createAssessment.mutateAsync({
+          companyInfo,
+          scores: driverScores,
+          answers,
+        }),
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Request timeout after 5 seconds')), 5000)
+        )
+      ]);
       
-      setLocation(result.redirectUrl);
+      console.log('API Response:', result);
+      console.log('Response type:', typeof result);
+      console.log('Response keys:', result ? Object.keys(result) : 'null');
+      
+      if (!result) {
+        throw new Error('No response from server');
+      }
+      
+      // tRPC automatically unwraps the response, so result is the data directly
+      if (result.redirectUrl) {
+        console.log('Navigating to:', result.redirectUrl);
+        navigate(result.redirectUrl);
+      } else {
+        console.error('Missing redirectUrl in response:', result);
+        throw new Error('Invalid API response: missing redirectUrl');
+      }
     } catch (error) {
       console.error('Failed to submit assessment:', error);
-      console.error('Error details:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined,
-        fullError: error,
-      });
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setAnnouncement(`Error: ${errorMessage}`);
       alert(`Failed to submit assessment: ${errorMessage}\n\nPlease check the console for details.`);
       setIsSubmitting(false);
     }
@@ -217,8 +423,33 @@ export default function Assessment() {
 
   const allSectionsComplete = DRIVER_SECTIONS.every(section => isSectionComplete(section));
 
+  // Handle question focus for keyboard navigation
+  const handleQuestionFocus = (questionId: number) => {
+    setFocusedQuestionId(questionId);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      {/* Skip Link for accessibility */}
+      <SkipLink targetId="main-content" />
+      
+      {/* Aria Live Region for announcements */}
+      <div 
+        role="status" 
+        aria-live="polite" 
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {announcement}
+      </div>
+
+      {/* Keyboard Shortcuts Dialog */}
+      <KeyboardShortcutsDialog 
+        open={showShortcuts} 
+        onOpenChange={setShowShortcuts}
+        context={currentStep === 0 ? 'form' : 'assessment'}
+      />
+
       {/* Header */}
       <header className="bg-primary text-primary-foreground p-5 sticky top-0 z-20 shadow-lg">
         <div className="container mx-auto max-w-5xl">
@@ -230,22 +461,41 @@ export default function Assessment() {
               onClick={() => window.location.href = '/'}
             />
             <h1 className="text-2xl md:text-4xl font-bold absolute left-1/2 transform -translate-x-1/2">Team ProblemOps Readiness Assessment</h1>
-            <div className="w-10 md:w-12"></div>
-            {currentStep > 0 && (
-              <div className="text-right">
-                <div className="text-3xl font-bold">{Object.keys(answers).length}/{totalQuestions}</div>
-                <div className="text-xs opacity-90">Completed</div>
-              </div>
-            )}
+            <div className="flex items-center gap-4">
+              {/* Keyboard shortcuts hint */}
+              <button
+                onClick={() => setShowShortcuts(true)}
+                className="p-2 rounded-lg hover:bg-primary-foreground/10 transition-colors"
+                aria-label="Show keyboard shortcuts (press ? key)"
+                title="Keyboard shortcuts (?)"
+              >
+                <Keyboard className="h-5 w-5" />
+              </button>
+              {currentStep > 0 && (
+                <div className="text-right">
+                  <div className="text-3xl font-bold" aria-live="polite">{Object.keys(answers).length}/{totalQuestions}</div>
+                  <div className="text-xs opacity-90">Completed</div>
+                </div>
+              )}
+            </div>
           </div>
           {currentStep > 0 && (
-            <Progress value={progress} className="h-2 bg-primary-foreground/20" />
+            <Progress 
+              value={progress} 
+              className="h-2 bg-primary-foreground/20" 
+              aria-label={`Progress: ${Object.keys(answers).length} of ${totalQuestions} questions completed`}
+            />
           )}
         </div>
       </header>
 
       {/* Content */}
-      <main className="container mx-auto py-12 px-6 max-w-5xl">
+      <main 
+        id="main-content" 
+        ref={mainContentRef}
+        className="container mx-auto py-12 px-6 max-w-5xl"
+        tabIndex={-1}
+      >
         {currentStep === 0 ? (
           /* Company Information Form */
           <motion.div
@@ -254,29 +504,40 @@ export default function Assessment() {
             className="space-y-8"
           >
             {/* Common Region: Header section */}
-            <div className="text-center mb-12 space-y-4">
+            <div className="mb-12 space-y-4">
               <h2 className="text-4xl font-bold">Before We Begin</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              <p className="text-muted-foreground text-lg">
                 Tell us about your company and team so we can provide personalized insights and calculate the financial impact of team effectiveness.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Press <kbd className="px-1.5 py-0.5 text-xs bg-muted border border-border rounded">?</kbd> for keyboard shortcuts
               </p>
             </div>
             
             {/* Common Region: Form container with visual grouping */}
-            <div className="bg-card p-8 md:p-12 rounded-xl border border-border shadow-lg space-y-8">
+            <form 
+              onSubmit={(e) => { e.preventDefault(); handleStartAssessment(); }}
+              className="bg-card p-8 md:p-12 rounded-xl border border-border shadow-lg space-y-8"
+            >
               {/* Proximity: Company details grouped together */}
-              <div className="space-y-6">
-                <h3 className="text-xl font-semibold border-b border-border pb-2">Company Information</h3>
+              <fieldset className="space-y-6">
+                <legend className="text-3xl font-semibold border-b border-border pb-3 w-full">Company Information</legend>
                 
                 <div className="space-y-2">
                   <Label htmlFor="company-name" className="text-base font-medium">
-                    Company Name <span className="text-destructive">*</span>
+                    Company Name <span className="text-destructive" aria-hidden="true">*</span>
+                    <span className="sr-only">(required)</span>
                   </Label>
                   <Input
+                    ref={companyNameRef}
                     id="company-name"
                     placeholder="e.g., Acme Corporation"
                     value={companyInfo.name}
                     onChange={(e) => setCompanyInfo(prev => ({ ...prev, name: e.target.value }))}
-                    className="text-base h-12"
+                    className="text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    required
+                    aria-required="true"
+                    autoFocus
                   />
                 </div>
                 
@@ -290,9 +551,9 @@ export default function Assessment() {
                     placeholder="e.g., john@acme.com"
                     value={companyInfo.email}
                     onChange={(e) => setCompanyInfo(prev => ({ ...prev, email: e.target.value }))}
-                    className="text-base h-12"
+                    className="text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   />
-                  <p className="text-sm text-muted-foreground">
+                  <p id="email-hint" className="text-sm text-muted-foreground">
                     We'll email you the results link and PDF report
                   </p>
                 </div>
@@ -307,7 +568,7 @@ export default function Assessment() {
                     placeholder="e.g., https://acme.com"
                     value={companyInfo.website}
                     onChange={(e) => setCompanyInfo(prev => ({ ...prev, website: e.target.value }))}
-                    className="text-base h-12"
+                    className="text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   />
                   <p className="text-sm text-muted-foreground">
                     We'll analyze your website to provide more relevant insights
@@ -323,19 +584,20 @@ export default function Assessment() {
                     placeholder="e.g., Product Engineering, Marketing"
                     value={companyInfo.team}
                     onChange={(e) => setCompanyInfo(prev => ({ ...prev, team: e.target.value }))}
-                    className="text-base h-12"
+                    className="text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   />
                 </div>
-              </div>
+              </fieldset>
 
               {/* Proximity: Financial parameters grouped together */}
-              <div className="space-y-6 pt-4">
-                <h3 className="text-xl font-semibold border-b border-border pb-2">Team Parameters</h3>
+              <fieldset className="space-y-6 pt-4">
+                <legend className="text-3xl font-semibold border-b border-border pb-3 w-full">Team Parameters</legend>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="team-size" className="text-base font-medium">
-                      Team Size <span className="text-destructive">*</span>
+                      Team Size <span className="text-destructive" aria-hidden="true">*</span>
+                      <span className="sr-only">(required)</span>
                     </Label>
                     <Input
                       id="team-size"
@@ -343,13 +605,17 @@ export default function Assessment() {
                       placeholder="10"
                       value={companyInfo.teamSize}
                       onChange={(e) => setCompanyInfo(prev => ({ ...prev, teamSize: e.target.value }))}
-                      className="text-base h-12"
+                      className="text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      required
+                      aria-required="true"
+                      min="1"
                     />
                   </div>
                   
                   <div className="space-y-2">
                     <Label htmlFor="avg-salary" className="text-base font-medium">
-                      Avg. Annual Salary <span className="text-destructive">*</span>
+                      Avg. Annual Salary <span className="text-destructive" aria-hidden="true">*</span>
+                      <span className="sr-only">(required)</span>
                     </Label>
                     <Input
                       id="avg-salary"
@@ -357,42 +623,47 @@ export default function Assessment() {
                       placeholder="100000"
                       value={companyInfo.avgSalary}
                       onChange={(e) => setCompanyInfo(prev => ({ ...prev, avgSalary: e.target.value }))}
-                      className="text-base h-12"
+                      className="text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      required
+                      aria-required="true"
+                      min="0"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <Label className="text-base font-medium">
-                    What Kind of Corporate Training Do You Want? <span className="text-destructive">*</span>
+                  <Label id="training-type-label" className="text-base font-medium">
+                    What Kind of Corporate Training Do You Want? <span className="text-destructive" aria-hidden="true">*</span>
+                    <span className="sr-only">(required)</span>
                   </Label>
                   <RadioGroup 
                     value={companyInfo.trainingType}
                     onValueChange={(value) => setCompanyInfo(prev => ({ ...prev, trainingType: value as 'half-day' | 'full-day' | 'month-long' | 'not-sure' }))}
                     className="space-y-3"
+                    aria-labelledby="training-type-label"
                   >
-                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
+                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-colors cursor-pointer">
                       <RadioGroupItem value="half-day" id="half-day" className="mt-1" />
                       <Label htmlFor="half-day" className="flex-1 cursor-pointer">
                         <div className="font-semibold">Half Day Workshop</div>
                         <div className="text-sm text-muted-foreground">${TRAINING_OPTIONS['half-day'].cost.toLocaleString()} - Focus on your #1 critical area</div>
                       </Label>
                     </div>
-                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
+                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-colors cursor-pointer">
                       <RadioGroupItem value="full-day" id="full-day" className="mt-1" />
                       <Label htmlFor="full-day" className="flex-1 cursor-pointer">
                         <div className="font-semibold">Full Day Workshop</div>
                         <div className="text-sm text-muted-foreground">${TRAINING_OPTIONS['full-day'].cost.toLocaleString()} - Focus on your top 2 critical areas</div>
                       </Label>
                     </div>
-                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
+                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-colors cursor-pointer">
                       <RadioGroupItem value="month-long" id="month-long" className="mt-1" />
                       <Label htmlFor="month-long" className="flex-1 cursor-pointer">
                         <div className="font-semibold">Month-Long Engagement</div>
                         <div className="text-sm text-muted-foreground">${TRAINING_OPTIONS['month-long'].cost.toLocaleString()} - Comprehensive training across all areas</div>
                       </Label>
                     </div>
-                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
+                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-colors cursor-pointer">
                       <RadioGroupItem value="not-sure" id="not-sure" className="mt-1" />
                       <Label htmlFor="not-sure" className="flex-1 cursor-pointer">
                         <div className="font-semibold">I'm Not Sure Yet</div>
@@ -401,20 +672,23 @@ export default function Assessment() {
                     </div>
                   </RadioGroup>
                 </div>
-              </div>
+              </fieldset>
 
               {/* Continuity: Clear call-to-action */}
               <div className="pt-6">
                 <Button
+                  type="submit"
                   size="lg"
-                  onClick={handleStartAssessment}
                   disabled={!companyInfo.name.trim() || !companyInfo.teamSize.trim() || !companyInfo.avgSalary.trim()}
-                  className="w-full h-14 text-lg"
+                  className="w-full h-14 text-lg focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 >
                   Start Assessment →
                 </Button>
+                <p className="text-center text-sm text-muted-foreground mt-2">
+                  Press <kbd className="px-1.5 py-0.5 text-xs bg-muted border border-border rounded">Enter</kbd> to continue
+                </p>
               </div>
-            </div>
+            </form>
           </motion.div>
         ) : (
           /* Assessment Accordions */
@@ -423,6 +697,15 @@ export default function Assessment() {
             animate={{ opacity: 1 }}
             className="space-y-6"
           >
+            {/* Keyboard navigation hint */}
+            <div className="bg-muted/50 border border-border rounded-lg p-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                <strong>Quick tip:</strong> Press number keys <kbd className="px-1.5 py-0.5 text-xs bg-background border border-border rounded">1</kbd>-<kbd className="px-1.5 py-0.5 text-xs bg-background border border-border rounded">7</kbd> to rate questions instantly. 
+                Use <kbd className="px-1.5 py-0.5 text-xs bg-background border border-border rounded">N</kbd>/<kbd className="px-1.5 py-0.5 text-xs bg-background border border-border rounded">P</kbd> to navigate. 
+                Press <kbd className="px-1.5 py-0.5 text-xs bg-background border border-border rounded">?</kbd> for all shortcuts.
+              </p>
+            </div>
+
             {/* Common Region: Accordion container */}
             <Accordion 
               type="single" 
@@ -439,13 +722,16 @@ export default function Assessment() {
                     value={section.id}
                     className="bg-card border border-border rounded-lg shadow-sm overflow-hidden"
                   >
-                    <AccordionTrigger className="px-6 py-5 hover:bg-accent/50 transition-colors [&[data-state=open]]:bg-accent/30">
+                    <AccordionTrigger 
+                      className="px-6 py-5 hover:bg-accent/50 transition-colors [&[data-state=open]]:bg-accent/30 focus:ring-2 focus:ring-ring focus:ring-inset"
+                      aria-label={`${section.title} section, ${isComplete ? 'complete' : 'incomplete'}, ${section.questions.filter(q => answers[q.id] !== undefined).length} of ${section.questions.length} questions answered`}
+                    >
                       <div className="flex items-center gap-4 w-full">
                         {/* Status Icon - subtle, secondary visual element */}
                         {isComplete ? (
-                          <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                          <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" aria-hidden="true" />
                         ) : (
-                          <Circle className="h-5 w-5 text-muted-foreground/40 flex-shrink-0" />
+                          <Circle className="h-5 w-5 text-muted-foreground/40 flex-shrink-0" aria-hidden="true" />
                         )}
                         
                         {/* Title - primary focus with strong hierarchy */}
@@ -474,11 +760,24 @@ export default function Assessment() {
                       </div>
                       
                       {/* Grouping: Questions visually separated but clearly related */}
-                      <div className="space-y-6">
+                      <div className="space-y-6" role="list" aria-label={`${section.title} questions`}>
                         {section.questions.map((q) => (
-                          <div key={q.id} className="space-y-4 p-5 bg-background rounded-lg border border-border/50">
+                          <div 
+                            key={q.id} 
+                            ref={(el) => { questionRefs.current[q.id] = el; }}
+                            className={`space-y-4 p-5 bg-background rounded-lg border transition-all ${
+                              focusedQuestionId === q.id 
+                                ? 'border-primary ring-2 ring-primary/20' 
+                                : 'border-border/50'
+                            }`}
+                            role="listitem"
+                            onFocus={() => handleQuestionFocus(q.id)}
+                          >
                             {/* Hierarchy: Question number and text */}
-                            <Label className="text-base font-medium leading-relaxed block">
+                            <Label 
+                              id={`question-${q.id}-label`}
+                              className="text-base font-medium leading-relaxed block"
+                            >
                               <span className="text-muted-foreground mr-2">{q.id}.</span>
                               {q.text}
                             </Label>
@@ -486,8 +785,10 @@ export default function Assessment() {
                             {/* Grouping: Scale buttons unified as single control */}
                             <RadioGroup
                               value={answers[q.id]?.toString()}
-                              onValueChange={(val) => handleAnswer(q.id, parseInt(val))}
+                              onValueChange={(val) => handleAnswer(q.id, parseInt(val), true)}
                               className="flex flex-wrap gap-2 sm:gap-3 justify-center pt-2"
+                              aria-labelledby={`question-${q.id}-label`}
+                              onFocus={() => handleQuestionFocus(q.id)}
                             >
                               {SCALE_LABELS.map((scale) => (
                                 <div key={scale.value} className="flex flex-col items-center gap-2">
@@ -495,11 +796,13 @@ export default function Assessment() {
                                     value={scale.value.toString()}
                                     id={`q${q.id}-${scale.value}`}
                                     className="peer sr-only"
+                                    aria-label={`${scale.value}${scale.label ? `, ${scale.label}` : ''}`}
                                   />
                                   <Label
                                     htmlFor={`q${q.id}-${scale.value}`}
                                     className={`
                                       flex flex-col items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 cursor-pointer transition-all
+                                      focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2
                                       ${answers[q.id] === scale.value 
                                         ? "border-primary bg-primary text-primary-foreground scale-110 shadow-lg font-bold" 
                                         : "border-muted-foreground/30 hover:border-primary/50 bg-card text-muted-foreground hover:scale-105"}
@@ -508,7 +811,7 @@ export default function Assessment() {
                                     <span className="text-base font-semibold">{scale.value}</span>
                                   </Label>
                                   {(scale.value === 1 || scale.value === 4 || scale.value === 7) && (
-                                    <span className="text-[10px] text-muted-foreground text-center max-w-[70px] hidden sm:block">
+                                    <span className="text-[10px] text-muted-foreground text-center max-w-[70px] hidden sm:block" aria-hidden="true">
                                       {scale.label}
                                     </span>
                                   )}
@@ -530,21 +833,25 @@ export default function Assessment() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-green-50 dark:bg-green-950/20 border-2 border-green-600 rounded-lg p-8 text-center space-y-4"
+                role="region"
+                aria-label="Assessment complete"
               >
-                <CheckCircle2 className="h-16 w-16 text-green-600 mx-auto" />
+                <CheckCircle2 className="h-16 w-16 text-green-600 mx-auto" aria-hidden="true" />
                 <h3 className="text-2xl font-bold">Assessment Complete!</h3>
                 <p className="text-muted-foreground">
                   You've answered all 35 questions. Click below to view your personalized results and ROI analysis.
                 </p>
                 <Button
+                  ref={submitButtonRef}
                   size="lg"
                   onClick={handleSubmit}
                   disabled={isSubmitting}
-                  className="h-14 px-8 text-lg bg-green-600 hover:bg-green-700"
+                  className="h-14 px-8 text-lg bg-green-600 hover:bg-green-700 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  aria-describedby="submit-hint"
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" aria-hidden="true" />
                       Generating Results...
                     </>
                   ) : (
@@ -553,6 +860,9 @@ export default function Assessment() {
                     </>
                   )}
                 </Button>
+                <p id="submit-hint" className="text-sm text-muted-foreground">
+                  Press <kbd className="px-1.5 py-0.5 text-xs bg-muted border border-border rounded">Ctrl</kbd>+<kbd className="px-1.5 py-0.5 text-xs bg-muted border border-border rounded">Enter</kbd> to submit
+                </p>
               </motion.div>
             )}
           </motion.div>

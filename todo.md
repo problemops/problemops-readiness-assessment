@@ -207,3 +207,28 @@
 - [ ] Write vitest test to prevent regression
 - [ ] Test end-to-end submission flow in browser
 - [ ] Save checkpoint with fix
+
+
+## Keyboard Accessibility (WCAG 2.0 Compliance)
+- [x] Add skip-to-content link at top of all pages
+- [x] Implement proper tab order for company info form
+- [x] Add keyboard support for radio button groups (arrow keys)
+- [x] Enable Enter key submission from text inputs (form onSubmit works natively)
+- [x] Implement number key shortcuts (1-7) for rating questions
+- [x] Add auto-advance to next question after rating selection
+- [x] Implement N/J/P/K shortcuts for question navigation
+- [x] Add Ctrl+Enter shortcut to submit assessment
+- [x] Add Ctrl+Shift+R shortcut to jump to Results button
+- [x] Implement ? key to show keyboard shortcuts help
+- [x] Add visible focus indicators (2px ring) to all interactive elements
+- [x] Ensure focus management on page transitions
+- [x] Add ARIA labels and roles for screen reader support
+- [x] Add aria-live regions for progress announcements
+- [x] Test complete keyboard navigation flow
+
+- [x] Fix typography hierarchy: "Company Information" and "Team Parameters" should be one em smaller than "Before We Begin" but larger than field labels
+
+
+## Critical Bugs (URGENT)
+- [x] Fix "Generating Results" infinite loading bug - was using wouter's useLocation instead of React Router's useNavigate
+- [ ] Fix React form state not updating when input values are set programmatically (affects testing and accessibility)

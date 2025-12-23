@@ -42,11 +42,21 @@ const trpcClient = trpc.createClient({
     httpBatchLink({
       url: "/api/trpc",
       transformer: superjson,
-      fetch(input, init) {
-        return globalThis.fetch(input, {
+      async fetch(input, init) {
+        console.log('[tRPC Fetch] Request:', input, init);
+        const response = await globalThis.fetch(input, {
           ...(init ?? {}),
           credentials: "include",
         });
+        console.log('[tRPC Fetch] Response status:', response.status);
+        console.log('[tRPC Fetch] Response headers:', Array.from(response.headers.entries()));
+        
+        // Clone response to read body without consuming it
+        const clonedResponse = response.clone();
+        const text = await clonedResponse.text();
+        console.log('[tRPC Fetch] Response body:', text.substring(0, 500));
+        
+        return response;
       },
     }),
   ],

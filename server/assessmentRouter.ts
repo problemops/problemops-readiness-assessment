@@ -28,75 +28,115 @@ export const assessmentRouter = router({
   create: publicProcedure
     .input(createAssessmentSchema)
     .mutation(async ({ input }) => {
-      const { companyInfo, scores, answers } = input;
+      console.log('[Assessment] ========== CREATE MUTATION START ==========');
+      console.log('[Assessment] Timestamp:', new Date().toISOString());
       
-      // Calculate readiness score (weighted average)
-      const DRIVER_WEIGHTS: Record<string, number> = {
-        trust: 0.20,
-        psychSafety: 0.18,
-        tms: 0.15,
-        commQuality: 0.15,
-        goalClarity: 0.12,
-        coordination: 0.10,
-        teamCognition: 0.10,
-      };
-      
-      const readinessScore = Object.entries(scores).reduce((sum, [driverId, score]) => {
-        const weight = DRIVER_WEIGHTS[driverId] || 0;
-        return sum + (score / 7) * weight;
-      }, 0);
-      
-      // Calculate dysfunction cost
-      const totalPayroll = companyInfo.teamSize * companyInfo.avgSalary;
-      const dysfunctionCost = totalPayroll * (1 - readinessScore);
-      
-      // Generate UUID for assessment
-      const assessmentId = randomUUID();
-      
-      // Get database instance
-      const db = await getDb();
-      if (!db) {
-        throw new Error("Database not available");
-      }
-      
-      // Insert into assessments table
-      await db.insert(assessments).values({
-        id: assessmentId,
-        companyName: companyInfo.name,
-        companyEmail: companyInfo.email || null,
-        companyWebsite: companyInfo.website || null,
-        teamName: companyInfo.team || null,
-        teamSize: companyInfo.teamSize,
-        avgSalary: companyInfo.avgSalary,
-        trainingType: companyInfo.trainingType,
-        readinessScore: readinessScore.toFixed(4),
-        dysfunctionCost: dysfunctionCost.toFixed(2),
-      });
-      
-      // Insert into assessmentData table
-      await db.insert(assessmentData).values({
-        assessmentId,
-        answers: JSON.stringify(answers),
-        driverScores: JSON.stringify(scores),
-        priorityAreas: null, // Will be calculated on demand
-        roiData: null, // Will be calculated on demand
-      });
-      
-      // If email provided, queue email job
-      if (companyInfo.email) {
-        await db.insert(emailLogs).values({
+      try {
+        const { companyInfo, scores, answers } = input;
+        console.log('[Assessment] Company:', companyInfo.name);
+        console.log('[Assessment] Scores:', JSON.stringify(scores));
+        console.log('[Assessment] Answers count:', Object.keys(answers).length);
+        
+        // Calculate readiness score (weighted average)
+        console.log('[Assessment] Calculating readiness score...');
+        const DRIVER_WEIGHTS: Record<string, number> = {
+          trust: 0.20,
+          psych_safety: 0.18,
+          tms: 0.15,
+          comm_quality: 0.15,
+          goal_clarity: 0.12,
+          coordination: 0.10,
+          team_cognition: 0.10,
+        };
+        
+        const readinessScore = Object.entries(scores).reduce((sum, [driverId, score]) => {
+          const weight = DRIVER_WEIGHTS[driverId] || 0;
+          if (weight === 0) {
+            console.warn(`[Assessment] Unknown driver ID: ${driverId}`);
+          }
+          return sum + (score / 7) * weight;
+        }, 0);
+        console.log('[Assessment] Readiness score:', readinessScore);
+        
+        // Calculate dysfunction cost
+        const totalPayroll = companyInfo.teamSize * companyInfo.avgSalary;
+        const dysfunctionCost = totalPayroll * (1 - readinessScore);
+        console.log('[Assessment] Dysfunction cost:', dysfunctionCost);
+        
+        // Generate UUID for assessment
+        const assessmentId = randomUUID();
+        console.log('[Assessment] Generated ID:', assessmentId);
+        
+        // Get database instance
+        console.log('[Assessment] Getting database connection...');
+        const db = await getDb();
+        if (!db) {
+          console.error('[Assessment] ERROR: Database not available!');
+          throw new Error("Database not available");
+        }
+        console.log('[Assessment] Database connection obtained');
+        
+        // Insert into assessments table
+        console.log('[Assessment] Inserting into assessments table...');
+        const assessmentValues = {
+          id: assessmentId,
+          companyName: companyInfo.name,
+          companyEmail: companyInfo.email || null,
+          companyWebsite: companyInfo.website || null,
+          teamName: companyInfo.team || null,
+          teamSize: companyInfo.teamSize,
+          avgSalary: companyInfo.avgSalary,
+          trainingType: companyInfo.trainingType,
+          readinessScore: readinessScore.toFixed(4),
+          dysfunctionCost: dysfunctionCost.toFixed(2),
+        };
+        console.log('[Assessment] Assessment values:', JSON.stringify(assessmentValues));
+        
+        await db.insert(assessments).values(assessmentValues);
+        console.log('[Assessment] Successfully inserted into assessments table');
+        
+        // Insert into assessmentData table
+        console.log('[Assessment] Inserting into assessmentData table...');
+        const dataValues = {
           assessmentId,
-          recipientEmail: companyInfo.email,
-          emailType: "results_with_pdf",
-          status: "pending",
-        });
+          answers: JSON.stringify(answers),
+          driverScores: JSON.stringify(scores),
+          priorityAreas: null,
+          roiData: null,
+        };
+        
+        await db.insert(assessmentData).values(dataValues);
+        console.log('[Assessment] Successfully inserted into assessmentData table');
+        
+        // If email provided, queue email job
+        if (companyInfo.email) {
+          console.log('[Assessment] Queueing email for:', companyInfo.email);
+          await db.insert(emailLogs).values({
+            assessmentId,
+            recipientEmail: companyInfo.email,
+            emailType: "results_with_pdf",
+            status: "pending",
+          });
+          console.log('[Assessment] Email queued successfully');
+        }
+        
+        const response = {
+          success: true,
+          assessmentId,
+          redirectUrl: `/results/${assessmentId}`,
+        };
+        console.log('[Assessment] Returning response:', JSON.stringify(response));
+        console.log('[Assessment] ========== CREATE MUTATION END ==========');
+        
+        return response;
+        
+      } catch (error) {
+        console.error('[Assessment] ========== ERROR ==========');
+        console.error('[Assessment] Error type:', error instanceof Error ? error.constructor.name : typeof error);
+        console.error('[Assessment] Error message:', error instanceof Error ? error.message : String(error));
+        console.error('[Assessment] Error stack:', error instanceof Error ? error.stack : 'No stack');
+        throw error;
       }
-      
-      return {
-        success: true,
-        assessmentId,
-        redirectUrl: `/results/${assessmentId}`,
-      };
     }),
 
   /**
@@ -106,6 +146,8 @@ export const assessmentRouter = router({
   getById: publicProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ input }) => {
+      console.log('[Assessment] getById called with ID:', input.id);
+      
       // Get database instance
       const db = await getDb();
       if (!db) {
@@ -120,6 +162,7 @@ export const assessmentRouter = router({
         .limit(1);
       
       if (!assessment) {
+        console.error('[Assessment] Assessment not found:', input.id);
         throw new Error("Assessment not found");
       }
       
@@ -130,12 +173,15 @@ export const assessmentRouter = router({
         .limit(1);
       
       if (!data) {
+        console.error('[Assessment] Assessment data not found:', input.id);
         throw new Error("Assessment data not found");
       }
       
       // Parse JSON fields
       const scores = JSON.parse(data.driverScores);
       const answers = JSON.parse(data.answers);
+      
+      console.log('[Assessment] Successfully retrieved assessment:', input.id);
       
       return {
         companyInfo: {

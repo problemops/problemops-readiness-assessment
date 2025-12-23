@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useParams } from "wouter";
+import { useNavigate, useParams } from "react-router-dom";
 import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -60,7 +60,7 @@ const formatPercent = (value: number) => {
 
 export default function Results() {
   const params = useParams();
-  const [, setLocation] = useLocation();
+  const navigate = useNavigate();
   const [results, setResults] = useState<any>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -176,7 +176,7 @@ export default function Results() {
       });
       setIsLoading(false);
     }
-  }, [assessmentData, assessmentId, queryError, setLocation]);
+  }, [assessmentData, assessmentId, queryError, navigate]);
 
   const getDriverDescription = (id: string): string => {
     const descriptions: Record<string, string> = {
@@ -211,7 +211,7 @@ export default function Results() {
           <AlertTriangle className="h-12 w-12 text-destructive mx-auto" />
           <h2 className="text-2xl font-bold">Assessment Not Found</h2>
           <p className="text-muted-foreground">{error || 'Unable to load assessment results'}</p>
-          <Button onClick={() => setLocation('/')}>Return to Home</Button>
+          <Button onClick={() => navigate('/')}>Return to Home</Button>
         </div>
       </div>
     );
@@ -293,7 +293,7 @@ export default function Results() {
                 src="/problemops-icon.svg" 
                 alt="ProblemOps" 
                 className="h-10 md:h-12 cursor-pointer hover:opacity-90 transition-opacity"
-                onClick={() => setLocation('/')}
+                onClick={() => navigate('/')}
               />
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold">Assessment Results</h1>
@@ -305,7 +305,7 @@ export default function Results() {
             <div className="flex gap-3">
               <Button 
                 variant="secondary" 
-                onClick={() => setLocation('/')}
+                onClick={() => navigate('/')}
                 className="gap-2"
               >
                 <Home className="h-4 w-4" />
