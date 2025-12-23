@@ -189,6 +189,12 @@ export default function Assessment() {
         driverScores[section.id] = avgScore;
       });
       
+      console.log('=== SUBMITTING ASSESSMENT ===');
+      console.log('Company Info:', companyInfo);
+      console.log('Driver Scores:', driverScores);
+      console.log('Answers count:', Object.keys(answers).length);
+      console.log('Full payload:', { companyInfo, scores: driverScores, answers });
+      
       const result = await createAssessment.mutateAsync({
         companyInfo,
         scores: driverScores,
@@ -198,7 +204,13 @@ export default function Assessment() {
       setLocation(result.redirectUrl);
     } catch (error) {
       console.error('Failed to submit assessment:', error);
-      alert('Failed to submit assessment. Please try again.');
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        fullError: error,
+      });
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Failed to submit assessment: ${errorMessage}\n\nPlease check the console for details.`);
       setIsSubmitting(false);
     }
   };

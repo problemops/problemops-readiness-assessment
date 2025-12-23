@@ -195,3 +195,15 @@
 - [ ] Update meta tags with OG images (deferred)
 - [x] Test branding on all pages
 - [ ] NEXT: Save checkpoint with branding complete
+
+
+## Fix Assessment Submission Error (URGENT)
+- [ ] Check server logs for error details
+- [ ] Review Assessment.tsx handleSubmit function
+- [ ] Check assessmentRouter.ts create endpoint
+- [ ] Verify database schema matches API expectations
+- [ ] Test API endpoint directly with curl/Postman
+- [ ] Fix the root cause
+- [ ] Write vitest test to prevent regression
+- [ ] Test end-to-end submission flow in browser
+- [ ] Save checkpoint with fix
