@@ -740,7 +740,7 @@ export default function Assessment() {
                       <RadioGroupItem value="not-sure" id="not-sure" />
                       <Label htmlFor="not-sure" className="flex-1 cursor-pointer flex flex-col gap-1 text-left items-start">
                         <div className="font-semibold text-black">I'm Not Sure Yet</div>
-                        <div className="text-sm text-muted-foreground">See all options with comparative ROI analysis</div>
+                        <div className="text-sm text-muted-foreground font-normal">See all options with comparative ROI analysis</div>
                       </Label>
                     </div>
                     {/* Half Day */}
@@ -748,7 +748,7 @@ export default function Assessment() {
                       <RadioGroupItem value="half-day" id="half-day" />
                       <Label htmlFor="half-day" className="flex-1 cursor-pointer flex flex-col gap-1 text-left items-start">
                         <div className="font-semibold text-black">Half Day Workshop</div>
-                        <div className="text-sm text-muted-foreground">${TRAINING_OPTIONS['half-day'].cost.toLocaleString()} - Focus on your #1 critical area</div>
+                        <div className="text-sm text-muted-foreground font-normal">${TRAINING_OPTIONS['half-day'].cost.toLocaleString()} - Focus on your #1 critical area</div>
                       </Label>
                     </div>
                     {/* Full Day */}
@@ -756,7 +756,7 @@ export default function Assessment() {
                       <RadioGroupItem value="full-day" id="full-day" />
                       <Label htmlFor="full-day" className="flex-1 cursor-pointer flex flex-col gap-1 text-left items-start">
                         <div className="font-semibold text-black">Full Day Workshop</div>
-                        <div className="text-sm text-muted-foreground">${TRAINING_OPTIONS['full-day'].cost.toLocaleString()} - Focus on your top 2 critical areas</div>
+                        <div className="text-sm text-muted-foreground font-normal">${TRAINING_OPTIONS['full-day'].cost.toLocaleString()} - Focus on your top 2 critical areas</div>
                       </Label>
                     </div>
                     {/* Month-Long */}
@@ -764,7 +764,7 @@ export default function Assessment() {
                       <RadioGroupItem value="month-long" id="month-long" />
                       <Label htmlFor="month-long" className="flex-1 cursor-pointer flex flex-col gap-1 text-left items-start">
                         <div className="font-semibold text-black">Month-Long Engagement</div>
-                        <div className="text-sm text-muted-foreground">${TRAINING_OPTIONS['month-long'].cost.toLocaleString()} - Comprehensive training across all areas</div>
+                        <div className="text-sm text-muted-foreground font-normal">${TRAINING_OPTIONS['month-long'].cost.toLocaleString()} - Comprehensive training across all areas</div>
                       </Label>
                     </div>
                   </RadioGroup>

@@ -404,3 +404,7 @@
 - [x] Update logo reference in Assessment page (already using /problemops-logo.svg)
 - [x] Update logo reference in Results page (already using /problemops-logo.svg)
 - [x] Test logo display on all pages
+
+## Training Type Description Font Weight
+
+- [x] Ensure training type descriptions are not bold (added font-normal)
