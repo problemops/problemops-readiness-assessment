@@ -290,8 +290,8 @@ export default function Results() {
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
               <img 
-                src="/problemops-logo.svg" 
-                alt="ProblemOps - Making change together" 
+                src="/problemops-icon.svg" 
+                alt="ProblemOps" 
                 className="h-10 md:h-12 cursor-pointer hover:opacity-90 transition-opacity"
                 onClick={() => setLocation('/')}
               />
