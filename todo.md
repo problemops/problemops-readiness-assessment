@@ -320,3 +320,19 @@
 - [x] Vertically stack Team Size and Average Salary input fields
 - [x] Ensure all text input fields have consistent full width
 - [x] Remove horizontal layout for input fields
+
+## Remove Email Field
+
+- [x] Remove email input field from Assessment page company information form
+- [x] Remove email from companyInfo state
+- [x] Update backend schema to remove email field (not needed - backend accepts any fields)
+- [x] Test form submission without email
+
+## Progress Stepper Text Color Fix
+
+- [x] Change text color inside golden amber (#FCD08B) circle from white to black
+- [x] Change text color in gray inactive circles from gray to white
+
+## Remove Autofocus on Form Load
+
+- [x] Remove autofocus from Company Name field to prevent scroll jump on page load

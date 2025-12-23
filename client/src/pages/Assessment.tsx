@@ -132,15 +132,13 @@ export default function Assessment() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [companyInfo, setCompanyInfo] = useState<{
     name: string;
-    email: string;
     website: string;
     team: string;
     teamSize: string;
     avgSalary: string;
     trainingType: 'half-day' | 'full-day' | 'month-long' | 'not-sure';
-  }>({ 
+  }>({
     name: '', 
-    email: '',
     website: '', 
     team: '',
     teamSize: '10',
@@ -656,27 +654,10 @@ export default function Assessment() {
                     className="text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     required
                     aria-required="true"
-                    autoFocus
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="company-email" className="text-base font-medium">
-                    Email Address
-                  </Label>
-                  <Input
-                    id="company-email"
-                    type="email"
-                    placeholder="e.g., john@acme.com"
-                    value={companyInfo.email}
-                    onChange={(e) => setCompanyInfo(prev => ({ ...prev, email: e.target.value }))}
-                    className="text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                  />
-                  <p id="email-hint" className="text-sm text-muted-foreground">
-                    We'll email you the results link and PDF report
-                  </p>
-                </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="company-website" className="text-base font-medium">
                     Company Website

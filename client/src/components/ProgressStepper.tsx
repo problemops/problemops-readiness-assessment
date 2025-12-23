@@ -51,9 +51,9 @@ export function ProgressStepper({ currentStep, completedSteps, className }: Prog
               <div
                 className={cn(
                   "w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-colors",
-                  status === 'active' && "bg-[#FCD08B] text-white",
+                  status === 'active' && "bg-[#FCD08B] text-black",
                   status === 'completed' && "bg-gray-400 text-white",
-                  status === 'inactive' && "border-2 border-gray-400 text-gray-400"
+                  status === 'inactive' && "border-2 border-gray-400 text-white"
                 )}
                 aria-label={`Step ${step.number}: ${step.label}, ${status}`}
               >
