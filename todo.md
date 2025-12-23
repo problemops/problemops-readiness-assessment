@@ -56,3 +56,10 @@
 - [x] Explain financial logic in 8th-grade reading level
 - [x] Enhance ROI card to highlight payback period more prominently
 - [x] Test financial breakdown clarity
+
+## Priority Matrix Feature
+- [x] Create priority matrix quadrant chart component
+- [x] Plot drivers by Impact (weight) vs Performance (score)
+- [x] Add quadrant labels and color coding
+- [x] Integrate into Results page
+- [x] Test priority matrix visualization

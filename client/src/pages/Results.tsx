@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Download, Home, TrendingUp, AlertTriangle, BarChart3, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { SlidePDFGenerator } from "@/lib/pdfGenerator";
+import PriorityMatrix from "@/components/PriorityMatrix";
 
 const DRIVER_NAMES: Record<string, string> = {
   trust: "Trust",
@@ -465,6 +466,14 @@ export default function Results() {
               </div>
             </CardContent>
           </Card>
+        </section>
+
+        <Separator />
+
+        {/* Priority Matrix */}
+        <section>
+          <h2 className="text-3xl font-bold mb-6">Where to Focus Your Efforts</h2>
+          <PriorityMatrix drivers={results.drivers} />
         </section>
 
         <Separator />
