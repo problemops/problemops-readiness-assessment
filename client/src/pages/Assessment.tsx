@@ -211,6 +211,75 @@ export default function Assessment() {
     return section.questions.every(q => answers[q.id] !== undefined);
   };
 
+  // Helper: Find which section a question belongs to
+  const findQuestionSection = (questionId: number) => {
+    return DRIVER_SECTIONS.find(s => s.questions.some(q => q.id === questionId));
+  };
+
+  // Helper: Navigate to a specific rating option
+  const focusRatingOption = (questionId: number, ratingValue: number) => {
+    const element = document.getElementById(`q${questionId}-${ratingValue}`);
+    if (element) {
+      element.focus();
+      // Scroll into view
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  // Handle TAB/SHIFT+TAB navigation for rating options
+  const handleRatingKeyDown = (e: React.KeyboardEvent, questionId: number, ratingValue: number) => {
+    // Handle ENTER key to select rating
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAnswer(questionId, ratingValue, true);
+      return;
+    }
+
+    // Handle TAB navigation
+    if (e.key === 'Tab') {
+      const isShiftTab = e.shiftKey;
+      
+      if (isShiftTab) {
+        // SHIFT+TAB: Navigate backward
+        if (ratingValue === 1) {
+          // Jump to rating 7 of previous question
+          e.preventDefault();
+          const currentIndex = ALL_QUESTION_IDS.indexOf(questionId);
+          const prevQuestionId = ALL_QUESTION_IDS[currentIndex - 1];
+          
+          if (prevQuestionId) {
+            const prevSection = findQuestionSection(prevQuestionId);
+            if (prevSection && prevSection.id !== openSection) {
+              setOpenSection(prevSection.id);
+            }
+            setTimeout(() => focusRatingOption(prevQuestionId, 7), 100);
+          }
+        }
+        // Otherwise, let native TAB handle navigation to previous rating
+      } else {
+        // TAB: Navigate forward
+        if (ratingValue === 7) {
+          // Jump to rating 1 of next question
+          e.preventDefault();
+          const currentIndex = ALL_QUESTION_IDS.indexOf(questionId);
+          const nextQuestionId = ALL_QUESTION_IDS[currentIndex + 1];
+          
+          if (nextQuestionId) {
+            const nextSection = findQuestionSection(nextQuestionId);
+            if (nextSection && nextSection.id !== openSection) {
+              setOpenSection(nextSection.id);
+            }
+            setTimeout(() => focusRatingOption(nextQuestionId, 1), 100);
+          } else {
+            // Last question, last rating - focus submit button
+            setTimeout(() => submitButtonRef.current?.focus(), 100);
+          }
+        }
+        // Otherwise, let native TAB handle navigation to next rating
+      }
+    }
+  };
+
   // Auto-advance to next section when current is complete
   useEffect(() => {
     if (currentStep > 0) {
@@ -455,12 +524,12 @@ export default function Assessment() {
         <div className="container mx-auto max-w-5xl">
           <div className="flex items-center justify-between mb-4">
             <img 
-              src="/problemops-icon.svg" 
+              src="/problemops-logo.svg" 
               alt="ProblemOps" 
-              className="h-10 md:h-12 cursor-pointer hover:opacity-90 transition-opacity"
+              className="h-8 md:h-10 cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => window.location.href = '/'}
             />
-            <h1 className="text-2xl md:text-4xl font-bold absolute left-1/2 transform -translate-x-1/2">Team ProblemOps Readiness Assessment</h1>
+            <h1 className="text-2xl md:text-4xl font-bold absolute left-1/2 transform -translate-x-1/2">Readiness Assessment</h1>
             <div className="flex items-center gap-4">
               {/* Keyboard shortcuts hint */}
               <button
@@ -800,9 +869,15 @@ export default function Assessment() {
                                   />
                                   <Label
                                     htmlFor={`q${q.id}-${scale.value}`}
+                                    id={`q${q.id}-${scale.value}`}
+                                    tabIndex={0}
+                                    role="radio"
+                                    aria-checked={answers[q.id] === scale.value}
+                                    aria-label={`Question ${q.id}: Rating ${scale.value} of 7${scale.label ? `, ${scale.label}` : ''}`}
+                                    onKeyDown={(e) => handleRatingKeyDown(e, q.id, scale.value)}
                                     className={`
                                       flex flex-col items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 cursor-pointer transition-all
-                                      focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2
+                                      focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none
                                       ${answers[q.id] === scale.value 
                                         ? "border-primary bg-primary text-primary-foreground scale-110 shadow-lg font-bold" 
                                         : "border-muted-foreground/30 hover:border-primary/50 bg-card text-muted-foreground hover:scale-105"}

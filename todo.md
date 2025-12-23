@@ -232,3 +232,31 @@
 ## Critical Bugs (URGENT)
 - [x] Fix "Generating Results" infinite loading bug - was using wouter's useLocation instead of React Router's useNavigate
 - [ ] Fix React form state not updating when input values are set programmatically (affects testing and accessibility)
+
+
+## Enhanced Keyboard Navigation: TAB+ENTER (NEW)
+- [x] Make each rating option (1-7) individually focusable with tabindex="0"
+- [x] Implement TAB navigation through rating options in natural order (1→2→3→4→5→6→7)
+- [x] Implement SHIFT+TAB backward navigation through rating options
+- [x] Add ENTER key handler to select focused rating option
+- [x] Implement auto-advance to next question's first rating after ENTER selection
+- [x] Ensure TAB navigation continues across questions (question N option 7 → question N+1 option 1)
+- [x] Add proper ARIA attributes (role="radiogroup", role="radio", aria-checked)
+- [x] Implement focus management to move focus programmatically after selection
+- [x] Prevent ENTER key from submitting form when pressed on rating options
+- [x] Ensure number key shortcuts (1-7) work alongside TAB+ENTER navigation
+- [x] Test focus indicators are visible on all rating options (2px ring, high contrast)
+- [ ] Test with screen reader (NVDA/JAWS/VoiceOver) for proper announcements
+- [x] Test complete assessment flow using only TAB, SHIFT+TAB, and ENTER
+- [x] Verify no focus traps exist in the assessment
+- [x] Test changing previous answers using TAB+ENTER
+- [x] Implement SHIFT+TAB from rating 1 to jump to rating 7 of previous question
+- [x] Implement TAB from rating 7 to jump to rating 1 of next question
+- [x] Implement cross-section navigation: auto-expand previous section on SHIFT+TAB from first question
+- [x] Implement cross-section navigation: auto-expand next section on TAB from last question
+- [x] Add smooth scrolling to bring focused question into view during cross-section navigation
+- [x] Test TAB/SHIFT+TAB navigation across all 7 accordion sections
+- [x] Verify no focus traps exist at section boundaries
+
+- [x] Rename application title from "Team ProblemOps Readiness Assessment" to "Readiness Assessment"
+- [x] Update logo to new ProblemOps horizontal dark mode SVG
