@@ -35,7 +35,7 @@ export const TRAINING_OPTIONS: Record<TrainingType, TrainingOption> = {
   'month-long': {
     type: 'month-long',
     name: 'Month-Long Engagement',
-    cost: 25000,
+    cost: 50000,
     duration: '4 weeks',
     focusAreas: 7,
     description: 'Comprehensive month-long program covering all 7 drivers with ongoing support and implementation'
