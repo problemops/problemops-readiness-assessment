@@ -3,7 +3,13 @@
 - [x] Implement PDF generation logic capturing key metrics and charts
 - [x] Connect "Download Report" button to the generation function
 - [x] Test PDF generation
-- [ ] Retrieve 35-question survey instrument
-- [ ] Create `AssessmentModal` component
-- [ ] Implement survey logic (pagination, scoring, progress)
-- [ ] Connect assessment results to main calculator state
+- [x] Retrieve 35-question survey instrument
+- [x] Create `AssessmentModal` component
+- [x] Implement survey logic (pagination, scoring, progress)
+- [x] Connect assessment results to main calculator state
+- [ ] Create `BreakdownModal` component
+- [ ] Implement logic to calculate cost/savings per driver
+- [ ] Make Cost and Savings cards clickable
+- [ ] Connect cards to open BreakdownModal with specific data context
+- [ ] Create `Navbar` component with Dashboard and Assessment links
+- [ ] Integrate Navbar into Home.tsx layout

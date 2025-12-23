@@ -12,6 +12,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip, Cell } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import AssessmentModal from "@/components/AssessmentModal";
+import BreakdownModal from "@/components/BreakdownModal";
+import Navbar from "@/components/Navbar";
 
 // --- Types & Constants ---
 
@@ -383,21 +385,16 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
       
-      {/* Header */}
-      <header className="border-b border-border sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 bg-primary flex items-center justify-center text-primary-foreground font-bold rounded-sm">
-              P
-            </div>
-            <h1 className="text-xl font-bold tracking-tight">ProblemOps <span className="font-normal text-muted-foreground">ROI Calculator</span></h1>
-          </div>
+      <Navbar onOpenAssessment={() => setIsAssessmentOpen(true)} />
+
+      <main className="container py-8 lg:py-12">
+        <div className="flex justify-end mb-6">
           <Button 
             variant="outline" 
             size="sm" 
-            className="hidden md:flex gap-2"
-            onClick={generateReport}
+            onClick={generateReport} 
             disabled={isGeneratingReport}
+            className="gap-2"
           >
             {isGeneratingReport ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -407,9 +404,6 @@ export default function Home() {
             {isGeneratingReport ? "Generating..." : "Download Report"}
           </Button>
         </div>
-      </header>
-
-      <main className="container py-8 lg:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
           
           {/* Left Column: Inputs */}
