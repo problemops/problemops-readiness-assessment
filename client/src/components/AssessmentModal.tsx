@@ -149,7 +149,7 @@ export default function AssessmentModal({ isOpen, onClose, onComplete }: Assessm
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto flex flex-col p-0 gap-0">
+      <DialogContent className="w-full h-full sm:h-auto sm:max-h-[90vh] md:w-[90vw] md:max-w-[90vw] overflow-y-auto flex flex-col p-0 gap-0 rounded-none sm:rounded-lg">
         
         {/* Header */}
         <div className="p-6 border-b border-border bg-background sticky top-0 z-10">
