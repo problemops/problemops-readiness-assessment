@@ -362,3 +362,32 @@
 ## New Assessment Button Scroll Fix
 
 - [x] Make "New Assessment" button scroll to top of page after navigation
+
+## Training Type TAB Navigation
+
+- [ ] Create BDD specification for training type TAB/SHIFT+TAB navigation
+- [ ] Change training type selection from arrow key navigation to TAB/SHIFT+TAB
+- [ ] Remove arrow key navigation behavior from training type radio group
+- [ ] Test TAB forward and SHIFT+TAB backward navigation
+
+## Training Type Clickable Box Area
+
+- [ ] Make entire training type option box clickable (not just text)
+- [ ] Add hover state to entire box
+- [ ] Add cursor pointer to entire box
+- [ ] Test clicking anywhere in the box selects the option
+
+## Training Type Layout & Styling Changes
+
+- [x] Reorder training type options to start with "Not Sure Yet" first
+- [x] Move option descriptions to new line below option name
+- [x] Change option name text color to black
+- [x] Change description text color to black
+- [x] Test visual layout and readability
+
+## Form Field Text Color
+
+- [x] Change all form field text color from gray to black
+- [x] Update input field text color (added text-black to Input component)
+- [x] Update label text color to black
+- [x] Ensure sufficient contrast for readability

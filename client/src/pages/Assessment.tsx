@@ -634,7 +634,7 @@ export default function Assessment() {
                 <legend className="text-3xl font-semibold border-b border-border pb-3 w-full">Company Information</legend>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="company-name" className="text-base font-medium">
+                  <Label htmlFor="company-name" className="text-base font-medium text-black">
                     Company Name <span className="text-destructive" aria-hidden="true">*</span>
                     <span className="sr-only">(required)</span>
                   </Label>
@@ -652,7 +652,7 @@ export default function Assessment() {
                 
 
                 <div className="space-y-2">
-                  <Label htmlFor="company-website" className="text-base font-medium">
+                  <Label htmlFor="company-website" className="text-base font-medium text-black">
                     Company Website
                   </Label>
                   <Input
@@ -669,7 +669,7 @@ export default function Assessment() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="team-name" className="text-base font-medium">
+                  <Label htmlFor="team-name" className="text-base font-medium text-black">
                     Team/Department Name
                   </Label>
                   <Input
@@ -688,7 +688,7 @@ export default function Assessment() {
                 
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="team-size" className="text-base font-medium">
+                    <Label htmlFor="team-size" className="text-base font-medium text-black">
                       Team Size <span className="text-destructive" aria-hidden="true">*</span>
                       <span className="sr-only">(required)</span>
                     </Label>
@@ -706,7 +706,7 @@ export default function Assessment() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="avg-salary" className="text-base font-medium">
+                    <Label htmlFor="avg-salary" className="text-base font-medium text-black">
                       Avg. Annual Salary <span className="text-destructive" aria-hidden="true">*</span>
                       <span className="sr-only">(required)</span>
                     </Label>
@@ -725,7 +725,7 @@ export default function Assessment() {
                 </div>
 
                 <div className="space-y-3">
-                  <Label id="training-type-label" className="text-base font-medium">
+                  <Label id="training-type-label" className="text-base font-medium text-black">
                     What Kind of Corporate Training Do You Want? <span className="text-destructive" aria-hidden="true">*</span>
                     <span className="sr-only">(required)</span>
                   </Label>
@@ -735,32 +735,36 @@ export default function Assessment() {
                     className="space-y-3"
                     aria-labelledby="training-type-label"
                   >
-                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-colors cursor-pointer">
-                      <RadioGroupItem value="half-day" id="half-day" className="mt-1" />
-                      <Label htmlFor="half-day" className="flex-1 cursor-pointer">
-                        <div className="font-semibold">Half Day Workshop</div>
-                        <div className="text-sm text-muted-foreground">${TRAINING_OPTIONS['half-day'].cost.toLocaleString()} - Focus on your #1 critical area</div>
-                      </Label>
-                    </div>
-                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-colors cursor-pointer">
-                      <RadioGroupItem value="full-day" id="full-day" className="mt-1" />
-                      <Label htmlFor="full-day" className="flex-1 cursor-pointer">
-                        <div className="font-semibold">Full Day Workshop</div>
-                        <div className="text-sm text-muted-foreground">${TRAINING_OPTIONS['full-day'].cost.toLocaleString()} - Focus on your top 2 critical areas</div>
-                      </Label>
-                    </div>
-                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-colors cursor-pointer">
-                      <RadioGroupItem value="month-long" id="month-long" className="mt-1" />
-                      <Label htmlFor="month-long" className="flex-1 cursor-pointer">
-                        <div className="font-semibold">Month-Long Engagement</div>
-                        <div className="text-sm text-muted-foreground">${TRAINING_OPTIONS['month-long'].cost.toLocaleString()} - Comprehensive training across all areas</div>
-                      </Label>
-                    </div>
+                    {/* Not Sure Yet - First */}
                     <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-colors cursor-pointer">
                       <RadioGroupItem value="not-sure" id="not-sure" className="mt-1" />
                       <Label htmlFor="not-sure" className="flex-1 cursor-pointer">
-                        <div className="font-semibold">I'm Not Sure Yet</div>
-                        <div className="text-sm text-muted-foreground">See all options with comparative ROI analysis</div>
+                        <div className="font-semibold text-black">I'm Not Sure Yet</div>
+                        <div className="text-sm text-black mt-1">See all options with comparative ROI analysis</div>
+                      </Label>
+                    </div>
+                    {/* Half Day */}
+                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-colors cursor-pointer">
+                      <RadioGroupItem value="half-day" id="half-day" className="mt-1" />
+                      <Label htmlFor="half-day" className="flex-1 cursor-pointer">
+                        <div className="font-semibold text-black">Half Day Workshop</div>
+                        <div className="text-sm text-black mt-1">${TRAINING_OPTIONS['half-day'].cost.toLocaleString()} - Focus on your #1 critical area</div>
+                      </Label>
+                    </div>
+                    {/* Full Day */}
+                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-colors cursor-pointer">
+                      <RadioGroupItem value="full-day" id="full-day" className="mt-1" />
+                      <Label htmlFor="full-day" className="flex-1 cursor-pointer">
+                        <div className="font-semibold text-black">Full Day Workshop</div>
+                        <div className="text-sm text-black mt-1">${TRAINING_OPTIONS['full-day'].cost.toLocaleString()} - Focus on your top 2 critical areas</div>
+                      </Label>
+                    </div>
+                    {/* Month-Long */}
+                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-colors cursor-pointer">
+                      <RadioGroupItem value="month-long" id="month-long" className="mt-1" />
+                      <Label htmlFor="month-long" className="flex-1 cursor-pointer">
+                        <div className="font-semibold text-black">Month-Long Engagement</div>
+                        <div className="text-sm text-black mt-1">${TRAINING_OPTIONS['month-long'].cost.toLocaleString()} - Comprehensive training across all areas</div>
                       </Label>
                     </div>
                   </RadioGroup>
