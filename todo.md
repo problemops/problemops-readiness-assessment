@@ -197,17 +197,6 @@
 - [ ] NEXT: Save checkpoint with branding complete
 
 
-## Fix Assessment Submission Error (URGENT)
-- [ ] Check server logs for error details
-- [ ] Review Assessment.tsx handleSubmit function
-- [ ] Check assessmentRouter.ts create endpoint
-- [ ] Verify database schema matches API expectations
-- [ ] Test API endpoint directly with curl/Postman
-- [ ] Fix the root cause
-- [ ] Write vitest test to prevent regression
-- [ ] Test end-to-end submission flow in browser
-- [ ] Save checkpoint with fix
-
 
 ## Keyboard Accessibility (WCAG 2.0 Compliance)
 - [x] Add skip-to-content link at top of all pages
@@ -281,3 +270,30 @@
 - [x] Add "Tell Us About Your Team" title under banner on accordion page
 - [x] Add "Test Results" title under banner on results page
 - [x] Ensure consistent title styling across all pages
+
+## Training Type Testing & Refinement (CURRENT)
+
+- [ ] Create BDD specification for all 4 training type scenarios
+- [ ] Test Half Day Workshop scenario end-to-end
+- [ ] Test Full Day Workshop scenario end-to-end
+- [ ] Test Month-Long Engagement scenario end-to-end
+- [ ] Test "I'm Not Sure Yet" comparison table scenario
+- [ ] Verify ROI calculations for each training type
+- [ ] Fix any bugs or issues discovered during testing
+- [ ] Document test results
+
+## Screen Reader Accessibility Testing (CURRENT)
+
+- [ ] Create BDD specification for screen reader testing
+- [ ] Test company information form with screen reader
+- [ ] Test assessment accordion navigation with screen reader
+- [ ] Test rating selection with screen reader
+- [ ] Test progress announcements with screen reader
+- [ ] Test results page with screen reader
+- [ ] Fix any accessibility issues discovered
+- [ ] Document screen reader test results
+
+## Logo Link Update
+
+- [x] Update Assessment page logo to link to https://problemops.com
+- [x] Update Results page logo to link to https://problemops.com

@@ -292,7 +292,7 @@ export default function Results() {
               src="/problemops-logo.svg" 
               alt="ProblemOps" 
               className="h-8 md:h-10 cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => navigate('/')}
+              onClick={() => window.location.href = 'https://problemops.com'}
             />
             <div className="flex gap-3">
               <Button 

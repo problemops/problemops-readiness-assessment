@@ -557,7 +557,7 @@ export default function Assessment() {
               src="/problemops-logo.svg" 
               alt="ProblemOps" 
               className="h-8 md:h-10 cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => window.location.href = '/'}
+              onClick={() => window.location.href = 'https://problemops.com'}
             />
             <div className="flex items-center gap-4">
               {/* Keyboard shortcuts hint */}
