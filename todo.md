@@ -1,5 +1,9 @@
-- [ ] Install `jspdf` and `html2canvas`
-- [ ] Create `ReportGenerator` component or utility function
-- [ ] Implement PDF generation logic capturing key metrics and charts
-- [ ] Connect "Download Report" button to the generation function
-- [ ] Test PDF generation
+- [x] Install `jspdf` and `html2canvas`
+- [x] Create `ReportGenerator` component or utility function
+- [x] Implement PDF generation logic capturing key metrics and charts
+- [x] Connect "Download Report" button to the generation function
+- [x] Test PDF generation
+- [ ] Retrieve 35-question survey instrument
+- [ ] Create `AssessmentModal` component
+- [ ] Implement survey logic (pagination, scoring, progress)
+- [ ] Connect assessment results to main calculator state

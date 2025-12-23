@@ -11,6 +11,7 @@ import html2canvas from "html2canvas";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip, Cell } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
+import AssessmentModal from "@/components/AssessmentModal";
 
 // --- Types & Constants ---
 
@@ -187,6 +188,7 @@ export default function Home() {
   const [roi, setRoi] = useState(0);
   const [paybackMonths, setPaybackMonths] = useState(0);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
 
   // Calculation Effect
   useEffect(() => {
@@ -229,6 +231,13 @@ export default function Home() {
 
   const handleDriverChange = (id: string, newValue: number) => {
     setDrivers(prev => prev.map(d => d.id === id ? { ...d, value: newValue } : d));
+  };
+
+  const handleAssessmentComplete = (scores: Record<string, number>) => {
+    setDrivers(prev => prev.map(d => ({
+      ...d,
+      value: scores[d.id] || d.value
+    })));
   };
 
   const generateReport = async () => {
@@ -582,10 +591,14 @@ export default function Home() {
               {/* Call to Action */}
               <div className="bg-secondary p-6 rounded-lg border border-border flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
-                  <h3 className="font-bold text-lg">Ready to fix this?</h3>
-                  <p className="text-muted-foreground text-sm">Get the full diagnostic report and action plan.</p>
+                  <h3 className="font-bold text-lg">Take the Full Assessment</h3>
+                  <p className="text-muted-foreground text-sm">Answer 35 validated questions to get your precise team score.</p>
                 </div>
-                <Button size="lg" className="w-full md:w-auto gap-2">
+                <Button 
+                  size="lg" 
+                  className="w-full md:w-auto gap-2"
+                  onClick={() => setIsAssessmentOpen(true)}
+                >
                   Start Assessment <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>
@@ -595,6 +608,12 @@ export default function Home() {
 
         </div>
       </main>
+
+      <AssessmentModal 
+        isOpen={isAssessmentOpen} 
+        onClose={() => setIsAssessmentOpen(false)} 
+        onComplete={handleAssessmentComplete} 
+      />
     </div>
   );
 }
