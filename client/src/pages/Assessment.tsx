@@ -220,11 +220,7 @@ export default function Assessment() {
               />
               <div>
                 <h1 className="text-xl md:text-2xl font-bold">Team Readiness Assessment</h1>
-                <p className="text-sm opacity-90 mt-1">
-                  {currentStep === 0 
-                    ? "Tell us about your team" 
-                    : "Evaluate your team across 7 key drivers"}
-                </p>
+
               </div>
             </div>
             {currentStep > 0 && (
