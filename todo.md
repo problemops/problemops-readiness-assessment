@@ -86,3 +86,10 @@
 - [x] Add training plan sections
 - [x] Add recommended deliverables
 - [x] Test PDF generation with real data
+
+## Results Page Intro
+- [x] Add personalized intro paragraph explaining assessment value
+- [x] Address company by name
+- [x] Explain what results show
+- [x] Highlight why results are valuable
+- [x] Preview actionable next steps

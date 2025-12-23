@@ -216,6 +216,17 @@ export default function Results() {
       </header>
 
       <main className="container mx-auto py-12 px-6 max-w-6xl space-y-12">
+        {/* Introduction */}
+        <section className="bg-card border rounded-lg p-8 shadow-sm">
+          <p className="text-lg leading-relaxed text-foreground">
+            <span className="font-semibold text-primary">{results.companyInfo.name || 'Your organization'}</span>, 
+            thank you for completing the ProblemOps Team Readiness Assessment. Your results reveal how your team performs across seven research-validated drivers of effectiveness—from trust and psychological safety to coordination and shared cognition. 
+            These insights translate directly into financial impact, showing you both the current cost of team dysfunction and the potential savings from targeted improvement. 
+            Most importantly, this report provides a concrete action plan based on the ProblemOps framework, with specific exercises, deliverables, and training priorities tailored to your team's unique needs. 
+            Use these results to build the business case for investment in team development and to guide your improvement journey.
+          </p>
+        </section>
+
         {/* Executive Summary */}
         <section>
           <h2 className="text-3xl font-bold mb-6">Executive Summary</h2>
