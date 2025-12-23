@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Info, TrendingUp, AlertTriangle, DollarSign, Users, BarChart3, ArrowRight } from "lucide-react";
+import { Info, TrendingUp, AlertTriangle, DollarSign, Users, BarChart3, ArrowRight, Download, Loader2 } from "lucide-react";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip, Cell } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
@@ -184,6 +186,7 @@ export default function Home() {
   const [projectedSavings, setProjectedSavings] = useState(0);
   const [roi, setRoi] = useState(0);
   const [paybackMonths, setPaybackMonths] = useState(0);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
   // Calculation Effect
   useEffect(() => {
@@ -228,6 +231,139 @@ export default function Home() {
     setDrivers(prev => prev.map(d => d.id === id ? { ...d, value: newValue } : d));
   };
 
+  const generateReport = async () => {
+    setIsGeneratingReport(true);
+    try {
+      // Create a new PDF document
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      // Add branding and title
+      doc.setFillColor(37, 99, 235); // Electric Blue
+      doc.rect(0, 0, 210, 20, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.text("ProblemOps ROI Diagnostic Report", 15, 13);
+      
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(new Date().toLocaleDateString(), 180, 13);
+
+      // Add Executive Summary Section
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text("Executive Summary", 15, 35);
+      
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Based on the assessment of ${teamSize} team members with an average salary of ${formatCurrency(avgSalary)},`, 15, 42);
+      doc.text(`your team is currently operating at a ${formatPercent(readinessScore)} readiness level.`, 15, 47);
+
+      // Add Key Metrics Grid
+      const startY = 60;
+      const boxWidth = 85;
+      const boxHeight = 30;
+      const gap = 10;
+
+      // Box 1: Cost of Dysfunction
+      doc.setDrawColor(249, 115, 22); // Orange border
+      doc.setLineWidth(0.5);
+      doc.rect(15, startY, boxWidth, boxHeight);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(249, 115, 22); // Orange text
+      doc.setFontSize(16);
+      doc.text(formatCurrency(dysfunctionCost), 20, startY + 12);
+      doc.setTextColor(100, 100, 100);
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.text("Annual Cost of Dysfunction", 20, startY + 22);
+
+      // Box 2: Projected Savings
+      doc.setDrawColor(37, 99, 235); // Blue border
+      doc.rect(15 + boxWidth + gap, startY, boxWidth, boxHeight);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(37, 99, 235); // Blue text
+      doc.setFontSize(16);
+      doc.text(formatCurrency(projectedSavings), 20 + boxWidth + gap + 5, startY + 12);
+      doc.setTextColor(100, 100, 100);
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.text("Projected Annual Savings", 20 + boxWidth + gap + 5, startY + 22);
+
+      // Box 3: ROI
+      doc.setDrawColor(200, 200, 200); // Grey border
+      doc.rect(15, startY + boxHeight + gap, boxWidth, boxHeight);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(16);
+      doc.text(formatPercent(roi), 20, startY + boxHeight + gap + 12);
+      doc.setTextColor(100, 100, 100);
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.text(`ROI (Payback: ${paybackMonths.toFixed(1)} months)`, 20, startY + boxHeight + gap + 22);
+
+      // Box 4: Readiness Score
+      doc.setDrawColor(200, 200, 200);
+      doc.rect(15 + boxWidth + gap, startY + boxHeight + gap, boxWidth, boxHeight);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(16);
+      doc.text(formatPercent(readinessScore), 20 + boxWidth + gap + 5, startY + boxHeight + gap + 12);
+      doc.setTextColor(100, 100, 100);
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.text("Team Readiness Score", 20 + boxWidth + gap + 5, startY + boxHeight + gap + 22);
+
+      // Add Driver Breakdown
+      const driverStartY = 150;
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 0, 0);
+      doc.text("Driver Breakdown", 15, driverStartY);
+
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      let currentY = driverStartY + 10;
+
+      drivers.forEach((driver) => {
+        // Driver Name
+        doc.text(driver.name, 15, currentY);
+        
+        // Score Bar Background
+        doc.setFillColor(240, 240, 240);
+        doc.rect(60, currentY - 4, 100, 5, "F");
+        
+        // Score Bar Fill
+        const fillWidth = (driver.value / 7) * 100;
+        doc.setFillColor(37, 99, 235);
+        doc.rect(60, currentY - 4, fillWidth, 5, "F");
+        
+        // Score Value
+        doc.text(`${driver.value.toFixed(1)}/7.0`, 170, currentY);
+        
+        currentY += 10;
+      });
+
+      // Footer
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text("Generated by ProblemOps ROI Calculator. Based on validated research from 23 peer-reviewed studies.", 15, 280);
+
+      // Save PDF
+      doc.save("ProblemOps_ROI_Report.pdf");
+
+    } catch (error) {
+      console.error("Failed to generate report:", error);
+    } finally {
+      setIsGeneratingReport(false);
+    }
+  };
+
   // Chart Data
   const chartData = [
     { name: 'Current Cost', value: dysfunctionCost, fill: 'var(--destructive)' },
@@ -247,9 +383,19 @@ export default function Home() {
             </div>
             <h1 className="text-xl font-bold tracking-tight">ProblemOps <span className="font-normal text-muted-foreground">ROI Calculator</span></h1>
           </div>
-          <Button variant="outline" size="sm" className="hidden md:flex gap-2">
-            <BarChart3 className="h-4 w-4" />
-            Download Report
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="hidden md:flex gap-2"
+            onClick={generateReport}
+            disabled={isGeneratingReport}
+          >
+            {isGeneratingReport ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4" />
+            )}
+            {isGeneratingReport ? "Generating..." : "Download Report"}
           </Button>
         </div>
       </header>

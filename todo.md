@@ -1,0 +1,5 @@
+- [ ] Install `jspdf` and `html2canvas`
+- [ ] Create `ReportGenerator` component or utility function
+- [ ] Implement PDF generation logic capturing key metrics and charts
+- [ ] Connect "Download Report" button to the generation function
+- [ ] Test PDF generation
