@@ -1,22 +1,19 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
+import Assessment from "./pages/Assessment";
 import Results from "./pages/Results";
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
-    <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path="/results" component={Results} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
-      <Route component={NotFound} />
-    </Switch>
+    <Routes>
+      <Route path="/" element={<Assessment />} />
+      <Route path="/results" element={<Results />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 
@@ -33,8 +30,10 @@ function App() {
         // switchable
       >
         <TooltipProvider>
-          <Toaster />
-          <Router />
+          <BrowserRouter>
+            <Toaster />
+            <Router />
+          </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

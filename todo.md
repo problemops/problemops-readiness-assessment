@@ -36,3 +36,15 @@
 - [ ] Integrate company website analysis for contextualized insights
 - [ ] Wire assessment completion to redirect to Results page
 - [ ] Test complete user flow from assessment to results
+
+## Streamlining - Remove Home Dashboard
+- [x] Create accordion-based Assessment with 7 driver sections
+- [x] Add 2-sentence context for each driver (8th grade level)
+- [x] Implement auto-expand/collapse on section completion
+- [x] Add subtle status icons (checkmark/circle) for completion
+- [x] Apply Gestalt principles (proximity, common region, grouping, continuity)
+- [x] Proper information hierarchy throughout
+- [x] Create Results page with all metrics and PDF download
+- [x] Update App.tsx routing to start with Assessment
+- [x] Remove Home page with sliders and manual calculator
+- [x] Test streamlined flow: Assessment → Results → PDF
