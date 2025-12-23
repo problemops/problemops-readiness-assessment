@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useLocation, useParams } from "wouter";
+import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Download, Home, TrendingUp, AlertTriangle, BarChart3, CheckCircle2 } from "lucide-react";
+import { Download, Home, TrendingUp, AlertTriangle, BarChart3, CheckCircle2, Target } from "lucide-react";
 import { motion } from "framer-motion";
 import { SlidePDFGenerator } from "@/lib/pdfGenerator";
 import PriorityMatrix from "@/components/PriorityMatrix";
@@ -12,6 +13,15 @@ import { ProblemOpsPrinciples } from "@/components/ProblemOpsPrinciples";
 import { calculate4CsScores, getRecommendedDeliverables } from "@/lib/fourCsScoring";
 import { generateTrainingPlan, getTrainingPriorities } from "@/lib/problemOpsTrainingPlan";
 import { generateTeamNarrative as generateEnhancedNarrative, type CompanyContext } from "@/lib/companyAnalysis";
+import { 
+  TRAINING_OPTIONS, 
+  getPriorityAreas, 
+  getRecommendedAreas, 
+  getMonthLongTimeline,
+  getRecommendedDeliverables as getTrainingDeliverables,
+  calculateTrainingROI,
+  type TrainingType 
+} from "@/lib/trainingRecommendations";
 
 const DRIVER_NAMES: Record<string, string> = {
   trust: "Trust",
@@ -49,14 +59,34 @@ const formatPercent = (value: number) => {
 };
 
 export default function Results() {
-  const navigate = useNavigate();
+  const params = useParams();
+  const [, setLocation] = useLocation();
   const [results, setResults] = useState<any>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const assessmentId = params.id;
+  const { data: assessmentData, isLoading: isQueryLoading, error: queryError } = trpc.assessment.getById.useQuery(
+    { id: assessmentId! },
+    { enabled: !!assessmentId }
+  );
 
   useEffect(() => {
-    const storedResults = sessionStorage.getItem('assessmentResults');
-    if (storedResults) {
-      const parsed = JSON.parse(storedResults);
+    if (!assessmentId) {
+      setError('No assessment ID provided');
+      setIsLoading(false);
+      return;
+    }
+
+    if (queryError) {
+      setError('Failed to load assessment');
+      setIsLoading(false);
+      return;
+    }
+
+    if (assessmentData) {
+      const parsed = assessmentData;
       
       // Calculate metrics
       const drivers = Object.entries(parsed.scores).map(([id, score]: [string, any]) => ({
@@ -70,14 +100,38 @@ export default function Results() {
       const readinessScore = drivers.reduce((sum, d) => sum + (d.value / 7) * d.weight, 0);
       const teamSize = parseInt(parsed.companyInfo.teamSize);
       const avgSalary = parseInt(parsed.companyInfo.avgSalary);
-      const interventionCost = parseInt(parsed.companyInfo.interventionCost);
+      const trainingType = (parsed.companyInfo.trainingType || 'not-sure') as TrainingType;
       
       const totalPayroll = teamSize * avgSalary;
       const dysfunctionCost = totalPayroll * (1 - readinessScore);
-      const targetReadiness = 0.85;
-      const projectedSavings = totalPayroll * (targetReadiness - readinessScore);
-      const roi = projectedSavings / interventionCost;
-      const paybackMonths = (interventionCost / projectedSavings) * 12;
+      
+      // Get priority areas for recommendations
+      const driverScoresForPriority: Record<string, number> = {};
+      drivers.forEach(d => {
+        driverScoresForPriority[d.id] = d.value;
+      });
+      const priorityAreas = getPriorityAreas(driverScoresForPriority, DRIVER_WEIGHTS);
+      const recommendedAreas = getRecommendedAreas(trainingType, priorityAreas);
+      
+      // Calculate ROI based on training type
+      const trainingOption = TRAINING_OPTIONS[trainingType];
+      let roiData;
+      
+      if (trainingType === 'not-sure') {
+        // Calculate for all three options
+        roiData = {
+          halfDay: calculateTrainingROI(2000, dysfunctionCost, readinessScore, 1),
+          fullDay: calculateTrainingROI(3500, dysfunctionCost, readinessScore, 2),
+          monthLong: calculateTrainingROI(25000, dysfunctionCost, readinessScore, 7)
+        };
+      } else {
+        roiData = calculateTrainingROI(
+          trainingOption.cost,
+          dysfunctionCost,
+          readinessScore,
+          trainingOption.focusAreas
+        );
+      }
 
       // Calculate 4 C's scores
       const driverScoresMap: Record<string, number> = {};
@@ -105,12 +159,13 @@ export default function Results() {
         drivers,
         readinessScore,
         dysfunctionCost,
-        projectedSavings,
-        roi,
-        paybackMonths,
         teamSize,
         avgSalary,
-        interventionCost,
+        trainingType,
+        trainingOption,
+        roiData,
+        priorityAreas,
+        recommendedAreas,
         companyInfo: parsed.companyInfo,
         answers: parsed.answers,
         fourCsAnalysis,
@@ -119,10 +174,9 @@ export default function Results() {
         recommendedDeliverables,
         enhancedNarrative,
       });
-    } else {
-      navigate('/');
+      setIsLoading(false);
     }
-  }, [navigate]);
+  }, [assessmentData, assessmentId, queryError, setLocation]);
 
   const getDriverDescription = (id: string): string => {
     const descriptions: Record<string, string> = {
@@ -137,21 +191,56 @@ export default function Results() {
     return descriptions[id] || "";
   };
 
+  // Show loading state
+  if (isLoading || isQueryLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Loading your assessment results...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error || !results) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <AlertTriangle className="h-12 w-12 text-destructive mx-auto" />
+          <h2 className="text-2xl font-bold">Assessment Not Found</h2>
+          <p className="text-muted-foreground">{error || 'Unable to load assessment results'}</p>
+          <Button onClick={() => setLocation('/')}>Return to Home</Button>
+        </div>
+      </div>
+    );
+  }
+
   const handleDownloadPDF = async () => {
     if (!results) return;
     
     setIsGenerating(true);
     try {
+      // Prepare data for PDF - use appropriate ROI data based on training type
+      let pdfROIData;
+      if (results.trainingType === 'not-sure') {
+        // For "not sure", use the month-long option for the PDF
+        pdfROIData = results.roiData.monthLong;
+      } else {
+        pdfROIData = results.roiData;
+      }
+
       const pdfData = {
         drivers: results.drivers,
         teamSize: results.teamSize,
         avgSalary: results.avgSalary,
-        interventionCost: results.interventionCost,
+        interventionCost: pdfROIData.cost,
         readinessScore: results.readinessScore,
         dysfunctionCost: results.dysfunctionCost,
-        projectedSavings: results.projectedSavings,
-        roi: results.roi,
-        paybackMonths: results.paybackMonths,
+        projectedSavings: pdfROIData.savings,
+        roi: pdfROIData.roi,
+        paybackMonths: pdfROIData.paybackMonths,
         companyInfo: results.companyInfo,
         assessmentAnswers: results.answers,
         fourCsAnalysis: results.fourCsAnalysis,
@@ -159,6 +248,8 @@ export default function Results() {
         trainingPriorities: results.trainingPriorities,
         recommendedDeliverables: results.recommendedDeliverables,
         enhancedNarrative: results.enhancedNarrative,
+        trainingType: results.trainingType,
+        recommendedAreas: results.recommendedAreas,
       };
       
       const generator = new SlidePDFGenerator(pdfData);
@@ -181,6 +272,16 @@ export default function Results() {
     );
   }
 
+  // Helper to get the appropriate ROI data for display
+  const getDisplayROI = () => {
+    if (results.trainingType === 'not-sure') {
+      return null; // We'll show comparison table instead
+    }
+    return results.roiData;
+  };
+
+  const displayROI = getDisplayROI();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
@@ -196,7 +297,7 @@ export default function Results() {
             <div className="flex gap-3">
               <Button 
                 variant="secondary" 
-                onClick={() => navigate('/')}
+                onClick={() => setLocation('/')}
                 className="gap-2"
               >
                 <Home className="h-4 w-4" />
@@ -230,7 +331,23 @@ export default function Results() {
         {/* Executive Summary */}
         <section>
           <h2 className="text-3xl font-bold mb-6">Executive Summary</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          {/* Training Type Indicator */}
+          <Card className="mb-6 bg-primary/5 border-primary/20">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <Target className="h-6 w-6 text-primary" />
+                <div>
+                  <h3 className="font-semibold text-lg">Selected Training Scope</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {results.trainingOption.label}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -261,76 +378,201 @@ export default function Results() {
             >
               <Card className="border-l-4 border-l-primary">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4" />
-                    Projected Annual Savings
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    Team Readiness Score
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-4xl font-bold text-primary mb-2">
-                    {formatCurrency(results.projectedSavings)}
+                    {formatPercent(results.readinessScore)}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    If improved to 85% readiness baseline
+                    Overall effectiveness across all 7 drivers
                   </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <Card className="border-l-4 border-l-green-600">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                    <BarChart3 className="h-4 w-4" />
-                    Return on Investment
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-4xl font-bold text-green-600 mb-3">
-                    {formatPercent(results.roi)}
-                  </div>
-                  <div className="bg-green-50 dark:bg-green-950/20 border border-green-600/30 rounded-lg px-4 py-3">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold text-green-700 dark:text-green-400">
-                        {results.paybackMonths.toFixed(1)}
-                      </span>
-                      <span className="text-sm font-medium text-green-700 dark:text-green-400">
-                        months to payback
-                      </span>
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
             </motion.div>
           </div>
 
-          {/* Readiness Score Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-6"
-          >
-            <Card className="bg-primary/5 border-primary/20">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-1">Team Readiness Score</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Overall effectiveness across all 7 drivers
-                    </p>
-                  </div>
-                  <div className="text-6xl font-bold text-primary">
-                    {formatPercent(results.readinessScore)}
-                  </div>
+          {/* ROI Display - Conditional based on training type */}
+          {results.trainingType === 'not-sure' ? (
+            /* Comparative ROI Table for "I'm Not Sure Yet" */
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">Training Options Comparison</CardTitle>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Compare the ROI and scope of each training option to help you decide which approach fits your needs and budget.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-3 px-4 font-semibold">Option</th>
+                        <th className="text-left py-3 px-4 font-semibold">Investment</th>
+                        <th className="text-left py-3 px-4 font-semibold">Focus Areas</th>
+                        <th className="text-left py-3 px-4 font-semibold">Annual Savings</th>
+                        <th className="text-left py-3 px-4 font-semibold">ROI</th>
+                        <th className="text-left py-3 px-4 font-semibold">Payback</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b hover:bg-muted/50">
+                        <td className="py-4 px-4">
+                          <div className="font-semibold">Half Day Workshop</div>
+                          <div className="text-xs text-muted-foreground">Quick-start intervention</div>
+                        </td>
+                        <td className="py-4 px-4 font-mono font-semibold">
+                          {formatCurrency(results.roiData.halfDay.cost)}
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="text-sm">Top priority only</div>
+                          <div className="text-xs text-muted-foreground">
+                            {results.priorityAreas[0]?.name || 'N/A'}
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 font-mono text-primary font-semibold">
+                          {formatCurrency(results.roiData.halfDay.savings)}
+                        </td>
+                        <td className="py-4 px-4 font-mono font-semibold text-green-600">
+                          {formatPercent(results.roiData.halfDay.roi)}
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="font-semibold">{results.roiData.halfDay.paybackMonths.toFixed(1)} mo</div>
+                        </td>
+                      </tr>
+                      <tr className="border-b hover:bg-muted/50">
+                        <td className="py-4 px-4">
+                          <div className="font-semibold">Full Day Workshop</div>
+                          <div className="text-xs text-muted-foreground">Focused deep-dive</div>
+                        </td>
+                        <td className="py-4 px-4 font-mono font-semibold">
+                          {formatCurrency(results.roiData.fullDay.cost)}
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="text-sm">Top 2 priorities</div>
+                          <div className="text-xs text-muted-foreground">
+                            {results.priorityAreas.slice(0, 2).map((a: any) => a.name).join(', ')}
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 font-mono text-primary font-semibold">
+                          {formatCurrency(results.roiData.fullDay.savings)}
+                        </td>
+                        <td className="py-4 px-4 font-mono font-semibold text-green-600">
+                          {formatPercent(results.roiData.fullDay.roi)}
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="font-semibold">{results.roiData.fullDay.paybackMonths.toFixed(1)} mo</div>
+                        </td>
+                      </tr>
+                      <tr className="border-b hover:bg-muted/50 bg-primary/5">
+                        <td className="py-4 px-4">
+                          <div className="font-semibold flex items-center gap-2">
+                            Month-Long Engagement
+                            <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded">RECOMMENDED</span>
+                          </div>
+                          <div className="text-xs text-muted-foreground">Comprehensive transformation</div>
+                        </td>
+                        <td className="py-4 px-4 font-mono font-semibold">
+                          {formatCurrency(results.roiData.monthLong.cost)}
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="text-sm">All 7 drivers</div>
+                          <div className="text-xs text-muted-foreground">Ranked by priority</div>
+                        </td>
+                        <td className="py-4 px-4 font-mono text-primary font-semibold">
+                          {formatCurrency(results.roiData.monthLong.savings)}
+                        </td>
+                        <td className="py-4 px-4 font-mono font-semibold text-green-600">
+                          {formatPercent(results.roiData.monthLong.roi)}
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="font-semibold">{results.roiData.monthLong.paybackMonths.toFixed(1)} mo</div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                  <p className="text-sm text-foreground">
+                    <strong>Recommendation:</strong> The Month-Long Engagement offers the best long-term value by addressing all drivers systematically. However, if budget is a constraint, starting with a Full Day Workshop on your top 2 priorities can deliver meaningful improvements while you build the business case for a more comprehensive program.
+                  </p>
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          ) : (
+            /* Single ROI Card for specific training types */
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <Card className="border-l-4 border-l-primary">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4" />
+                      Projected Annual Savings
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-4xl font-bold text-primary mb-2">
+                      {formatCurrency(displayROI!.savings)}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      From {results.trainingOption.label.toLowerCase()}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <Card className="border-l-4 border-l-green-600">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                      <BarChart3 className="h-4 w-4" />
+                      Return on Investment
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-4xl font-bold text-green-600 mb-2">
+                      {formatPercent(displayROI!.roi)}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Investment: {formatCurrency(displayROI!.cost)}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <Card className="border-l-4 border-l-amber-600">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">
+                      Payback Period
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-4xl font-bold text-amber-600 mb-2">
+                      {displayROI!.paybackMonths.toFixed(1)}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      months to recover investment
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </div>
+          )}
         </section>
 
         <Separator />
@@ -423,100 +665,68 @@ export default function Results() {
 
         <Separator />
 
-        {/* Projected Savings Breakdown */}
-        <section>
-          <h2 className="text-3xl font-bold mb-6">Understanding Your Projected Savings</h2>
-          <Card>
-            <CardContent className="pt-6 space-y-6">
-              <div className="prose prose-lg max-w-none">
-                <p className="text-foreground/90 leading-relaxed">
-                  The good news: you don't have to be perfect to see big improvements. Research shows that high-performing teams typically operate at about 85% readiness. That's our target—a realistic, achievable goal that still leaves room for the normal challenges every team faces.
-                </p>
-              </div>
-
-              <div className="bg-primary/5 border border-primary/20 p-6 rounded-lg space-y-4">
-                <h3 className="text-xl font-semibold">The Improvement Opportunity:</h3>
-                
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <div className="text-3xl font-bold text-muted-foreground mb-1">{formatPercent(results.readinessScore)}</div>
-                    <div className="text-sm text-muted-foreground">Current Readiness</div>
+        {/* Training Scope & Focus Areas */}
+        {results.trainingType !== 'not-sure' && (
+          <>
+            <section>
+              <h2 className="text-3xl font-bold mb-6">Your Training Focus Areas</h2>
+              <Card>
+                <CardContent className="pt-6 space-y-6">
+                  <div className="prose prose-lg max-w-none">
+                    <p className="text-foreground/90 leading-relaxed">
+                      Based on your selection of <strong>{results.trainingOption.label}</strong>, your training will focus on the following areas ranked by priority and impact:
+                    </p>
                   </div>
-                  <div className="flex items-center justify-center">
-                    <TrendingUp className="h-8 w-8 text-primary" />
-                  </div>
-                  <div>
-                    <div className="text-3xl font-bold text-primary mb-1">85%</div>
-                    <div className="text-sm text-muted-foreground">Target Readiness</div>
-                  </div>
-                </div>
 
-                <div className="bg-background p-4 rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">Improvement Potential:</span>
-                    <span className="text-2xl font-bold text-primary">{formatPercent(0.85 - results.readinessScore)}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="prose prose-lg max-w-none">
-                <p className="text-foreground/90 leading-relaxed">
-                  When you improve your team's readiness from {formatPercent(results.readinessScore)} to 85%, you're not just making people happier—you're unlocking real productivity. That means less time wasted, faster decisions, fewer mistakes, and more capacity to take on new work without hiring more people.
-                </p>
-              </div>
-
-              <div className="bg-primary/5 border border-primary/20 p-6 rounded-lg space-y-4">
-                <h3 className="text-xl font-semibold">Where the Savings Come From:</h3>
-                <p className="text-sm text-muted-foreground">By improving each driver toward the 85% target, you reclaim wasted productivity and turn it into value.</p>
-                
-                <div className="space-y-3">
-                  {results.drivers.map((driver: any) => {
-                    const currentEfficiency = driver.value / 7;
-                    const targetEfficiency = 0.85;
-                    const improvementGap = Math.max(0, targetEfficiency - currentEfficiency);
-                    const driverSavings = (results.teamSize * results.avgSalary) * driver.weight * improvementGap;
-                    
-                    return (
-                      <div key={driver.id} className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium">{driver.name}</span>
-                          <span className="font-semibold text-primary">{formatCurrency(driverSavings)}</span>
+                  <div className="space-y-4">
+                    {results.recommendedAreas.map((area: any, index: number) => (
+                      <div key={area.id} className="bg-muted/50 p-5 rounded-lg border-l-4 border-l-primary">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-3">
+                            <div className="bg-primary text-primary-foreground w-8 h-8 rounded-full flex items-center justify-center font-bold">
+                              {index + 1}
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-semibold">{area.name}</h3>
+                              <p className="text-sm text-muted-foreground">
+                                Current Score: {area.score.toFixed(1)}/7.0 ({Math.round((area.score / 7) * 100)}%)
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm text-muted-foreground">Impact Weight</div>
+                            <div className="text-lg font-bold text-primary">{Math.round(area.weight * 100)}%</div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                          <span>Current: {Math.round(currentEfficiency * 100)}%</span>
-                          <span>→</span>
-                          <span>Target: 85%</span>
-                          <span>•</span>
-                          <span>Gain: {Math.round(improvementGap * 100)}%</span>
-                        </div>
-                        <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-primary rounded-full"
-                            style={{ width: `${(driverSavings / results.projectedSavings) * 100}%` }}
-                          />
-                        </div>
+                        <p className="text-sm text-foreground/80 mt-3">{area.description}</p>
                       </div>
-                    );
-                  })}
-                </div>
+                    ))}
+                  </div>
 
-                <Separator />
-                <div className="flex justify-between items-center text-xl pt-2">
-                  <span className="font-bold">Total Projected Annual Savings:</span>
-                  <span className="font-bold text-primary text-2xl">{formatCurrency(results.projectedSavings)}</span>
-                </div>
-              </div>
-
-              <div className="prose prose-lg max-w-none">
-                <p className="text-foreground/90 leading-relaxed">
-                  This savings doesn't require hiring more people or buying expensive tools. It comes from helping your existing team work together more smoothly. With an estimated intervention cost of {formatCurrency(results.interventionCost)}, you'll recover your investment in just <strong>{results.paybackMonths.toFixed(1)} months</strong>, then continue saving {formatCurrency(results.projectedSavings)} every year after that.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
-
-        <Separator />
+                  {results.trainingType === 'month-long' && (
+                    <div className="bg-primary/5 border border-primary/20 p-6 rounded-lg">
+                      <h3 className="text-lg font-semibold mb-3">Month-Long Timeline</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Your comprehensive engagement will address all 7 drivers in a prioritized sequence:
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {results.priorityAreas.map((area: any, index: number) => (
+                          <div key={area.id} className="flex items-center gap-2 text-sm">
+                            <span className="bg-primary/20 text-primary px-2 py-1 rounded font-semibold text-xs">
+                              Week {Math.floor(index / 2) + 1}
+                            </span>
+                            <span>{area.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </section>
+            <Separator />
+          </>
+        )}
 
         {/* Priority Matrix */}
         <section>
@@ -609,7 +819,7 @@ export default function Results() {
 
         <Separator />
 
-        {/* Training Plan */}
+        {/* Training Plan - Filtered based on training type */}
         <section>
           <h2 className="text-3xl font-bold mb-6">Your ProblemOps Training Plan</h2>
           
@@ -622,21 +832,33 @@ export default function Results() {
                   Priority Focus Areas
                 </h3>
                 <div className="space-y-3">
-                  {results.trainingPriorities.map((priority: any, index: number) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <div className={`px-2 py-1 rounded text-xs font-bold ${
-                        priority.urgency === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
-                        priority.urgency === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                        'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                      }`}>
-                        {priority.urgency.toUpperCase()}
+                  {results.trainingPriorities
+                    .filter((priority: any) => {
+                      // Filter priorities based on training type
+                      if (results.trainingType === 'not-sure' || results.trainingType === 'month-long') {
+                        return true; // Show all
+                      }
+                      // For half-day and full-day, only show priorities that match recommended areas
+                      const recommendedAreaNames = results.recommendedAreas.map((a: any) => a.name.toLowerCase());
+                      return recommendedAreaNames.some((name: string) => 
+                        priority.area.toLowerCase().includes(name) || name.includes(priority.area.toLowerCase())
+                      );
+                    })
+                    .map((priority: any, index: number) => (
+                      <div key={index} className="flex items-start gap-3">
+                        <div className={`px-2 py-1 rounded text-xs font-bold ${
+                          priority.urgency === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                          priority.urgency === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                          'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                        }`}>
+                          {priority.urgency.toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="font-semibold">{priority.area}</div>
+                          <div className="text-sm text-muted-foreground">{priority.reason}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-semibold">{priority.area}</div>
-                        <div className="text-sm text-muted-foreground">{priority.reason}</div>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </CardContent>
             </Card>
@@ -757,37 +979,4 @@ export default function Results() {
       </main>
     </div>
   );
-}
-
-function generateTeamNarrative(results: any): string {
-  const { drivers, readinessScore, companyInfo } = results;
-  
-  const strengths = drivers.filter((d: any) => d.value >= 5.5).map((d: any) => d.name);
-  const opportunities = drivers.filter((d: any) => d.value < 4.5).map((d: any) => d.name);
-  
-  const companyContext = companyInfo.name ? `${companyInfo.name}${companyInfo.team ? `'s ${companyInfo.team}` : ''}` : 'Your team';
-  
-  let narrative = `${companyContext} demonstrates a readiness score of ${formatPercent(readinessScore)}, `;
-  
-  if (readinessScore >= 0.85) {
-    narrative += 'indicating a highly effective team operating at peak performance. ';
-  } else if (readinessScore >= 0.70) {
-    narrative += 'suggesting a functional team with notable areas for optimization. ';
-  } else if (readinessScore >= 0.50) {
-    narrative += 'revealing significant dysfunction that is impacting team effectiveness and organizational outcomes. ';
-  } else {
-    narrative += 'indicating a critical state requiring immediate intervention to restore team functionality. ';
-  }
-  
-  if (strengths.length > 0) {
-    narrative += `The team shows particular strength in ${strengths.slice(0, 2).join(' and ')}, which provides a solid foundation for improvement efforts. `;
-  }
-  
-  if (opportunities.length > 0) {
-    narrative += `However, challenges in ${opportunities.slice(0, 2).join(' and ')} represent significant opportunities for growth. `;
-  }
-  
-  narrative += `By addressing these gaps through targeted interventions based on the ProblemOps methodology, the team can unlock ${formatCurrency(results.projectedSavings)} in annual value while building a more cohesive, effective, and resilient working environment.`;
-  
-  return narrative;
 }

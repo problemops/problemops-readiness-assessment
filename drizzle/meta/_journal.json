@@ -8,6 +8,13 @@
       "when": 1766511276979,
       "tag": "0000_windy_inhumans",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1766519310484,
+      "tag": "0001_rich_lizard",
+      "breakpoints": true
     }
   ]
 }

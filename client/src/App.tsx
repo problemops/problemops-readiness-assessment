@@ -11,7 +11,7 @@ function Router() {
   return (
     <Routes>
       <Route path="/" element={<Assessment />} />
-      <Route path="/results" element={<Results />} />
+      <Route path="/results/:id" element={<Results />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

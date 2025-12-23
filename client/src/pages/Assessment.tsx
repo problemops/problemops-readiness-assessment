@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
+import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -107,18 +108,28 @@ const DRIVER_SECTIONS = [
 ];
 
 export default function Assessment() {
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
+  const createAssessment = trpc.assessment.create.useMutation();
   
   const [currentStep, setCurrentStep] = useState(0); // 0 = company info, 1-7 = driver sections
   const [openSection, setOpenSection] = useState<string>("trust");
   const [answers, setAnswers] = useState<Record<number, number>>({});
-  const [companyInfo, setCompanyInfo] = useState({ 
+  const [companyInfo, setCompanyInfo] = useState<{
+    name: string;
+    email: string;
+    website: string;
+    team: string;
+    teamSize: string;
+    avgSalary: string;
+    trainingType: 'half-day' | 'full-day' | 'month-long' | 'not-sure';
+  }>({ 
     name: '', 
+    email: '',
     website: '', 
     team: '',
     teamSize: '10',
     avgSalary: '100000',
-    interventionCost: '25000'
+    trainingType: 'not-sure'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -158,37 +169,37 @@ export default function Assessment() {
     }
   };
 
-  const handleSubmit = () => {
-    // Check if all questions are answered
+  const handleSubmit = async () => {
     const allAnswered = DRIVER_SECTIONS.every(section => isSectionComplete(section));
     
     if (!allAnswered) {
       alert('Please answer all questions before submitting.');
       return;
     }
-
+    
     setIsSubmitting(true);
     
-    // Calculate scores per driver
-    const driverScores: Record<string, number> = {};
-    
-    DRIVER_SECTIONS.forEach(section => {
-      const scores = section.questions.map(q => answers[q.id]).filter(Boolean);
-      driverScores[section.id] = scores.length > 0 
-        ? scores.reduce((sum, val) => sum + val, 0) / scores.length 
-        : 4;
-    });
-
-    // Simulate processing
-    setTimeout(() => {
-      sessionStorage.setItem('assessmentResults', JSON.stringify({
-        scores: driverScores,
-        companyInfo,
-        answers
-      }));
+    try {
+      const driverScores: Record<string, number> = {};
+      DRIVER_SECTIONS.forEach(section => {
+        const sectionQuestions = section.questions.map(q => q.id);
+        const sectionAnswers = sectionQuestions.map(qId => answers[qId]).filter(Boolean);
+        const avgScore = sectionAnswers.reduce((sum, score) => sum + score, 0) / sectionAnswers.length;
+        driverScores[section.id] = avgScore;
+      });
       
-      navigate('/results');
-    }, 1500);
+      const result = await createAssessment.mutateAsync({
+        companyInfo,
+        scores: driverScores,
+        answers,
+      });
+      
+      setLocation(result.redirectUrl);
+    } catch (error) {
+      console.error('Failed to submit assessment:', error);
+      alert('Failed to submit assessment. Please try again.');
+      setIsSubmitting(false);
+    }
   };
 
   const allSectionsComplete = DRIVER_SECTIONS.every(section => isSectionComplete(section));
@@ -257,6 +268,23 @@ export default function Assessment() {
                 </div>
                 
                 <div className="space-y-2">
+                  <Label htmlFor="company-email" className="text-base font-medium">
+                    Email Address
+                  </Label>
+                  <Input
+                    id="company-email"
+                    type="email"
+                    placeholder="e.g., john@acme.com"
+                    value={companyInfo.email}
+                    onChange={(e) => setCompanyInfo(prev => ({ ...prev, email: e.target.value }))}
+                    className="text-base h-12"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    We'll email you the results link and PDF report
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
                   <Label htmlFor="company-website" className="text-base font-medium">
                     Company Website
                   </Label>
@@ -321,21 +349,44 @@ export default function Assessment() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="intervention-cost" className="text-base font-medium">
-                    Est. Intervention Cost
+                <div className="space-y-3">
+                  <Label className="text-base font-medium">
+                    What Kind of Corporate Training Do You Want? <span className="text-destructive">*</span>
                   </Label>
-                  <Input
-                    id="intervention-cost"
-                    type="number"
-                    placeholder="25000"
-                    value={companyInfo.interventionCost}
-                    onChange={(e) => setCompanyInfo(prev => ({ ...prev, interventionCost: e.target.value }))}
-                    className="text-base h-12"
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    Estimated cost of workshops, consulting, or tooling
-                  </p>
+                  <RadioGroup 
+                    value={companyInfo.trainingType}
+                    onValueChange={(value) => setCompanyInfo(prev => ({ ...prev, trainingType: value as 'half-day' | 'full-day' | 'month-long' | 'not-sure' }))}
+                    className="space-y-3"
+                  >
+                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
+                      <RadioGroupItem value="half-day" id="half-day" className="mt-1" />
+                      <Label htmlFor="half-day" className="flex-1 cursor-pointer">
+                        <div className="font-semibold">Half Day Workshop</div>
+                        <div className="text-sm text-muted-foreground">$2,000 - Focus on your #1 critical area</div>
+                      </Label>
+                    </div>
+                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
+                      <RadioGroupItem value="full-day" id="full-day" className="mt-1" />
+                      <Label htmlFor="full-day" className="flex-1 cursor-pointer">
+                        <div className="font-semibold">Full Day Workshop</div>
+                        <div className="text-sm text-muted-foreground">$3,500 - Focus on your top 2 critical areas</div>
+                      </Label>
+                    </div>
+                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
+                      <RadioGroupItem value="month-long" id="month-long" className="mt-1" />
+                      <Label htmlFor="month-long" className="flex-1 cursor-pointer">
+                        <div className="font-semibold">Month-Long Engagement</div>
+                        <div className="text-sm text-muted-foreground">$25,000 - Comprehensive training across all areas</div>
+                      </Label>
+                    </div>
+                    <div className="flex items-start space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
+                      <RadioGroupItem value="not-sure" id="not-sure" className="mt-1" />
+                      <Label htmlFor="not-sure" className="flex-1 cursor-pointer">
+                        <div className="font-semibold">I'm Not Sure Yet</div>
+                        <div className="text-sm text-muted-foreground">See all options with comparative ROI analysis</div>
+                      </Label>
+                    </div>
+                  </RadioGroup>
                 </div>
               </div>
 

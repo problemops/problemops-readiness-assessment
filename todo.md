@@ -93,3 +93,92 @@
 - [x] Explain what results show
 - [x] Highlight why results are valuable
 - [x] Preview actionable next steps
+
+## Assessment Progress Bar
+- [x] Calculate completion percentage based on answered questions
+- [x] Create visual progress bar component
+- [x] Display progress bar at top of assessment
+- [x] Show "X of 35 questions answered" text
+- [x] Update progress in real-time as users answer questions
+
+## Training Type Selector
+- [x] Replace "Est. Intervention Cost" with "What Kind of Corporate Training Do You Want?"
+- [x] Add 4 options: Half Day ($2k), Full Day ($3.5k), Month-Long ($25k), Not Sure Yet
+- [x] Create recommendation logic for Half Day (top 1 critical area)
+- [x] Create recommendation logic for Full Day (top 2 critical areas)
+- [x] Create recommendation logic for Month-Long (all areas, 1-month timeline)
+- [ ] Create comparative view for "Not Sure Yet" (show all 3 options)
+- [ ] Update Results page to show tailored recommendations
+- [ ] Update deliverables based on training type
+- [ ] Update PDF generator with training-specific content
+- [ ] Test all training type options
+
+## Training Type Feature - BDD Implementation
+- [x] Verify Assessment.tsx training type field (4 radio options, default "not-sure")
+- [x] Verify trainingRecommendations.ts ROI calculations for all 4 types
+- [x] Implement comparison table for "I'm Not Sure Yet" in Results.tsx
+- [x] Implement Training Focus Areas section (conditional based on training type)
+- [x] Add Month-Long Timeline display for month-long option
+- [x] Filter Priority Focus Areas based on training type
+- [x] Add edge case handling for fewer priority areas than expected
+- [x] Update PDF generator to include training scope on Company Overview page
+- [x] Update PDF generator to add Training Focus page after Executive Summary
+- [x] Update PDF generator to use correct ROI data based on training type
+- [ ] CURRENT: Manual browser testing of all 4 training type scenarios
+  - [ ] Test Half Day Workshop: Enter data, complete assessment, verify Results page
+  - [ ] Test Full Day Workshop: Same data, verify 2 focus areas shown
+  - [ ] Test Month-Long Engagement: Same data, verify timeline and all 7 areas
+  - [ ] Test "I'm Not Sure Yet": Same data, verify comparison table displayed
+- [ ] Verify ROI calculations match BDD formulas for each scenario
+- [ ] Test PDF generation for each training type (4 PDFs total)
+- [ ] Document all test results in training-type-test-report.md
+- [ ] Fix any issues found during testing
+- [ ] Update test report with PASS/FAIL status for each scenario
+- [ ] Mark all training type tasks complete in todo.md
+- [ ] Save checkpoint: "Training type feature complete with dynamic ROI"
+- [ ] Deliver test report and checkpoint to user
+
+## High-Performance Database Architecture with Email (HIGH PRIORITY)
+- [x] User approved BDD scenarios - proceeding with implementation
+- [x] Phase 1: Database Setup
+  - [x] Create optimized schema (4 tables: assessments, assessment_data, email_logs, pdf_cache)
+  - [x] Add all indexes (primary, partial, GIN for JSONB)
+  - [x] Configure connection pooling
+  - [x] Run migrations
+- [x] Phase 2: Assessment Service API
+  - [x] POST /api/assessments - Create assessment
+  - [x] GET /api/assessments/:id - Get by ID
+  - [ ] Add Redis caching layer (deferred)
+  - [x] Error handling and retries
+- [ ] Phase 3: Email Service (Async)
+  - [ ] Integrate email provider (SendGrid/AWS SES/Resend)
+  - [ ] Create email templates (HTML with results link)
+  - [ ] Implement async job queue (BullMQ)
+  - [ ] Add retry logic with exponential backoff
+  - [ ] Email logging and tracking
+- [ ] Phase 4: PDF Service
+  - [ ] GET /api/assessments/:id/pdf endpoint
+  - [ ] S3 upload integration for PDF storage
+  - [ ] CDN configuration (Cloudflare/CloudFront)
+  - [ ] PDF caching logic
+- [x] Phase 5: Frontend Updates
+  - [x] Add email field to Assessment form (optional)
+  - [x] Update Assessment.tsx to POST to API
+  - [x] Update Results.tsx to load from GET /api/assessments/:id
+  - [x] Add URL routing for /results/:id
+  - [x] Loading states and error handling
+- [x] Phase 6: Testing & Performance
+  - [x] Unit tests for assessment API (14 tests passing)
+  - [x] Database persistence testing
+  - [x] Data retrieval testing
+  - [ ] Load testing (1000 concurrent users) - deferred
+  - [ ] Database failover testing - deferred
+  - [ ] Email delivery testing - pending email service
+  - [ ] PDF generation performance testing - working
+  - [x] Verify API response times
+- [ ] Phase 7: Monitoring
+  - [ ] Set up APM (Application Performance Monitoring)
+  - [ ] Database monitoring dashboard
+  - [ ] Email delivery tracking
+  - [ ] Alert configuration
+- [ ] Save checkpoint: "High-performance database with email integration"

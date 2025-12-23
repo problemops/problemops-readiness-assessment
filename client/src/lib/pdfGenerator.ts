@@ -69,6 +69,8 @@ type AssessmentData = {
   trainingPriorities?: TrainingPriority[];
   recommendedDeliverables?: Record<string, string[]>;
   enhancedNarrative?: string;
+  trainingType?: string;
+  recommendedAreas?: Array<{id: string; name: string; score: number; weight: number; description: string}>;
 };
 
 const PAGE_WIDTH = 210; // A4 width in mm
@@ -246,6 +248,33 @@ export class SlidePDFGenerator {
     y = this.setBullet(`Team Size: ${this.data.teamSize} members`, y);
     y = this.setBullet(`Average Salary: ${this.formatCurrency(this.data.avgSalary)}`, y);
     y = this.setBullet(`Total Annual Payroll: ${this.formatCurrency(this.data.teamSize * this.data.avgSalary)}`, y);
+    
+    // Add training scope if available
+    if (this.data.trainingType) {
+      y += 10;
+      this.doc.setFontSize(14);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text('Selected Training Scope:', MARGIN, y);
+      y += 8;
+      
+      this.doc.setFontSize(11);
+      this.doc.setFont('helvetica', 'normal');
+      const trainingLabels: Record<string, string> = {
+        'half-day': 'Half Day Workshop ($2,000)',
+        'full-day': 'Full Day Workshop ($3,500)',
+        'month-long': 'Month-Long Engagement ($25,000)',
+        'not-sure': 'Exploring Options (PDF shows Month-Long option)'
+      };
+      const trainingLabel = trainingLabels[this.data.trainingType] || 'Not specified';
+      y = this.setBullet(trainingLabel, y);
+      
+      if (this.data.recommendedAreas && this.data.recommendedAreas.length > 0 && this.data.trainingType !== 'not-sure') {
+        const focusText = this.data.trainingType === 'month-long' 
+          ? 'Focus: All 7 drivers in prioritized sequence'
+          : `Focus: ${this.data.recommendedAreas.map(a => a.name).join(', ')}`;
+        y = this.setBullet(focusText, y);
+      }
+    }
     
     y += 10;
     this.doc.setFontSize(12);
