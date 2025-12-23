@@ -397,3 +397,10 @@
 - [x] Change training type descriptions to placeholder text color (text-muted-foreground)
 - [x] Ensure descriptions are left-aligned
 - [x] Vertically center radio button in training type boxes
+
+## Logo Update
+
+- [x] Copy new ProblemOps horizontal logo to public directory
+- [x] Update logo reference in Assessment page (already using /problemops-logo.svg)
+- [x] Update logo reference in Results page (already using /problemops-logo.svg)
+- [x] Test logo display on all pages

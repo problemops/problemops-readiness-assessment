@@ -738,7 +738,7 @@ export default function Assessment() {
                     {/* Not Sure Yet - First */}
                     <div className="flex items-center space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-colors cursor-pointer">
                       <RadioGroupItem value="not-sure" id="not-sure" />
-                      <Label htmlFor="not-sure" className="flex-1 cursor-pointer flex flex-col gap-1">
+                      <Label htmlFor="not-sure" className="flex-1 cursor-pointer flex flex-col gap-1 text-left items-start">
                         <div className="font-semibold text-black">I'm Not Sure Yet</div>
                         <div className="text-sm text-muted-foreground">See all options with comparative ROI analysis</div>
                       </Label>
@@ -746,7 +746,7 @@ export default function Assessment() {
                     {/* Half Day */}
                     <div className="flex items-center space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-colors cursor-pointer">
                       <RadioGroupItem value="half-day" id="half-day" />
-                      <Label htmlFor="half-day" className="flex-1 cursor-pointer flex flex-col gap-1">
+                      <Label htmlFor="half-day" className="flex-1 cursor-pointer flex flex-col gap-1 text-left items-start">
                         <div className="font-semibold text-black">Half Day Workshop</div>
                         <div className="text-sm text-muted-foreground">${TRAINING_OPTIONS['half-day'].cost.toLocaleString()} - Focus on your #1 critical area</div>
                       </Label>
@@ -754,7 +754,7 @@ export default function Assessment() {
                     {/* Full Day */}
                     <div className="flex items-center space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-colors cursor-pointer">
                       <RadioGroupItem value="full-day" id="full-day" />
-                      <Label htmlFor="full-day" className="flex-1 cursor-pointer flex flex-col gap-1">
+                      <Label htmlFor="full-day" className="flex-1 cursor-pointer flex flex-col gap-1 text-left items-start">
                         <div className="font-semibold text-black">Full Day Workshop</div>
                         <div className="text-sm text-muted-foreground">${TRAINING_OPTIONS['full-day'].cost.toLocaleString()} - Focus on your top 2 critical areas</div>
                       </Label>
@@ -762,7 +762,7 @@ export default function Assessment() {
                     {/* Month-Long */}
                     <div className="flex items-center space-x-3 p-4 border border-border rounded-lg hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-colors cursor-pointer">
                       <RadioGroupItem value="month-long" id="month-long" />
-                      <Label htmlFor="month-long" className="flex-1 cursor-pointer flex flex-col gap-1">
+                      <Label htmlFor="month-long" className="flex-1 cursor-pointer flex flex-col gap-1 text-left items-start">
                         <div className="font-semibold text-black">Month-Long Engagement</div>
                         <div className="text-sm text-muted-foreground">${TRAINING_OPTIONS['month-long'].cost.toLocaleString()} - Comprehensive training across all areas</div>
                       </Label>
