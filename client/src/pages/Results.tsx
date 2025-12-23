@@ -288,20 +288,12 @@ export default function Results() {
       <header className="bg-primary text-primary-foreground py-4 px-6 shadow-lg">
         <div className="container mx-auto max-w-6xl">
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <img 
-                src="/problemops-icon.svg" 
-                alt="ProblemOps" 
-                className="h-10 md:h-12 cursor-pointer hover:opacity-90 transition-opacity"
-                onClick={() => navigate('/')}
-              />
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold">Assessment Results</h1>
-                <p className="text-sm opacity-90 mt-1">
-                  {results.companyInfo.name}{results.companyInfo.team ? ` - ${results.companyInfo.team}` : ''}
-                </p>
-              </div>
-            </div>
+            <img 
+              src="/problemops-logo.svg" 
+              alt="ProblemOps" 
+              className="h-8 md:h-10 cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={() => navigate('/')}
+            />
             <div className="flex gap-3">
               <Button 
                 variant="secondary" 
@@ -325,6 +317,14 @@ export default function Results() {
       </header>
 
       <main className="container mx-auto py-12 px-6 max-w-6xl space-y-12">
+        {/* Page Title */}
+        <h1 className="text-4xl md:text-5xl font-bold">Test Results</h1>
+        
+        {/* Company Info Subtitle */}
+        <p className="text-xl text-muted-foreground -mt-6">
+          {results.companyInfo.name}{results.companyInfo.team ? ` - ${results.companyInfo.team}` : ''}
+        </p>
+        
         {/* Introduction */}
         <section className="bg-card border rounded-lg p-8 shadow-sm">
           <p className="text-lg leading-relaxed text-foreground">

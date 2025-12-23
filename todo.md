@@ -273,3 +273,11 @@
 ## Progress Bar Styling
 
 - [x] Change progress bar filled color to white (#FFFFFF)
+
+## Banner and Page Title Updates
+
+- [x] Remove "Readiness Assessment" text from top banner (keep only logo)
+- [x] Rename "Before You Begin" to "Team Cross-Functional Efficiency Readiness Assessment"
+- [x] Add "Tell Us About Your Team" title under banner on accordion page
+- [x] Add "Test Results" title under banner on results page
+- [x] Ensure consistent title styling across all pages

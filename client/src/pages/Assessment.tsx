@@ -559,7 +559,6 @@ export default function Assessment() {
               className="h-8 md:h-10 cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => window.location.href = '/'}
             />
-            <h1 className="text-2xl md:text-4xl font-bold absolute left-1/2 transform -translate-x-1/2">Readiness Assessment</h1>
             <div className="flex items-center gap-4">
               {/* Keyboard shortcuts hint */}
               <button
@@ -605,7 +604,7 @@ export default function Assessment() {
           >
             {/* Common Region: Header section */}
             <div className="mb-12 space-y-4">
-              <h2 className="text-4xl font-bold">Before We Begin</h2>
+              <h1 className="text-4xl md:text-5xl font-bold">Team Cross-Functional Efficiency Readiness Assessment</h1>
               <p className="text-muted-foreground text-lg">
                 Tell us about your company and team so we can provide personalized insights and calculate the financial impact of team effectiveness.
               </p>
@@ -797,6 +796,9 @@ export default function Assessment() {
             animate={{ opacity: 1 }}
             className="space-y-6"
           >
+            {/* Page title */}
+            <h1 className="text-4xl md:text-5xl font-bold mb-8">Tell Us About Your Team</h1>
+            
             {/* Keyboard navigation hint */}
             <div className="bg-muted/50 border border-border rounded-lg p-4 text-center">
               <p className="text-sm text-muted-foreground">
