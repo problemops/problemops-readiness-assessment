@@ -213,7 +213,7 @@ export default function Assessment() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
               <img 
-                src="/problemops-logo.png" 
+                src="/problemops-logo.svg" 
                 alt="ProblemOps - Making change together" 
                 className="h-10 md:h-12 cursor-pointer hover:opacity-90 transition-opacity"
                 onClick={() => window.location.href = '/'}
