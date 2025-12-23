@@ -582,6 +582,7 @@ export default function Assessment() {
             <Progress 
               value={progress} 
               className="h-2 bg-primary-foreground/20" 
+              indicatorClassName="bg-white"
               aria-label={`Progress: ${Object.keys(answers).length} of ${totalQuestions} questions completed`}
             />
           )}
