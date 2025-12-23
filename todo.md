@@ -297,3 +297,9 @@
 
 - [x] Update Assessment page logo to link to https://problemops.com
 - [x] Update Results page logo to link to https://problemops.com
+
+## Results Page Bottom Actions
+
+- [x] Add "Generate Report PDF" button at bottom of Results page
+- [x] Add "New Assessment" button at bottom of Results page
+- [x] Left-align both buttons

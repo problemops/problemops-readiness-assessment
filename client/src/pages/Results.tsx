@@ -984,6 +984,26 @@ export default function Results() {
             </CardContent>
           </Card>
         </section>
+
+        {/* Bottom Action Buttons */}
+        <section className="flex gap-3">
+          <Button 
+            onClick={handleDownloadPDF}
+            disabled={isGenerating}
+            className="gap-2"
+          >
+            <Download className="h-4 w-4" />
+            {isGenerating ? 'Generating...' : 'Generate Report PDF'}
+          </Button>
+          <Button 
+            variant="secondary" 
+            onClick={() => navigate('/')}
+            className="gap-2"
+          >
+            <Home className="h-4 w-4" />
+            New Assessment
+          </Button>
+        </section>
       </main>
     </div>
   );
