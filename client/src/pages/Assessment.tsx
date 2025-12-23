@@ -12,6 +12,7 @@ import { CheckCircle2, Circle, Loader2, Keyboard } from "lucide-react";
 import { motion } from "framer-motion";
 import { SkipLink } from "@/components/SkipLink";
 import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
+import { ProgressStepper } from "@/components/ProgressStepper";
 
 const SCALE_LABELS = [
   { value: 1, label: "Strongly Disagree" },
@@ -550,42 +551,61 @@ export default function Assessment() {
       />
 
       {/* Header */}
-      <header className="bg-primary text-primary-foreground p-5 sticky top-0 z-20 shadow-lg">
-        <div className="container mx-auto max-w-5xl">
-          <div className="flex items-center justify-between mb-4">
+      <header className="bg-primary text-primary-foreground sticky top-0 z-20 shadow-lg">
+        {/* Top Banner Row */}
+        <div className="container mx-auto max-w-5xl px-5 py-4">
+          <div className="flex items-center justify-between md:justify-center md:gap-8">
+            {/* Logo - Left on desktop, stacked on mobile */}
             <img 
               src="/problemops-logo.svg" 
               alt="ProblemOps" 
-              className="h-8 md:h-10 cursor-pointer hover:opacity-90 transition-opacity"
+              className="h-8 md:h-10 cursor-pointer hover:opacity-90 transition-opacity md:absolute md:left-5"
               onClick={() => window.location.href = 'https://problemops.com'}
             />
-            <div className="flex items-center gap-4">
-              {/* Keyboard shortcuts hint */}
-              <button
-                onClick={() => setShowShortcuts(true)}
-                className="p-2 rounded-lg hover:bg-primary-foreground/10 transition-colors"
-                aria-label="Show keyboard shortcuts (press ? key)"
-                title="Keyboard shortcuts (?)"
-              >
-                <Keyboard className="h-5 w-5" />
-              </button>
-              {currentStep > 0 && (
-                <div className="text-right">
-                  <div className="text-3xl font-bold" aria-live="polite">{Object.keys(answers).length}/{totalQuestions}</div>
-                  <div className="text-xs opacity-90">Completed</div>
-                </div>
-              )}
+            
+            {/* Progress Stepper - Center */}
+            <ProgressStepper 
+              currentStep={currentStep === 0 ? 'begin' : 'assess'}
+              completedSteps={currentStep > 0 ? ['begin'] : []}
+              className="hidden md:flex"
+            />
+            
+            {/* Keyboard Icon - Right on desktop */}
+            <button
+              onClick={() => setShowShortcuts(true)}
+              className="p-2 rounded-lg hover:bg-primary-foreground/10 transition-colors md:absolute md:right-5"
+              aria-label="Show keyboard shortcuts (press ? key)"
+              title="Keyboard shortcuts (?)"
+            >
+              <Keyboard className="h-5 w-5" />
+            </button>
+          </div>
+          
+          {/* Mobile: Stacked Progress Stepper */}
+          <div className="md:hidden mt-4 flex justify-center">
+            <ProgressStepper 
+              currentStep={currentStep === 0 ? 'begin' : 'assess'}
+              completedSteps={currentStep > 0 ? ['begin'] : []}
+            />
+          </div>
+        </div>
+        
+        {/* Question-Level Progress Bar (only on Assess page) */}
+        {currentStep > 0 && (
+          <div className="bg-primary/80 py-3">
+            <div className="container mx-auto max-w-5xl px-5">
+              <Progress 
+                value={progress} 
+                className="h-2 bg-primary-foreground/20" 
+                indicatorClassName="bg-white"
+                aria-label={`Progress: ${Object.keys(answers).length} of ${totalQuestions} questions completed`}
+              />
+              <div className="text-center text-white text-sm mt-2">
+                {Object.keys(answers).length} of {totalQuestions} questions completed
+              </div>
             </div>
           </div>
-          {currentStep > 0 && (
-            <Progress 
-              value={progress} 
-              className="h-2 bg-primary-foreground/20" 
-              indicatorClassName="bg-white"
-              aria-label={`Progress: ${Object.keys(answers).length} of ${totalQuestions} questions completed`}
-            />
-          )}
-        </div>
+        )}
       </header>
 
       {/* Content */}
@@ -692,7 +712,7 @@ export default function Assessment() {
               <fieldset className="space-y-6 pt-4">
                 <legend className="text-3xl font-semibold border-b border-border pb-3 w-full">Team Parameters</legend>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="team-size" className="text-base font-medium">
                       Team Size <span className="text-destructive" aria-hidden="true">*</span>

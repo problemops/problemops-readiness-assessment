@@ -303,3 +303,20 @@
 - [x] Add "Generate Report PDF" button at bottom of Results page
 - [x] Add "New Assessment" button at bottom of Results page
 - [x] Left-align both buttons
+
+## Multi-Level Progress Indicators
+
+- [x] Create BDD specification for page-level and question-level progress
+- [x] Create ProgressStepper component (Begin → Assess → Recommendations)
+- [x] Add page-level stepper below banner on Assessment page
+- [x] Add page-level stepper below banner on Results page
+- [x] Position question-level progress bar below page-level stepper
+- [x] Update progress calculations to consider page-level context
+- [x] Test progress indicator on all three stages
+- [x] Ensure responsive design on mobile devices
+
+## Form Layout Fix
+
+- [x] Vertically stack Team Size and Average Salary input fields
+- [x] Ensure all text input fields have consistent full width
+- [x] Remove horizontal layout for input fields

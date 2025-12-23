@@ -10,6 +10,7 @@ import { SlidePDFGenerator } from "@/lib/pdfGenerator";
 import PriorityMatrix from "@/components/PriorityMatrix";
 import { FourCsChart } from "@/components/FourCsChart";
 import { ProblemOpsPrinciples } from "@/components/ProblemOpsPrinciples";
+import { ProgressStepper } from "@/components/ProgressStepper";
 import { calculate4CsScores, getRecommendedDeliverables } from "@/lib/fourCsScoring";
 import { generateTrainingPlan, getTrainingPriorities } from "@/lib/problemOpsTrainingPlan";
 import { generateTeamNarrative as generateEnhancedNarrative, type CompanyContext } from "@/lib/companyAnalysis";
@@ -285,16 +286,27 @@ export default function Results() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground py-4 px-6 shadow-lg">
-        <div className="container mx-auto max-w-6xl">
-          <div className="flex justify-between items-center">
+      <header className="bg-primary text-primary-foreground shadow-lg">
+        {/* Top Banner Row */}
+        <div className="container mx-auto max-w-6xl px-5 py-4">
+          <div className="flex items-center justify-between md:justify-center md:gap-8">
+            {/* Logo - Left on desktop, stacked on mobile */}
             <img 
               src="/problemops-logo.svg" 
               alt="ProblemOps" 
-              className="h-8 md:h-10 cursor-pointer hover:opacity-90 transition-opacity"
+              className="h-8 md:h-10 cursor-pointer hover:opacity-90 transition-opacity md:absolute md:left-5"
               onClick={() => window.location.href = 'https://problemops.com'}
             />
-            <div className="flex gap-3">
+            
+            {/* Progress Stepper - Center */}
+            <ProgressStepper 
+              currentStep="recommendations"
+              completedSteps={['begin', 'assess']}
+              className="hidden md:flex"
+            />
+            
+            {/* Action Buttons - Right on desktop, hidden on mobile */}
+            <div className="hidden md:flex gap-3 md:absolute md:right-5">
               <Button 
                 variant="secondary" 
                 onClick={() => navigate('/')}
@@ -312,6 +324,25 @@ export default function Results() {
                 {isGenerating ? 'Generating...' : 'Download PDF Report'}
               </Button>
             </div>
+            
+            {/* Mobile: Show only download button */}
+            <Button 
+              onClick={handleDownloadPDF}
+              disabled={isGenerating}
+              size="sm"
+              className="md:hidden gap-2 bg-white text-primary hover:bg-white/90"
+            >
+              <Download className="h-4 w-4" />
+              {isGenerating ? 'Generating...' : 'PDF'}
+            </Button>
+          </div>
+          
+          {/* Mobile: Stacked Progress Stepper */}
+          <div className="md:hidden mt-4 flex justify-center">
+            <ProgressStepper 
+              currentStep="recommendations"
+              completedSteps={['begin', 'assess']}
+            />
           </div>
         </div>
       </header>
