@@ -286,7 +286,7 @@ export default function Results() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground shadow-lg">
+      <header className="bg-primary text-primary-foreground sticky top-0 z-20 shadow-lg">
         {/* Top Banner Row */}
         <div className="container mx-auto max-w-6xl px-5 py-4">
           <div className="flex items-center justify-between md:justify-center md:gap-8">
@@ -309,7 +309,10 @@ export default function Results() {
             <div className="hidden md:flex gap-3 md:absolute md:right-5">
               <Button 
                 variant="secondary" 
-                onClick={() => navigate('/')}
+                onClick={() => {
+                  navigate('/');
+                  setTimeout(() => window.scrollTo(0, 0), 0);
+                }}
                 className="gap-2"
               >
                 <Home className="h-4 w-4" />
@@ -1028,7 +1031,10 @@ export default function Results() {
           </Button>
           <Button 
             variant="secondary" 
-            onClick={() => navigate('/')}
+            onClick={() => {
+              navigate('/');
+              setTimeout(() => window.scrollTo(0, 0), 0);
+            }}
             className="gap-2"
           >
             <Home className="h-4 w-4" />

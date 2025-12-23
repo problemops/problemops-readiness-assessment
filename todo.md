@@ -336,3 +336,29 @@
 ## Remove Autofocus on Form Load
 
 - [x] Remove autofocus from Company Name field to prevent scroll jump on page load
+
+## LocalStorage Auto-Save Feature
+
+- [ ] Create BDD specification for localStorage auto-save
+- [ ] Implement auto-save with 30-second interval for answers and company info
+- [ ] Implement resume functionality on page load
+- [ ] Add visual indicator showing "Draft saved" status
+- [ ] Add "Clear Draft" button to discard saved progress
+- [ ] Clear localStorage after successful submission
+- [ ] Handle edge cases (localStorage full, disabled, corrupted data)
+- [ ] Test auto-save and resume functionality
+
+## Remove Auto-Focus on Assessment Start
+
+- [x] Remove automatic focus and scroll to first question when assessment starts
+- [x] Keep user at top of page to see "Tell Us About Your Team" title
+
+## Sticky Banner on All Pages
+
+- [x] Verify Assessment page banner is sticky (already has sticky top-0 z-20)
+- [x] Make Results page banner sticky/fixed at top (added sticky top-0 z-20)
+- [x] Test banner stays visible while scrolling on all pages
+
+## New Assessment Button Scroll Fix
+
+- [x] Make "New Assessment" button scroll to top of page after navigation

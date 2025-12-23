@@ -442,15 +442,8 @@ export default function Assessment() {
   const handleStartAssessment = () => {
     if (companyInfo.name.trim() && companyInfo.teamSize.trim() && companyInfo.avgSalary.trim()) {
       setCurrentStep(1);
-      // Focus first question after transition
+      // Announce assessment start without auto-focus
       setTimeout(() => {
-        setFocusedQuestionId(1);
-        const firstRef = questionRefs.current[1];
-        if (firstRef) {
-          firstRef.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          const firstButton = firstRef.querySelector('button[role="radio"]') as HTMLElement;
-          firstButton?.focus();
-        }
         setAnnouncement("Assessment started. Use number keys 1-7 to rate each question. Press N for next, P for previous.");
       }, 500);
     }
