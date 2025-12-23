@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
 import { ArrowRight, ArrowLeft, CheckCircle2 } from "lucide-react";
@@ -85,23 +86,28 @@ interface AssessmentModalProps {
 }
 
 export default function AssessmentModal({ isOpen, onClose, onComplete }: AssessmentModalProps) {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(-1); // Start at -1 for company info
   const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [companyInfo, setCompanyInfo] = useState({ name: '', website: '', team: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Group questions into pages of 5 (one construct per page)
   const questionsPerPage = 5;
   const totalPages = Math.ceil(QUESTIONS.length / questionsPerPage);
-  const currentQuestions = QUESTIONS.slice(currentStep * questionsPerPage, (currentStep + 1) * questionsPerPage);
+  const currentQuestions = currentStep >= 0 ? QUESTIONS.slice(currentStep * questionsPerPage, (currentStep + 1) * questionsPerPage) : [];
 
-  const progress = ((Object.keys(answers).length) / QUESTIONS.length) * 100;
+  const progress = currentStep < 0 ? 0 : ((Object.keys(answers).length) / QUESTIONS.length) * 100;
 
   const handleAnswer = (questionId: number, value: number) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
 
   const handleNext = () => {
-    if (currentStep < totalPages - 1) {
+    if (currentStep < 0) {
+      // Moving from company info to first question page
+      setCurrentStep(0);
+      window.scrollTo(0, 0);
+    } else if (currentStep < totalPages - 1) {
       setCurrentStep(prev => prev + 1);
       window.scrollTo(0, 0);
     } else {
@@ -110,7 +116,7 @@ export default function AssessmentModal({ isOpen, onClose, onComplete }: Assessm
   };
 
   const handleBack = () => {
-    if (currentStep > 0) {
+    if (currentStep >= 0) {
       setCurrentStep(prev => prev - 1);
       window.scrollTo(0, 0);
     }
@@ -138,14 +144,21 @@ export default function AssessmentModal({ isOpen, onClose, onComplete }: Assessm
     setTimeout(() => {
       onComplete(finalScores);
       setIsSubmitting(false);
+      
+      // Store company info in sessionStorage for Results page
+      sessionStorage.setItem('companyInfo', JSON.stringify(companyInfo));
+      
       onClose();
       // Reset state for next time
-      setCurrentStep(0);
+      setCurrentStep(-1);
       setAnswers({});
+      setCompanyInfo({ name: '', website: '', team: '' });
     }, 1000);
   };
 
-  const isPageComplete = currentQuestions.every(q => answers[q.id] !== undefined);
+  const isPageComplete = currentStep < 0 
+    ? companyInfo.name.trim() !== '' 
+    : currentQuestions.every(q => answers[q.id] !== undefined);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -174,53 +187,110 @@ export default function AssessmentModal({ isOpen, onClose, onComplete }: Assessm
 
         {/* Questions Body */}
         <div className="p-6 space-y-8 flex-1">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentStep}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-8"
-            >
-              {currentQuestions.map((q) => (
-                <div key={q.id} className="space-y-4">
-                  <Label className="text-base font-medium leading-relaxed">
-                    {q.id}. {q.text}
+          {currentStep < 0 ? (
+            /* Company Information Form */
+            <div className="space-y-6 max-w-2xl mx-auto">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold mb-2">Before We Begin</h3>
+                <p className="text-muted-foreground">
+                  Tell us about your company so we can provide personalized insights.
+                </p>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="company-name" className="text-base font-medium">
+                    Company Name <span className="text-destructive">*</span>
                   </Label>
-                  <RadioGroup
-                    value={answers[q.id]?.toString()}
-                    onValueChange={(val) => handleAnswer(q.id, parseInt(val))}
-                    className="flex flex-wrap gap-2 sm:gap-4"
-                  >
-                    {SCALE_LABELS.map((scale) => (
-                      <div key={scale.value} className="flex flex-col items-center gap-2">
-                        <RadioGroupItem
-                          value={scale.value.toString()}
-                          id={`q${q.id}-${scale.value}`}
-                          className="peer sr-only"
-                        />
-                        <Label
-                          htmlFor={`q${q.id}-${scale.value}`}
-                          className={`
-                            flex flex-col items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 cursor-pointer transition-all
-                            ${answers[q.id] === scale.value 
-                              ? "border-primary bg-primary text-primary-foreground scale-110 shadow-md" 
-                              : "border-muted hover:border-primary/50 bg-secondary text-muted-foreground"}
-                          `}
-                        >
-                          <span className="text-sm font-bold">{scale.value}</span>
-                        </Label>
-                        <span className="text-[10px] text-muted-foreground text-center max-w-[60px] hidden sm:block">
-                          {scale.value === 1 || scale.value === 7 || scale.value === 4 ? scale.label : ""}
-                        </span>
-                      </div>
-                    ))}
-                  </RadioGroup>
+                  <Input
+                    id="company-name"
+                    placeholder="e.g., Acme Corporation"
+                    value={companyInfo.name}
+                    onChange={(e) => setCompanyInfo(prev => ({ ...prev, name: e.target.value }))}
+                    className="text-base"
+                  />
                 </div>
-              ))}
-            </motion.div>
-          </AnimatePresence>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="company-website" className="text-base font-medium">
+                    Company Website
+                  </Label>
+                  <Input
+                    id="company-website"
+                    type="url"
+                    placeholder="e.g., https://acme.com"
+                    value={companyInfo.website}
+                    onChange={(e) => setCompanyInfo(prev => ({ ...prev, website: e.target.value }))}
+                    className="text-base"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    We'll analyze your website to provide more relevant insights
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="team-name" className="text-base font-medium">
+                    Team/Department Name
+                  </Label>
+                  <Input
+                    id="team-name"
+                    placeholder="e.g., Product Engineering, Marketing"
+                    value={companyInfo.team}
+                    onChange={(e) => setCompanyInfo(prev => ({ ...prev, team: e.target.value }))}
+                    className="text-base"
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-8"
+              >
+                {currentQuestions.map((q) => (
+                  <div key={q.id} className="space-y-4">
+                    <Label className="text-base font-medium leading-relaxed">
+                      {q.id}. {q.text}
+                    </Label>
+                    <RadioGroup
+                      value={answers[q.id]?.toString()}
+                      onValueChange={(val) => handleAnswer(q.id, parseInt(val))}
+                      className="flex flex-wrap gap-2 sm:gap-4"
+                    >
+                      {SCALE_LABELS.map((scale) => (
+                        <div key={scale.value} className="flex flex-col items-center gap-2">
+                          <RadioGroupItem
+                            value={scale.value.toString()}
+                            id={`q${q.id}-${scale.value}`}
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor={`q${q.id}-${scale.value}`}
+                            className={`
+                              flex flex-col items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 cursor-pointer transition-all
+                              ${answers[q.id] === scale.value 
+                                ? "border-primary bg-primary text-primary-foreground scale-110 shadow-md" 
+                                : "border-muted hover:border-primary/50 bg-secondary text-muted-foreground"}
+                            `}
+                          >
+                            <span className="text-sm font-bold">{scale.value}</span>
+                          </Label>
+                          <span className="text-[10px] text-muted-foreground text-center max-w-[60px] hidden sm:block">
+                            {scale.value === 1 || scale.value === 7 || scale.value === 4 ? scale.label : ""}
+                          </span>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          )}
         </div>
 
         {/* Footer */}
@@ -228,7 +298,7 @@ export default function AssessmentModal({ isOpen, onClose, onComplete }: Assessm
           <Button
             variant="outline"
             onClick={handleBack}
-            disabled={currentStep === 0 || isSubmitting}
+            disabled={currentStep < 0 || isSubmitting}
           >
             <ArrowLeft className="mr-2 h-4 w-4" /> Back
           </Button>

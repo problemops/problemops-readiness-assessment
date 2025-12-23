@@ -7,9 +7,26 @@
 - [x] Create `AssessmentModal` component
 - [x] Implement survey logic (pagination, scoring, progress)
 - [x] Connect assessment results to main calculator state
-- [ ] Create `BreakdownModal` component
-- [ ] Implement logic to calculate cost/savings per driver
-- [ ] Make Cost and Savings cards clickable
-- [ ] Connect cards to open BreakdownModal with specific data context
-- [ ] Create `Navbar` component with Dashboard and Assessment links
-- [ ] Integrate Navbar into Home.tsx layout
+- [x] Create `BreakdownModal` component
+- [x] Implement logic to calculate cost/savings per driver
+- [x] Make Cost and Savings cards clickable
+- [x] Connect cards to open BreakdownModal with specific data context
+- [x] Create `Navbar` component with Dashboard and Assessment links
+- [x] Integrate Navbar into Home.tsx layout
+- [x] Assessment completion auto-redirect to dashboard
+- [x] Responsive assessment modal (90% desktop, 100% mobile)
+
+## New Features - Results Page
+- [x] Add company information fields to home page Team Parameters section
+- [x] Add company information form to assessment (name, website, team/dept)
+- [ ] Create Results page component with routing
+- [ ] Display executive metrics (Cost, Savings, ROI) at top
+- [ ] Show 7-driver summary with scores
+- [x] Show detailed line-item breakdown of Annual Cost of Dysfunction calculation
+- [ ] Generate detailed reasoning for each driver based on assessment answers
+- [ ] Create qualitative team narrative paragraph with company context
+- [ ] Build chunked training plan organized by driver clusters with 4 C's exercises
+- [ ] Implement standardized slide-style PDF export (one key insight per page)
+- [ ] Integrate company website analysis for contextualized insights
+- [ ] Wire assessment completion to redirect to Results page
+- [ ] Test complete user flow from assessment to results

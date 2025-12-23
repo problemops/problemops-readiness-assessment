@@ -139,7 +139,8 @@ const MetricCard = ({
   subtext, 
   icon: Icon, 
   variant = "default",
-  delay = 0
+  delay = 0,
+  onClick
 }: { 
   label: string; 
   value: string; 
@@ -147,6 +148,7 @@ const MetricCard = ({
   icon: any; 
   variant?: "default" | "destructive" | "success";
   delay?: number;
+  onClick?: () => void;
 }) => {
   const colors = {
     default: "text-foreground",
@@ -160,7 +162,10 @@ const MetricCard = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
     >
-      <Card className="h-full border-l-4 border-l-transparent hover:border-l-primary transition-all duration-300">
+      <Card 
+        className={`h-full border-l-4 border-l-transparent hover:border-l-primary transition-all duration-300 ${onClick ? 'cursor-pointer' : ''}`}
+        onClick={onClick}
+      >
         <CardContent className="pt-6">
           <div className="flex justify-between items-start mb-2">
             <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{label}</p>
@@ -191,6 +196,11 @@ export default function Home() {
   const [paybackMonths, setPaybackMonths] = useState(0);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
+  const [companyInfo, setCompanyInfo] = useState({ name: '', website: '', team: '' });
+  const [breakdownModal, setBreakdownModal] = useState<{ isOpen: boolean; type: 'cost' | 'savings' | null }>({ 
+    isOpen: false, 
+    type: null 
+  });
 
   // Calculation Effect
   useEffect(() => {
@@ -243,9 +253,17 @@ export default function Home() {
     setIsAssessmentOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+  
+  const handleOpenAssessment = () => {
+    // Store company info before opening assessment
+    sessionStorage.setItem('companyInfo', JSON.stringify(companyInfo));
+    setIsAssessmentOpen(true);
+  };
 
   const generateReport = async () => {
     setIsGeneratingReport(true);
+    // Store company info for potential use in report
+    sessionStorage.setItem('companyInfo', JSON.stringify(companyInfo));
     try {
       // Create a new PDF document
       const doc = new jsPDF({
@@ -387,7 +405,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
       
-      <Navbar onOpenAssessment={() => setIsAssessmentOpen(true)} />
+      <Navbar onOpenAssessment={handleOpenAssessment} />
 
       <main className="container py-8 lg:py-12">
         <div className="flex justify-end mb-6">
@@ -413,7 +431,41 @@ export default function Home() {
             
             <section>
               <h2 className="text-2xl font-bold mb-2">Team Parameters</h2>
-              <p className="text-muted-foreground mb-6">Define the scale and investment of your team.</p>
+              <p className="text-muted-foreground mb-6">Define your company context and team scale.</p>
+              
+              <div className="space-y-4 mb-6">
+                <div className="space-y-2">
+                  <Label htmlFor="company-name">Company Name</Label>
+                  <Input 
+                    id="company-name" 
+                    placeholder="e.g., Acme Corporation"
+                    value={companyInfo.name}
+                    onChange={(e) => setCompanyInfo(prev => ({ ...prev, name: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="company-website">Company Website</Label>
+                  <Input 
+                    id="company-website" 
+                    type="url"
+                    placeholder="e.g., https://acme.com"
+                    value={companyInfo.website}
+                    onChange={(e) => setCompanyInfo(prev => ({ ...prev, website: e.target.value }))}
+                  />
+                  <p className="text-xs text-muted-foreground">We'll analyze your website to provide more relevant insights</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="team-dept">Team/Department</Label>
+                  <Input 
+                    id="team-dept" 
+                    placeholder="e.g., Product Engineering, Marketing"
+                    value={companyInfo.team}
+                    onChange={(e) => setCompanyInfo(prev => ({ ...prev, team: e.target.value }))}
+                  />
+                </div>
+              </div>
+              
+              <Separator className="my-6" />
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div className="space-y-2">
@@ -532,6 +584,7 @@ export default function Home() {
                   icon={AlertTriangle}
                   variant="destructive"
                   delay={0.1}
+                  onClick={() => setBreakdownModal({ isOpen: true, type: 'cost' })}
                 />
                 <MetricCard 
                   label="Projected Annual Savings" 
@@ -540,6 +593,7 @@ export default function Home() {
                   icon={TrendingUp}
                   variant="success"
                   delay={0.2}
+                  onClick={() => setBreakdownModal({ isOpen: true, type: 'savings' })}
                 />
                 <MetricCard 
                   label="Return on Investment" 
@@ -593,7 +647,7 @@ export default function Home() {
                 <Button 
                   size="lg" 
                   className="w-full md:w-auto gap-2"
-                  onClick={() => setIsAssessmentOpen(true)}
+                  onClick={handleOpenAssessment}
                 >
                   Start Assessment <ArrowRight className="h-4 w-4" />
                 </Button>
@@ -610,6 +664,18 @@ export default function Home() {
         onClose={() => setIsAssessmentOpen(false)} 
         onComplete={handleAssessmentComplete} 
       />
+      
+      {breakdownModal.type && (
+        <BreakdownModal
+          isOpen={breakdownModal.isOpen}
+          onClose={() => setBreakdownModal({ isOpen: false, type: null })}
+          type={breakdownModal.type}
+          drivers={drivers}
+          teamSize={teamSize}
+          avgSalary={avgSalary}
+          totalAmount={breakdownModal.type === 'cost' ? dysfunctionCost : projectedSavings}
+        />
+      )}
     </div>
   );
 }

@@ -85,9 +85,9 @@ export default function BreakdownModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl">
+      <DialogContent className="w-full h-full sm:h-auto sm:max-h-[95vh] md:w-[95vw] md:max-w-[95vw] md:h-[95vh] overflow-y-auto flex flex-col p-0 gap-0 rounded-none sm:rounded-lg">
+        <DialogHeader className="p-6 pb-4 border-b border-border">
+          <DialogTitle className="flex items-center gap-2 text-2xl">
             {type === "cost" ? (
               <>
                 <AlertTriangle className="h-6 w-6 text-destructive" />
@@ -107,7 +107,7 @@ export default function BreakdownModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden flex flex-col gap-4 mt-4">
+        <div className="flex-1 overflow-hidden flex flex-col gap-6 p-6">
           <div className="bg-secondary/50 p-4 rounded-lg border border-border text-center">
             <p className="text-sm text-muted-foreground uppercase tracking-wider mb-1">
               Total {type === "cost" ? "Annual Loss" : "Potential Savings"}
