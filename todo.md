@@ -260,3 +260,12 @@
 
 - [x] Rename application title from "Team ProblemOps Readiness Assessment" to "Readiness Assessment"
 - [x] Update logo to new ProblemOps horizontal dark mode SVG
+
+## Accordion Navigation UX Improvements
+
+- [x] Fix scroll positioning: when navigating to new section, scroll to top of section minus banner height
+- [x] Calculate banner height dynamically and use as scroll offset
+- [x] Prevent accordion auto-collapse when navigating backward to previous completed sections
+- [x] Allow users to adjust answers in previously completed sections without accordion closing
+- [x] Test scroll positioning across all 7 sections with TAB/SHIFT+TAB navigation
+- [x] Test backward navigation (SHIFT+TAB) maintains open accordion state

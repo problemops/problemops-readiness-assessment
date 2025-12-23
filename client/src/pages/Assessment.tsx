@@ -125,7 +125,7 @@ export default function Assessment() {
   });
   
   const [currentStep, setCurrentStep] = useState(0); // 0 = company info, 1 = assessment
-  const [openSection, setOpenSection] = useState<string>("trust");
+  const [openSections, setOpenSections] = useState<string[]>(["trust"]);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [focusedQuestionId, setFocusedQuestionId] = useState<number | null>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -182,8 +182,8 @@ export default function Assessment() {
           s.questions.some(q => q.id === nextQuestionId)
         );
         
-        if (nextSection && nextSection.id !== openSection) {
-          setOpenSection(nextSection.id);
+        if (nextSection && !openSections.includes(nextSection.id)) {
+          setOpenSections(prev => [...prev, nextSection.id]);
         }
         
         // Focus next question after a brief delay for DOM update
@@ -204,7 +204,7 @@ export default function Assessment() {
         }, 100);
       }
     }
-  }, [openSection]);
+  }, [openSections]);
 
   // Check if a section is complete
   const isSectionComplete = (section: typeof DRIVER_SECTIONS[0]) => {
@@ -216,13 +216,29 @@ export default function Assessment() {
     return DRIVER_SECTIONS.find(s => s.questions.some(q => q.id === questionId));
   };
 
+  // Helper: Scroll to section with banner offset
+  const scrollToSection = (sectionId: string) => {
+    const section = document.getElementById(`section-${sectionId}`);
+    const banner = document.querySelector('header');
+    const bannerHeight = banner?.offsetHeight || 80;
+    
+    if (section) {
+      const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+      const scrollPosition = sectionTop - bannerHeight - 16; // 16px extra padding
+      
+      window.scrollTo({
+        top: scrollPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   // Helper: Navigate to a specific rating option
   const focusRatingOption = (questionId: number, ratingValue: number) => {
     const element = document.getElementById(`q${questionId}-${ratingValue}`);
     if (element) {
       element.focus();
-      // Scroll into view
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Don't use scrollIntoView here - let scrollToSection handle it
     }
   };
 
@@ -249,10 +265,17 @@ export default function Assessment() {
           
           if (prevQuestionId) {
             const prevSection = findQuestionSection(prevQuestionId);
-            if (prevSection && prevSection.id !== openSection) {
-              setOpenSection(prevSection.id);
+            if (prevSection && !openSections.includes(prevSection.id)) {
+              setOpenSections(prev => [...prev, prevSection.id]);
+              // Scroll to previous section with banner offset
+              setTimeout(() => {
+                scrollToSection(prevSection.id);
+                setTimeout(() => focusRatingOption(prevQuestionId, 7), 100);
+              }, 100);
+            } else {
+              // Same section, just focus previous question
+              setTimeout(() => focusRatingOption(prevQuestionId, 7), 100);
             }
-            setTimeout(() => focusRatingOption(prevQuestionId, 7), 100);
           }
         }
         // Otherwise, let native TAB handle navigation to previous rating
@@ -266,10 +289,17 @@ export default function Assessment() {
           
           if (nextQuestionId) {
             const nextSection = findQuestionSection(nextQuestionId);
-            if (nextSection && nextSection.id !== openSection) {
-              setOpenSection(nextSection.id);
+            if (nextSection && !openSections.includes(nextSection.id)) {
+              setOpenSections(prev => [...prev, nextSection.id]);
+              // Scroll to new section with banner offset
+              setTimeout(() => {
+                scrollToSection(nextSection.id);
+                setTimeout(() => focusRatingOption(nextQuestionId, 1), 100);
+              }, 100);
+            } else {
+              // Same section, just focus next question
+              setTimeout(() => focusRatingOption(nextQuestionId, 1), 100);
             }
-            setTimeout(() => focusRatingOption(nextQuestionId, 1), 100);
           } else {
             // Last question, last rating - focus submit button
             setTimeout(() => submitButtonRef.current?.focus(), 100);
@@ -283,19 +313,19 @@ export default function Assessment() {
   // Auto-advance to next section when current is complete
   useEffect(() => {
     if (currentStep > 0) {
-      const currentSectionIndex = DRIVER_SECTIONS.findIndex(s => s.id === openSection);
+      const currentSectionIndex = DRIVER_SECTIONS.findIndex(s => openSections.includes(s.id));
       const currentSection = DRIVER_SECTIONS[currentSectionIndex];
       
       if (currentSection && isSectionComplete(currentSection)) {
         const nextSection = DRIVER_SECTIONS[currentSectionIndex + 1];
         if (nextSection) {
           setTimeout(() => {
-            setOpenSection(nextSection.id);
+            setOpenSections(prev => [...prev, nextSection.id]);
           }, 300);
         }
       }
     }
-  }, [answers, openSection, currentStep]);
+  }, [answers, openSections, currentStep]);
 
   // Keyboard shortcuts handler
   useEffect(() => {
@@ -395,8 +425,8 @@ export default function Assessment() {
       s.questions.some(q => q.id === targetQuestionId)
     );
     
-    if (targetSection && targetSection.id !== openSection) {
-      setOpenSection(targetSection.id);
+    if (targetSection && !openSections.includes(targetSection.id)) {
+      setOpenSections(prev => [...prev, targetSection.id]);
     }
     
     setTimeout(() => {
@@ -777,9 +807,9 @@ export default function Assessment() {
 
             {/* Common Region: Accordion container */}
             <Accordion 
-              type="single" 
-              value={openSection} 
-              onValueChange={setOpenSection}
+              type="multiple" 
+              value={openSections} 
+              onValueChange={setOpenSections}
               className="space-y-4"
             >
               {DRIVER_SECTIONS.map((section, index) => {
@@ -789,6 +819,7 @@ export default function Assessment() {
                   <AccordionItem 
                     key={section.id} 
                     value={section.id}
+                    id={`section-${section.id}`}
                     className="bg-card border border-border rounded-lg shadow-sm overflow-hidden"
                   >
                     <AccordionTrigger 
