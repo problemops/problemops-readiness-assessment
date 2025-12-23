@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -90,6 +90,7 @@ export default function AssessmentModal({ isOpen, onClose, onComplete }: Assessm
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [companyInfo, setCompanyInfo] = useState({ name: '', website: '', team: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const modalContentRef = useRef<HTMLDivElement>(null);
 
   // Group questions into pages of 5 (one construct per page)
   const questionsPerPage = 5;
@@ -106,10 +107,10 @@ export default function AssessmentModal({ isOpen, onClose, onComplete }: Assessm
     if (currentStep < 0) {
       // Moving from company info to first question page
       setCurrentStep(0);
-      window.scrollTo(0, 0);
+      modalContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (currentStep < totalPages - 1) {
       setCurrentStep(prev => prev + 1);
-      window.scrollTo(0, 0);
+      modalContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       handleSubmit();
     }
@@ -118,7 +119,7 @@ export default function AssessmentModal({ isOpen, onClose, onComplete }: Assessm
   const handleBack = () => {
     if (currentStep >= 0) {
       setCurrentStep(prev => prev - 1);
-      window.scrollTo(0, 0);
+      modalContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -162,7 +163,10 @@ export default function AssessmentModal({ isOpen, onClose, onComplete }: Assessm
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="w-full h-full sm:h-auto sm:max-h-[90vh] md:w-[90vw] md:max-w-[90vw] overflow-y-auto flex flex-col p-0 gap-0 rounded-none sm:rounded-lg">
+      <DialogContent 
+        ref={modalContentRef}
+        className="w-full h-full sm:h-auto sm:max-h-[90vh] md:w-[90vw] md:max-w-[90vw] overflow-y-auto flex flex-col p-0 gap-0 rounded-none sm:rounded-lg"
+      >
         
         {/* Header */}
         <div className="p-6 border-b border-border bg-background sticky top-0 z-10">

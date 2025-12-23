@@ -15,6 +15,7 @@
 - [x] Integrate Navbar into Home.tsx layout
 - [x] Assessment completion auto-redirect to dashboard
 - [x] Responsive assessment modal (90% desktop, 100% mobile)
+- [x] Auto-scroll to top on assessment step changes
 
 ## New Features - Results Page
 - [x] Add company information fields to home page Team Parameters section
@@ -26,7 +27,12 @@
 - [ ] Generate detailed reasoning for each driver based on assessment answers
 - [ ] Create qualitative team narrative paragraph with company context
 - [ ] Build chunked training plan organized by driver clusters with 4 C's exercises
-- [ ] Implement standardized slide-style PDF export (one key insight per page)
+- [x] Design PDF page templates and structure (17-page format with Company Overview)
+- [x] Create PDF generation utility with jsPDF
+- [x] Implement driver reasoning generator based on assessment answers
+- [x] Build ProblemOps 4 C's training plan content
+- [x] Wire PDF export to Download Report button
+- [x] Test complete PDF generation flow
 - [ ] Integrate company website analysis for contextualized insights
 - [ ] Wire assessment completion to redirect to Results page
 - [ ] Test complete user flow from assessment to results
