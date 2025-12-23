@@ -241,12 +241,19 @@ export default function Results() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-bold text-green-600 mb-2">
+                  <div className="text-4xl font-bold text-green-600 mb-3">
                     {formatPercent(results.roi)}
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Payback in {results.paybackMonths.toFixed(1)} months
-                  </p>
+                  <div className="bg-green-50 dark:bg-green-950/20 border border-green-600/30 rounded-lg px-4 py-3">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-bold text-green-700 dark:text-green-400">
+                        {results.paybackMonths.toFixed(1)}
+                      </span>
+                      <span className="text-sm font-medium text-green-700 dark:text-green-400">
+                        months to payback
+                      </span>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -275,6 +282,189 @@ export default function Results() {
               </CardContent>
             </Card>
           </motion.div>
+        </section>
+
+        <Separator />
+
+        {/* Cost of Dysfunction Breakdown */}
+        <section>
+          <h2 className="text-3xl font-bold mb-6">Understanding Your Cost of Dysfunction</h2>
+          <Card>
+            <CardContent className="pt-6 space-y-6">
+              <div className="prose prose-lg max-w-none">
+                <p className="text-foreground/90 leading-relaxed">
+                  Think of your team's total payroll as an investment in getting work done. When your team works at full effectiveness, you get the maximum value from every dollar you spend on salaries. But when there are problems with trust, communication, or coordination, some of that money gets wasted on confusion, rework, and delays.
+                </p>
+              </div>
+
+              <div className="bg-muted/50 p-6 rounded-lg space-y-4">
+                <h3 className="text-xl font-semibold">Here's How We Calculate It:</h3>
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Your Team Size:</span>
+                    <span className="font-semibold">{results.teamSize} people</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Average Salary:</span>
+                    <span className="font-semibold">{formatCurrency(results.avgSalary)}</span>
+                  </div>
+                  <Separator />
+                  <div className="flex justify-between items-center text-lg">
+                    <span className="font-medium">Total Annual Payroll Investment:</span>
+                    <span className="font-bold">{formatCurrency(results.teamSize * results.avgSalary)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="prose prose-lg max-w-none">
+                <p className="text-foreground/90 leading-relaxed">
+                  Your team's readiness score is <strong>{formatPercent(results.readinessScore)}</strong>. This means your team is working at about {Math.round(results.readinessScore * 100)}% of its potential effectiveness. The remaining {Math.round((1 - results.readinessScore) * 100)}% represents lost productivity—time spent on miscommunication, redoing work, waiting for information, or dealing with conflicts.
+                </p>
+              </div>
+
+              <div className="bg-destructive/5 border border-destructive/20 p-6 rounded-lg space-y-4">
+                <h3 className="text-xl font-semibold">Where the Waste Comes From:</h3>
+                <p className="text-sm text-muted-foreground">Each driver contributes differently to your total dysfunction cost based on research showing which factors matter most for team performance.</p>
+                
+                <div className="space-y-3">
+                  {results.drivers.map((driver: any) => {
+                    const driverGap = (1 - (driver.value / 7));
+                    const driverCost = (results.teamSize * results.avgSalary) * driver.weight * driverGap;
+                    
+                    return (
+                      <div key={driver.id} className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium">{driver.name}</span>
+                          <span className="font-semibold text-destructive">{formatCurrency(driverCost)}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                          <span>Score: {driver.value.toFixed(1)}/7.0</span>
+                          <span>•</span>
+                          <span>Gap: {Math.round(driverGap * 100)}%</span>
+                          <span>•</span>
+                          <span>Impact weight: {Math.round(driver.weight * 100)}%</span>
+                        </div>
+                        <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-destructive rounded-full"
+                            style={{ width: `${(driverCost / results.dysfunctionCost) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <Separator />
+                <div className="flex justify-between items-center text-xl pt-2">
+                  <span className="font-bold">Total Annual Cost of Dysfunction:</span>
+                  <span className="font-bold text-destructive text-2xl">{formatCurrency(results.dysfunctionCost)}</span>
+                </div>
+              </div>
+
+              <div className="prose prose-lg max-w-none">
+                <p className="text-foreground/90 leading-relaxed">
+                  This is how much money you're essentially leaving on the table each year because your team isn't working as effectively as it could. It's not that people aren't trying—it's that the system has friction that slows everyone down.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        <Separator />
+
+        {/* Projected Savings Breakdown */}
+        <section>
+          <h2 className="text-3xl font-bold mb-6">Understanding Your Projected Savings</h2>
+          <Card>
+            <CardContent className="pt-6 space-y-6">
+              <div className="prose prose-lg max-w-none">
+                <p className="text-foreground/90 leading-relaxed">
+                  The good news: you don't have to be perfect to see big improvements. Research shows that high-performing teams typically operate at about 85% readiness. That's our target—a realistic, achievable goal that still leaves room for the normal challenges every team faces.
+                </p>
+              </div>
+
+              <div className="bg-primary/5 border border-primary/20 p-6 rounded-lg space-y-4">
+                <h3 className="text-xl font-semibold">The Improvement Opportunity:</h3>
+                
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <div className="text-3xl font-bold text-muted-foreground mb-1">{formatPercent(results.readinessScore)}</div>
+                    <div className="text-sm text-muted-foreground">Current Readiness</div>
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <TrendingUp className="h-8 w-8 text-primary" />
+                  </div>
+                  <div>
+                    <div className="text-3xl font-bold text-primary mb-1">85%</div>
+                    <div className="text-sm text-muted-foreground">Target Readiness</div>
+                  </div>
+                </div>
+
+                <div className="bg-background p-4 rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">Improvement Potential:</span>
+                    <span className="text-2xl font-bold text-primary">{formatPercent(0.85 - results.readinessScore)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="prose prose-lg max-w-none">
+                <p className="text-foreground/90 leading-relaxed">
+                  When you improve your team's readiness from {formatPercent(results.readinessScore)} to 85%, you're not just making people happier—you're unlocking real productivity. That means less time wasted, faster decisions, fewer mistakes, and more capacity to take on new work without hiring more people.
+                </p>
+              </div>
+
+              <div className="bg-primary/5 border border-primary/20 p-6 rounded-lg space-y-4">
+                <h3 className="text-xl font-semibold">Where the Savings Come From:</h3>
+                <p className="text-sm text-muted-foreground">By improving each driver toward the 85% target, you reclaim wasted productivity and turn it into value.</p>
+                
+                <div className="space-y-3">
+                  {results.drivers.map((driver: any) => {
+                    const currentEfficiency = driver.value / 7;
+                    const targetEfficiency = 0.85;
+                    const improvementGap = Math.max(0, targetEfficiency - currentEfficiency);
+                    const driverSavings = (results.teamSize * results.avgSalary) * driver.weight * improvementGap;
+                    
+                    return (
+                      <div key={driver.id} className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium">{driver.name}</span>
+                          <span className="font-semibold text-primary">{formatCurrency(driverSavings)}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                          <span>Current: {Math.round(currentEfficiency * 100)}%</span>
+                          <span>→</span>
+                          <span>Target: 85%</span>
+                          <span>•</span>
+                          <span>Gain: {Math.round(improvementGap * 100)}%</span>
+                        </div>
+                        <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-primary rounded-full"
+                            style={{ width: `${(driverSavings / results.projectedSavings) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <Separator />
+                <div className="flex justify-between items-center text-xl pt-2">
+                  <span className="font-bold">Total Projected Annual Savings:</span>
+                  <span className="font-bold text-primary text-2xl">{formatCurrency(results.projectedSavings)}</span>
+                </div>
+              </div>
+
+              <div className="prose prose-lg max-w-none">
+                <p className="text-foreground/90 leading-relaxed">
+                  This savings doesn't require hiring more people or buying expensive tools. It comes from helping your existing team work together more smoothly. With an estimated intervention cost of {formatCurrency(results.interventionCost)}, you'll recover your investment in just <strong>{results.paybackMonths.toFixed(1)} months</strong>, then continue saving {formatCurrency(results.projectedSavings)} every year after that.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </section>
 
         <Separator />

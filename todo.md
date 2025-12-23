@@ -48,3 +48,11 @@
 - [x] Update App.tsx routing to start with Assessment
 - [x] Remove Home page with sliders and manual calculator
 - [x] Test streamlined flow: Assessment → Results → PDF
+
+## Results Page Enhancements
+- [x] Add narrative breakdown for Annual Cost of Dysfunction
+- [x] Add narrative breakdown for Projected Annual Savings
+- [x] Show driver-by-driver contribution to costs
+- [x] Explain financial logic in 8th-grade reading level
+- [x] Enhance ROI card to highlight payback period more prominently
+- [x] Test financial breakdown clarity
