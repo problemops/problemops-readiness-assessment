@@ -1,0 +1,186 @@
+{
+  "query": "DESCRIBE testRegistry;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TnkFjGBKdfpupi.root --database B3x5NWCFiG4wF9DctXvqsL --execute DESCRIBE testRegistry;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "testId",
+      "Type": "varchar(100)",
+      "Null": "NO",
+      "Key": "UNI",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "testType",
+      "Type": "enum('unit','integration','bdd','browser','api')",
+      "Null": "NO",
+      "Key": "MUL",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "testCategory",
+      "Type": "varchar(50)",
+      "Null": "NO",
+      "Key": "MUL",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "testSuite",
+      "Type": "varchar(255)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "testName",
+      "Type": "varchar(500)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "description",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "givenContext",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "whenAction",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "thenOutcome",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "additionalExpectations",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "priority",
+      "Type": "enum('P0','P1','P2','P3')",
+      "Null": "NO",
+      "Key": "MUL",
+      "Default": "P2",
+      "Extra": ""
+    },
+    {
+      "Field": "status",
+      "Type": "enum('ACTIVE','PENDING','SKIPPED','DEPRECATED')",
+      "Null": "NO",
+      "Key": "MUL",
+      "Default": "ACTIVE",
+      "Extra": ""
+    },
+    {
+      "Field": "isAutomated",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "MUL",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "filePath",
+      "Type": "varchar(500)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "implementationLocation",
+      "Type": "varchar(500)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "testCoverageMethod",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "createdAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "updatedAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+    },
+    {
+      "Field": "lastRunAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "lastRunStatus",
+      "Type": "enum('PASS','FAIL','SKIPPED')",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "notes",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint(11)\tNO\tPRI\tNULL\tauto_increment\ntestId\tvarchar(100)\tNO\tUNI\tNULL\t\ntestType\tenum('unit','integration','bdd','browser','api')\tNO\tMUL\tNULL\t\ntestCategory\tvarchar(50)\tNO\tMUL\tNULL\t\ntestSuite\tvarchar(255)\tNO\t\tNULL\t\ntestName\tvarchar(500)\tNO\t\tNULL\t\ndescription\ttext\tYES\t\tNULL\t\ngivenContext\ttext\tYES\t\tNULL\t\nwhenAction\ttext\tYES\t\tNULL\t\nthenOutcome\ttext\tYES\t\tNULL\t\nadditionalExpectations\ttext\tYES\t\tNULL\t\npriority\tenum('P0','P1','P2','P3')\tNO\tMUL\tP2\t\nstatus\tenum('ACTIVE','PENDING','SKIPPED','DEPRECATED')\tNO\tMUL\tACTIVE\t\nisAutomated\tint(11)\tNO\tMUL\t0\t\nfilePath\tvarchar(500)\tYES\t\tNULL\t\nimplementationLocation\tvarchar(500)\tYES\t\tNULL\t\ntestCoverageMethod\tvarchar(255)\tYES\t\tNULL\t\ncreatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\nupdatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\nlastRunAt\ttimestamp\tYES\t\tNULL\t\nlastRunStatus\tenum('PASS','FAIL','SKIPPED')\tYES\t\tNULL\t\nnotes\ttext\tYES\t\tNULL\t\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}

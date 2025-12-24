@@ -773,3 +773,17 @@
 - [ ] Run all automated tests (unit + browser) and verify 100% pass
 - [ ] Update test registry with automation status
 - [x] Save checkpoint: BDD automation infrastructure + 5 P0 ROI tests
+
+
+## Complete Playwright Test Suite (20 P0 Tests)
+- [x] Fix ROI calculation test selectors (check actual question navigation)
+- [x] Create 5 P0 ROI calculation tests (roi-calculations.spec.ts)
+- [x] Create 5 P0 training options tests (training-options.spec.ts)
+- [x] Create 5 P0 accessibility tests (accessibility.spec.ts)
+- [x] Create 3 P0 data flow tests (data-flow.spec.ts)
+- [x] Create 2 P0 UI/UX tests (ui-flows.spec.ts)
+- [x] Run complete Playwright suite (20 tests)
+- [ ] Fix 15 failing tests (sticky header blocking clicks, timing issues)
+- [ ] Achieve 100% pass rate (currently 5/20 passing = 25%)
+- [ ] Update package.json with test scripts
+- [ ] Save checkpoint: P0 test automation infrastructure complete

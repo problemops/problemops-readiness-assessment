@@ -1,0 +1,110 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - link "Skip to main content" [ref=e4] [cursor=pointer]:
+      - /url: "#main-content"
+    - status [ref=e5]
+    - alert [ref=e6]
+    - banner [ref=e7]:
+      - generic [ref=e9]:
+        - link "Return to ProblemOps homepage" [ref=e10] [cursor=pointer]:
+          - /url: https://problemops.com
+          - img "ProblemOps" [ref=e11]
+        - 'progressbar "Overall progress: Step 1 of 3, Begin" [ref=e12]':
+          - generic [ref=e14]:
+            - 'generic "Step 1: Begin, active" [ref=e15]':
+              - generic [ref=e16]: "1"
+            - generic [ref=e17]: Begin
+          - generic [ref=e20]:
+            - 'generic "Step 2: Assess, inactive" [ref=e21]':
+              - generic [ref=e22]: "2"
+            - generic [ref=e23]: Assess
+          - generic [ref=e26]:
+            - 'generic "Step 3: Recommendations, inactive" [ref=e27]':
+              - generic [ref=e28]: "3"
+            - generic [ref=e29]: Recommendations
+        - generic [ref=e30]:
+          - button "Switch to dark mode" [ref=e31]:
+            - img [ref=e32]
+          - button "Show keyboard shortcuts (press ? key)" [ref=e34]:
+            - img [ref=e35]
+    - main [ref=e37]:
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - heading "Team Cross-Functional Efficiency Readiness Assessment" [level=1] [ref=e40]
+          - paragraph [active] [ref=e41]: Tell us about your company and team so we can provide personalized insights and calculate the financial impact of team effectiveness.
+          - paragraph [ref=e42]: Press ? for keyboard shortcuts
+        - generic [ref=e43]:
+          - group "Company Information" [ref=e44]:
+            - generic [ref=e45]: Company Information
+            - heading "Company Information" [level=2] [ref=e46]
+            - generic [ref=e47]:
+              - generic [ref=e48]:
+                - text: Company Name
+                - generic [ref=e49]: "*"
+                - generic [ref=e50]: (required)
+              - textbox "Company Name (required)" [ref=e51]:
+                - /placeholder: e.g., Acme Corporation
+            - generic [ref=e52]:
+              - generic [ref=e53]: Company Website
+              - textbox "Company Website" [ref=e54]:
+                - /placeholder: e.g., https://acme.com
+              - paragraph [ref=e55]: We'll analyze your website to provide more relevant insights
+            - generic [ref=e56]:
+              - generic [ref=e57]: Team/Department Name
+              - textbox "Team/Department Name" [ref=e58]:
+                - /placeholder: e.g., Product Engineering, Marketing
+          - group "Team Parameters" [ref=e59]:
+            - generic [ref=e60]: Team Parameters
+            - heading "Team Parameters" [level=2] [ref=e61]
+            - generic [ref=e62]:
+              - generic [ref=e63]:
+                - generic [ref=e64]:
+                  - text: Team Size
+                  - generic [ref=e65]: "*"
+                  - generic [ref=e66]: (required)
+                - spinbutton "Team Size (required)" [ref=e67]: "10"
+              - generic [ref=e68]:
+                - generic [ref=e69]:
+                  - text: Avg. Annual Salary
+                  - generic [ref=e70]: "*"
+                  - generic [ref=e71]: (required)
+                - spinbutton "Avg. Annual Salary (required)" [ref=e72]: "100000"
+            - generic [ref=e73]:
+              - generic [ref=e74]:
+                - text: What Kind of Corporate Training Do You Want?
+                - generic [ref=e75]: "*"
+                - generic [ref=e76]: (required)
+              - radiogroup "What Kind of Corporate Training Do You Want? (required)" [ref=e77]:
+                - generic [ref=e78] [cursor=pointer]:
+                  - radio "I'm Not Sure Yet See all options with comparative ROI analysis" [checked] [ref=e79]:
+                    - img [ref=e80]
+                  - radio [checked]
+                  - generic [ref=e82]:
+                    - generic [ref=e83]: I'm Not Sure Yet
+                    - generic [ref=e84]: See all options with comparative ROI analysis
+                - generic [ref=e85] [cursor=pointer]:
+                  - 'radio "Half Day Workshop $2,000 (4 hours of training) - Focus on your #1 critical area" [ref=e86]'
+                  - radio
+                  - generic [ref=e87]:
+                    - generic [ref=e88]: Half Day Workshop
+                    - generic [ref=e89]: "$2,000 (4 hours of training) - Focus on your #1 critical area"
+                - generic [ref=e90] [cursor=pointer]:
+                  - radio "Full Day Workshop $3,500 (8 hours of training) - Focus on your top 2 critical areas" [ref=e91]
+                  - radio
+                  - generic [ref=e92]:
+                    - generic [ref=e93]: Full Day Workshop
+                    - generic [ref=e94]: $3,500 (8 hours of training) - Focus on your top 2 critical areas
+                - generic [ref=e95] [cursor=pointer]:
+                  - radio "Month-Long Engagement $30,000 (80 hours of training, coaching, and consulting) - Comprehensive training across all areas" [ref=e96]
+                  - radio
+                  - generic [ref=e97]:
+                    - generic [ref=e98]: Month-Long Engagement
+                    - generic [ref=e99]: $30,000 (80 hours of training, coaching, and consulting) - Comprehensive training across all areas
+          - generic [ref=e100]:
+            - button "Start Assessment →" [disabled]
+            - paragraph [ref=e101]: Press Enter to continue
+```

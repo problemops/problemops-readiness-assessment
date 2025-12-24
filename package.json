@@ -10,6 +10,10 @@
     "check": "tsc --noEmit",
     "format": "prettier --write .",
     "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:all": "vitest run && playwright test",
     "db:push": "drizzle-kit generate && drizzle-kit migrate"
   },
   "dependencies": {

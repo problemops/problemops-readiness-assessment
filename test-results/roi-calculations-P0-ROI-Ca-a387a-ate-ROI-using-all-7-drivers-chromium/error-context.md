@@ -1,0 +1,292 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - link "Skip to main content" [ref=e4] [cursor=pointer]:
+      - /url: "#main-content"
+    - status [ref=e5]
+    - alert [ref=e6]
+    - banner [ref=e7]:
+      - generic [ref=e9]:
+        - link "Return to ProblemOps homepage" [ref=e10] [cursor=pointer]:
+          - /url: https://problemops.com
+          - img "ProblemOps" [ref=e11]
+        - 'progressbar "Overall progress: Step 2 of 3, Assess" [ref=e12]':
+          - generic [ref=e14]:
+            - 'generic "Step 1: Begin, completed" [ref=e15]':
+              - img [ref=e16]
+            - generic [ref=e18]: Begin
+          - generic [ref=e21]:
+            - 'generic "Step 2: Assess, active" [ref=e22]':
+              - generic [ref=e23]: "2"
+            - generic [ref=e24]: Assess
+          - generic [ref=e27]:
+            - 'generic "Step 3: Recommendations, inactive" [ref=e28]':
+              - generic [ref=e29]: "3"
+            - generic [ref=e30]: Recommendations
+        - generic [ref=e31]:
+          - button "Switch to dark mode" [ref=e32]:
+            - img [ref=e33]
+          - button "Show keyboard shortcuts (press ? key)" [ref=e35]:
+            - img [ref=e36]
+      - generic [ref=e39]:
+        - 'progressbar "Progress: 0 of 35 questions completed" [ref=e40]'
+        - generic [ref=e42]: 0 of 35 questions completed
+    - main [ref=e43]:
+      - generic [ref=e44]:
+        - heading "Tell Us About Your Team" [level=1] [ref=e45]
+        - paragraph [ref=e47]:
+          - strong [ref=e48]: "Quick tip:"
+          - text: Press number keys 1-7 to rate questions instantly. Use N/P to navigate. Press ? for all shortcuts.
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - heading "Trust section, incomplete, 0 of 5 questions answered" [level=3] [ref=e51]:
+              - button "Trust section, incomplete, 0 of 5 questions answered" [expanded] [ref=e52]:
+                - generic [ref=e53]:
+                  - img [ref=e54]
+                  - generic [ref=e56]:
+                    - generic [ref=e57]: "1"
+                    - heading "Trust" [level=3] [ref=e58]
+                  - generic [ref=e59]: 0/5
+                - img
+            - region "Trust section, incomplete, 0 of 5 questions answered" [ref=e60]:
+              - generic [ref=e61]:
+                - paragraph [ref=e63]: Trust means team members can rely on each other to follow through on commitments and believe others have good intentions. When trust is strong, people feel safe depending on one another and working together becomes easier.
+                - list "Trust questions" [ref=e64]:
+                  - listitem [ref=e65]:
+                    - generic [ref=e66]:
+                      - generic [ref=e67]: "1."
+                      - text: Team members can rely on each other to complete their work.
+                    - radiogroup "1.Team members can rely on each other to complete their work." [ref=e68]:
+                      - generic [ref=e69]:
+                        - radio "1, Strongly Disagree" [ref=e70]
+                        - 'radio "Question 1: Rating 1 of 7, Strongly Disagree" [ref=e71] [cursor=pointer]':
+                          - generic [ref=e72]: "1"
+                        - generic [ref=e73]: Strongly Disagree
+                      - generic [ref=e74]:
+                        - radio "2" [ref=e75]
+                        - 'radio "Question 1: Rating 2 of 7" [ref=e76] [cursor=pointer]':
+                          - generic [ref=e77]: "2"
+                      - generic [ref=e78]:
+                        - radio "3" [ref=e79]
+                        - 'radio "Question 1: Rating 3 of 7" [ref=e80] [cursor=pointer]':
+                          - generic [ref=e81]: "3"
+                      - generic [ref=e82]:
+                        - radio "4, Neutral" [ref=e83]
+                        - 'radio "Question 1: Rating 4 of 7, Neutral" [ref=e84] [cursor=pointer]':
+                          - generic [ref=e85]: "4"
+                        - generic [ref=e86]: Neutral
+                      - generic [ref=e87]:
+                        - radio "5" [ref=e88]
+                        - 'radio "Question 1: Rating 5 of 7" [ref=e89] [cursor=pointer]':
+                          - generic [ref=e90]: "5"
+                      - generic [ref=e91]:
+                        - radio "6" [ref=e92]
+                        - 'radio "Question 1: Rating 6 of 7" [ref=e93] [cursor=pointer]':
+                          - generic [ref=e94]: "6"
+                      - generic [ref=e95]:
+                        - radio "7, Strongly Agree" [ref=e96]
+                        - 'radio "Question 1: Rating 7 of 7, Strongly Agree" [ref=e97] [cursor=pointer]':
+                          - generic [ref=e98]: "7"
+                        - generic [ref=e99]: Strongly Agree
+                  - listitem [ref=e100]:
+                    - generic [ref=e101]:
+                      - generic [ref=e102]: "2."
+                      - text: People on this team are comfortable being vulnerable with one another.
+                    - radiogroup "2.People on this team are comfortable being vulnerable with one another." [ref=e103]:
+                      - generic [ref=e104]:
+                        - radio "1, Strongly Disagree" [ref=e105]
+                        - 'radio "Question 2: Rating 1 of 7, Strongly Disagree" [ref=e106] [cursor=pointer]':
+                          - generic [ref=e107]: "1"
+                        - generic [ref=e108]: Strongly Disagree
+                      - generic [ref=e109]:
+                        - radio "2" [ref=e110]
+                        - 'radio "Question 2: Rating 2 of 7" [ref=e111] [cursor=pointer]':
+                          - generic [ref=e112]: "2"
+                      - generic [ref=e113]:
+                        - radio "3" [ref=e114]
+                        - 'radio "Question 2: Rating 3 of 7" [ref=e115] [cursor=pointer]':
+                          - generic [ref=e116]: "3"
+                      - generic [ref=e117]:
+                        - radio "4, Neutral" [ref=e118]
+                        - 'radio "Question 2: Rating 4 of 7, Neutral" [ref=e119] [cursor=pointer]':
+                          - generic [ref=e120]: "4"
+                        - generic [ref=e121]: Neutral
+                      - generic [ref=e122]:
+                        - radio "5" [ref=e123]
+                        - 'radio "Question 2: Rating 5 of 7" [ref=e124] [cursor=pointer]':
+                          - generic [ref=e125]: "5"
+                      - generic [ref=e126]:
+                        - radio "6" [ref=e127]
+                        - 'radio "Question 2: Rating 6 of 7" [ref=e128] [cursor=pointer]':
+                          - generic [ref=e129]: "6"
+                      - generic [ref=e130]:
+                        - radio "7, Strongly Agree" [ref=e131]
+                        - 'radio "Question 2: Rating 7 of 7, Strongly Agree" [ref=e132] [cursor=pointer]':
+                          - generic [ref=e133]: "7"
+                        - generic [ref=e134]: Strongly Agree
+                  - listitem [ref=e135]:
+                    - generic [ref=e136]:
+                      - generic [ref=e137]: "3."
+                      - text: Team members believe others have good intentions.
+                    - radiogroup "3.Team members believe others have good intentions." [ref=e138]:
+                      - generic [ref=e139]:
+                        - radio "1, Strongly Disagree" [ref=e140]
+                        - 'radio "Question 3: Rating 1 of 7, Strongly Disagree" [ref=e141] [cursor=pointer]':
+                          - generic [ref=e142]: "1"
+                        - generic [ref=e143]: Strongly Disagree
+                      - generic [ref=e144]:
+                        - radio "2" [ref=e145]
+                        - 'radio "Question 3: Rating 2 of 7" [ref=e146] [cursor=pointer]':
+                          - generic [ref=e147]: "2"
+                      - generic [ref=e148]:
+                        - radio "3" [ref=e149]
+                        - 'radio "Question 3: Rating 3 of 7" [ref=e150] [cursor=pointer]':
+                          - generic [ref=e151]: "3"
+                      - generic [ref=e152]:
+                        - radio "4, Neutral" [ref=e153]
+                        - 'radio "Question 3: Rating 4 of 7, Neutral" [ref=e154] [cursor=pointer]':
+                          - generic [ref=e155]: "4"
+                        - generic [ref=e156]: Neutral
+                      - generic [ref=e157]:
+                        - radio "5" [ref=e158]
+                        - 'radio "Question 3: Rating 5 of 7" [ref=e159] [cursor=pointer]':
+                          - generic [ref=e160]: "5"
+                      - generic [ref=e161]:
+                        - radio "6" [ref=e162]
+                        - 'radio "Question 3: Rating 6 of 7" [ref=e163] [cursor=pointer]':
+                          - generic [ref=e164]: "6"
+                      - generic [ref=e165]:
+                        - radio "7, Strongly Agree" [ref=e166]
+                        - 'radio "Question 3: Rating 7 of 7, Strongly Agree" [ref=e167] [cursor=pointer]':
+                          - generic [ref=e168]: "7"
+                        - generic [ref=e169]: Strongly Agree
+                  - listitem [ref=e170]:
+                    - generic [ref=e171]:
+                      - generic [ref=e172]: "4."
+                      - text: We trust each other to follow through on commitments.
+                    - radiogroup "4.We trust each other to follow through on commitments." [ref=e173]:
+                      - generic [ref=e174]:
+                        - radio "1, Strongly Disagree" [ref=e175]
+                        - 'radio "Question 4: Rating 1 of 7, Strongly Disagree" [ref=e176] [cursor=pointer]':
+                          - generic [ref=e177]: "1"
+                        - generic [ref=e178]: Strongly Disagree
+                      - generic [ref=e179]:
+                        - radio "2" [ref=e180]
+                        - 'radio "Question 4: Rating 2 of 7" [ref=e181] [cursor=pointer]':
+                          - generic [ref=e182]: "2"
+                      - generic [ref=e183]:
+                        - radio "3" [ref=e184]
+                        - 'radio "Question 4: Rating 3 of 7" [ref=e185] [cursor=pointer]':
+                          - generic [ref=e186]: "3"
+                      - generic [ref=e187]:
+                        - radio "4, Neutral" [ref=e188]
+                        - 'radio "Question 4: Rating 4 of 7, Neutral" [ref=e189] [cursor=pointer]':
+                          - generic [ref=e190]: "4"
+                        - generic [ref=e191]: Neutral
+                      - generic [ref=e192]:
+                        - radio "5" [ref=e193]
+                        - 'radio "Question 4: Rating 5 of 7" [ref=e194] [cursor=pointer]':
+                          - generic [ref=e195]: "5"
+                      - generic [ref=e196]:
+                        - radio "6" [ref=e197]
+                        - 'radio "Question 4: Rating 6 of 7" [ref=e198] [cursor=pointer]':
+                          - generic [ref=e199]: "6"
+                      - generic [ref=e200]:
+                        - radio "7, Strongly Agree" [ref=e201]
+                        - 'radio "Question 4: Rating 7 of 7, Strongly Agree" [ref=e202] [cursor=pointer]':
+                          - generic [ref=e203]: "7"
+                        - generic [ref=e204]: Strongly Agree
+                  - listitem [ref=e205]:
+                    - generic [ref=e206]:
+                      - generic [ref=e207]: "5."
+                      - text: Team members feel safe depending on one another.
+                    - radiogroup "5.Team members feel safe depending on one another." [ref=e208]:
+                      - generic [ref=e209]:
+                        - radio "1, Strongly Disagree" [ref=e210]
+                        - 'radio "Question 5: Rating 1 of 7, Strongly Disagree" [ref=e211] [cursor=pointer]':
+                          - generic [ref=e212]: "1"
+                        - generic [ref=e213]: Strongly Disagree
+                      - generic [ref=e214]:
+                        - radio "2" [ref=e215]
+                        - 'radio "Question 5: Rating 2 of 7" [ref=e216] [cursor=pointer]':
+                          - generic [ref=e217]: "2"
+                      - generic [ref=e218]:
+                        - radio "3" [ref=e219]
+                        - 'radio "Question 5: Rating 3 of 7" [ref=e220] [cursor=pointer]':
+                          - generic [ref=e221]: "3"
+                      - generic [ref=e222]:
+                        - radio "4, Neutral" [ref=e223]
+                        - 'radio "Question 5: Rating 4 of 7, Neutral" [ref=e224] [cursor=pointer]':
+                          - generic [ref=e225]: "4"
+                        - generic [ref=e226]: Neutral
+                      - generic [ref=e227]:
+                        - radio "5" [ref=e228]
+                        - 'radio "Question 5: Rating 5 of 7" [ref=e229] [cursor=pointer]':
+                          - generic [ref=e230]: "5"
+                      - generic [ref=e231]:
+                        - radio "6" [ref=e232]
+                        - 'radio "Question 5: Rating 6 of 7" [ref=e233] [cursor=pointer]':
+                          - generic [ref=e234]: "6"
+                      - generic [ref=e235]:
+                        - radio "7, Strongly Agree" [ref=e236]
+                        - 'radio "Question 5: Rating 7 of 7, Strongly Agree" [ref=e237] [cursor=pointer]':
+                          - generic [ref=e238]: "7"
+                        - generic [ref=e239]: Strongly Agree
+          - heading "Psychological Safety section, incomplete, 0 of 5 questions answered" [level=3] [ref=e241]:
+            - button "Psychological Safety section, incomplete, 0 of 5 questions answered" [ref=e242]:
+              - generic [ref=e243]:
+                - img [ref=e244]
+                - generic [ref=e246]:
+                  - generic [ref=e247]: "2"
+                  - heading "Psychological Safety" [level=3] [ref=e248]
+                - generic [ref=e249]: 0/5
+              - img
+          - heading "Transactive Memory section, incomplete, 0 of 5 questions answered" [level=3] [ref=e251]:
+            - button "Transactive Memory section, incomplete, 0 of 5 questions answered" [ref=e252]:
+              - generic [ref=e253]:
+                - img [ref=e254]
+                - generic [ref=e256]:
+                  - generic [ref=e257]: "3"
+                  - heading "Transactive Memory" [level=3] [ref=e258]
+                - generic [ref=e259]: 0/5
+              - img
+          - heading "Communication Quality section, incomplete, 0 of 5 questions answered" [level=3] [ref=e261]:
+            - button "Communication Quality section, incomplete, 0 of 5 questions answered" [ref=e262]:
+              - generic [ref=e263]:
+                - img [ref=e264]
+                - generic [ref=e266]:
+                  - generic [ref=e267]: "4"
+                  - heading "Communication Quality" [level=3] [ref=e268]
+                - generic [ref=e269]: 0/5
+              - img
+          - heading "Goal Clarity section, incomplete, 0 of 5 questions answered" [level=3] [ref=e271]:
+            - button "Goal Clarity section, incomplete, 0 of 5 questions answered" [ref=e272]:
+              - generic [ref=e273]:
+                - img [ref=e274]
+                - generic [ref=e276]:
+                  - generic [ref=e277]: "5"
+                  - heading "Goal Clarity" [level=3] [ref=e278]
+                - generic [ref=e279]: 0/5
+              - img
+          - heading "Coordination section, incomplete, 0 of 5 questions answered" [level=3] [ref=e281]:
+            - button "Coordination section, incomplete, 0 of 5 questions answered" [ref=e282]:
+              - generic [ref=e283]:
+                - img [ref=e284]
+                - generic [ref=e286]:
+                  - generic [ref=e287]: "6"
+                  - heading "Coordination" [level=3] [ref=e288]
+                - generic [ref=e289]: 0/5
+              - img
+          - heading "Team Cognition section, incomplete, 0 of 5 questions answered" [level=3] [ref=e291]:
+            - button "Team Cognition section, incomplete, 0 of 5 questions answered" [ref=e292]:
+              - generic [ref=e293]:
+                - img [ref=e294]
+                - generic [ref=e296]:
+                  - generic [ref=e297]: "7"
+                  - heading "Team Cognition" [level=3] [ref=e298]
+                - generic [ref=e299]: 0/5
+              - img
+```
