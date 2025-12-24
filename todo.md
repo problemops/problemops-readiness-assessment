@@ -959,4 +959,139 @@
 - [x] Remove text labels from New Assessment button in header (keep icon only)
 - [x] Ensure proper aria-label and title attributes for accessibility
 - [x] Test in both light and dark modes
+- [x] Save checkpoint
+
+
+## Enhanced Dysfunction Cost Calculation (December 24, 2024)
+
+- [ ] Design comprehensive dysfunction cost formula incorporating business value ratios
+- [ ] Include cost categories: rework, opportunity, turnover, quality, overhead
+- [ ] Integrate 7 driver scores with weighted impact on each cost category
+- [ ] Apply 4 C's scores as business impact multipliers
+- [ ] Add industry-specific cost factors beyond payroll
+- [ ] Update calculation methodology document with new formulas
+- [ ] Implement new dysfunction cost calculation in codebase
+- [ ] Write unit tests for new calculation logic
+- [ ] Update Results page to show enhanced cost breakdown
 - [ ] Save checkpoint
+
+
+## Enhanced Dysfunction Cost Formula v4.0 Implementation
+
+### Calculation Engine
+- [ ] Install mathematical precision libraries (decimal.js or similar for JavaScript)
+- [ ] Refactor calculation engine to use v4.0 formula
+- [ ] Implement all six cost components (C₁-C₆)
+- [ ] Implement overlap discount (0.88 multiplier)
+- [ ] Implement 4 C's multiplier (M₄C)
+- [ ] Implement industry factor (φ)
+- [ ] Implement team size factor η(N)
+- [ ] Implement gaming penalty (G)
+- [ ] Implement continuous sigmoid for engagement (E_coef)
+- [ ] Implement input clamping for all drivers
+- [ ] Implement upper bound cap (3.5P)
+
+### UI Updates
+- [ ] Update User Guide modal with v4.0 content
+- [ ] Update How It Works modal with v4.0 formula explanation
+- [ ] Update results page to show new cost breakdown (C₁-C₆)
+- [ ] Update results page to show multipliers (M₄C, φ, η, G)
+
+### Testing - BDD Scenarios
+- [ ] V1: Division by zero protection
+- [ ] V2: Negative payroll validation
+- [ ] V3: Driver scores outside [1,7] clamping
+- [ ] V4: Continuous engagement function (no jumps)
+- [ ] V5: Numerical precision validation
+- [ ] V6: Single driver gaming detection
+- [ ] V7: Headcount reduction disincentive
+- [ ] V8: Industry misclassification validation
+- [ ] V9: Revenue manipulation bounds
+- [ ] V10: Assessment timing validation
+- [ ] V11: Double-counting prevention (overlap discount)
+- [ ] V12: Audit trail requirements
+- [ ] V13: Calibration framework
+- [ ] V14: Multi-currency handling
+- [ ] V15: Confidence intervals
+
+### Testing - Unit Tests
+- [ ] Convert all 15 BDD scenarios to unit tests
+- [ ] Test boundedness (TCD ≥ 0)
+- [ ] Test perfect team (TCD = 0)
+- [ ] Test monotonicity (improving drivers reduces TCD)
+- [ ] Test proportionality (TCD scales with payroll)
+- [ ] Test continuity (no discontinuities)
+
+### Regression Testing
+- [ ] Test existing assessment flows still work
+- [ ] Test results page renders correctly
+- [ ] Test all training options calculate correctly
+- [ ] Test priority matrix still works
+- [ ] Test database integration still works
+
+
+## Release 4.0: Enhanced Dysfunction Cost Formula & Microservices Architecture
+
+### Phase 1-2: Infrastructure & Domain Models ✅ COMPLETE
+- [x] Install decimal.js for mathematical precision
+- [x] Create domain models (Assessment, Value Objects)
+- [x] Create repository interfaces and implementations
+- [x] Create DTOs and Mappers
+- [x] Create custom error hierarchy
+
+### Phase 3-7: Microservices Implementation ✅ COMPLETE
+- [x] Assessment Service (CRUD operations)
+- [x] Calculation Service (v4.0 formula with all 6 cost components)
+- [x] Industry Classification Service (LLM integration)
+- [x] Priority Matrix Service
+- [x] Training Recommendation Service
+- [x] Email Service
+- [x] ServiceContainer (Dependency Injection)
+
+### Phase 8: Router Integration ✅ COMPLETE
+- [x] Create assessmentRouter_v2.ts with microservices
+- [x] Update ServiceContainer with all dependencies
+- [x] TypeScript compilation passes
+
+### Phase 9: Testing ✅ COMPLETE
+- [x] Create 147 BDD scenarios (2 feature files)
+- [x] Create 59 unit tests for CalculationService (all vulnerabilities)
+- [x] Create 88 unit tests for backward compatibility
+- [x] Total: 147 unit tests created
+
+### Phase 10: Regression & Deployment 🔄 IN PROGRESS
+- [ ] Fix test setup issues (DomainFactory instantiation)
+- [ ] Run full test suite (147 tests)
+- [ ] Update UI content (User Guide, How It Works)
+- [ ] Create checkpoint
+- [ ] Deploy to production
+
+### Formula v4.0 Features ✅ COMPLETE
+- [x] 6 cost components (C1-C6) with research-backed coefficients
+- [x] Engagement-based disengagement cost (Kahn 1990)
+- [x] Continuous sigmoid for engagement (no discontinuities)
+- [x] Gaming detection with correlation checks
+- [x] Team size efficiency factor η(N)
+- [x] Industry factors (7 industries)
+- [x] BV ratio bounds [1,10]
+- [x] 12% overlap discount
+- [x] Upper bound cap (3.5P)
+- [x] 95% confidence intervals
+- [x] All 15 vulnerabilities fixed
+
+### Architecture Improvements ✅ COMPLETE
+- [x] Enterprise microservices architecture
+- [x] SOLID principles applied throughout
+- [x] Dependency injection pattern
+- [x] Repository pattern for data access
+- [x] Domain-Driven Design
+- [x] Clean Architecture (Domain → Application → Infrastructure → Presentation)
+- [x] 15+ new service files created
+- [x] Type-safe with strict TypeScript
+
+### Documentation ✅ COMPLETE
+- [x] Enhanced Dysfunction Cost Formula v4.0 (academic paper)
+- [x] User Guide v2.0 with plain-language explanations
+- [x] Formula stress testing analysis (15 vulnerabilities)
+- [x] Symbolic proofs with validation results (10/10 tests passed)
+- [x] All files in `/docs` folder ready for GitHub

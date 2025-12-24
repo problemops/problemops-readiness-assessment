@@ -12,6 +12,9 @@ import {
   getDefaultIndustry,
   type Industry 
 } from "../client/src/lib/priorityMatrixCalculations";
+import { getCalculationService } from "./services/ServiceContainer";
+import type { CalculationInput } from "./domain/interfaces/ICalculationService";
+import Decimal from 'decimal.js';
 
 // Input validation schemas
 const createAssessmentSchema = z.object({
@@ -45,31 +48,17 @@ export const assessmentRouter = router({
         console.log('[Assessment] Scores:', JSON.stringify(scores));
         console.log('[Assessment] Answers count:', Object.keys(answers).length);
         
-        // Calculate readiness score (weighted average)
-        console.log('[Assessment] Calculating readiness score...');
-        const DRIVER_WEIGHTS: Record<string, number> = {
-          trust: 0.20,
-          psych_safety: 0.18,
-          tms: 0.15,
-          comm_quality: 0.15,
-          goal_clarity: 0.12,
-          coordination: 0.10,
-          team_cognition: 0.10,
-        };
-        
-        const readinessScore = Object.entries(scores).reduce((sum, [driverId, score]) => {
-          const weight = DRIVER_WEIGHTS[driverId] || 0;
-          if (weight === 0) {
-            console.warn(`[Assessment] Unknown driver ID: ${driverId}`);
-          }
-          return sum + (score / 7) * weight;
-        }, 0);
-        console.log('[Assessment] Readiness score:', readinessScore);
-        
-        // Calculate dysfunction cost
+        // Calculate total payroll
         const totalPayroll = companyInfo.teamSize * companyInfo.avgSalary;
-        const dysfunctionCost = totalPayroll * (1 - readinessScore);
-        console.log('[Assessment] Dysfunction cost:', dysfunctionCost);
+        console.log('[Assessment] Total payroll:', totalPayroll);
+        
+        // Get calculation service (microservices architecture)
+        const calculationService = getCalculationService();
+        
+        // Calculate readiness score using v4.0 formula (backward compatible)
+        console.log('[Assessment] Calculating readiness score with v4.0...');
+        const readinessScore = calculationService.calculateReadinessScore(scores as any);
+        console.log('[Assessment] Readiness score:', readinessScore);
         
         // Generate UUID for assessment
         const assessmentId = randomUUID();
@@ -91,6 +80,46 @@ export const assessmentRouter = router({
           }
         } else {
           console.log('[Assessment] No website provided, using default industry');
+        }
+        
+        // Calculate Enhanced Dysfunction Cost v4.0 with detected industry
+        console.log('[Assessment] Calculating Enhanced Dysfunction Cost v4.0...');
+        let tcdResult: any = null;
+        let dysfunctionCost = 0;
+        
+        try {
+          const calculationInput: CalculationInput = {
+            payroll: totalPayroll,
+            teamSize: companyInfo.teamSize,
+            driverScores: scores as any,
+            industry: detectedIndustry,
+            revenue: undefined, // TODO: Add revenue field to company info form
+          };
+          
+          tcdResult = await calculationService.calculate(calculationInput);
+          dysfunctionCost = tcdResult.tcd.toNumber();
+          
+          console.log('[Assessment] TCD calculated:', dysfunctionCost);
+          console.log('[Assessment] Cost components:', {
+            productivity: tcdResult.costComponents.productivity.toNumber(),
+            rework: tcdResult.costComponents.rework.toNumber(),
+            turnover: tcdResult.costComponents.turnover.toNumber(),
+            opportunity: tcdResult.costComponents.opportunity.toNumber(),
+            overhead: tcdResult.costComponents.overhead.toNumber(),
+            disengagement: tcdResult.costComponents.disengagement.toNumber(),
+          });
+          console.log('[Assessment] Multipliers:', tcdResult.multipliers);
+          console.log('[Assessment] Engagement:', tcdResult.engagement.score, tcdResult.engagement.category);
+          console.log('[Assessment] Anomaly score:', tcdResult.anomaly.score);
+          console.log('[Assessment] Confidence interval:', {
+            lower: tcdResult.confidenceInterval.lower.toNumber(),
+            upper: tcdResult.confidenceInterval.upper.toNumber(),
+          });
+        } catch (error) {
+          console.error('[Assessment] TCD calculation failed:', error);
+          // Fallback to simple calculation
+          dysfunctionCost = totalPayroll * (1 - readinessScore);
+          console.log('[Assessment] Using fallback dysfunction cost:', dysfunctionCost);
         }
         
         // Calculate priority matrix
@@ -136,7 +165,7 @@ export const assessmentRouter = router({
           answers: JSON.stringify(answers),
           driverScores: JSON.stringify(scores),
           priorityAreas: null,
-          roiData: null,
+          roiData: tcdResult ? JSON.stringify(tcdResult) : null, // Store v4.0 TCD result
           priorityMatrixData: JSON.stringify(priorityMatrix),
         };
         
