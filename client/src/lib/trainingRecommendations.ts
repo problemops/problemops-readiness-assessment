@@ -20,7 +20,7 @@ export const TRAINING_OPTIONS: Record<TrainingType, TrainingOption> = {
     type: 'half-day',
     name: 'Half Day Workshop',
     cost: 2000,
-    duration: '4 hours',
+    duration: '4 hours of training',
     focusAreas: 1,
     description: 'Intensive half-day session focused on your #1 most critical area for immediate impact'
   },
@@ -28,15 +28,15 @@ export const TRAINING_OPTIONS: Record<TrainingType, TrainingOption> = {
     type: 'full-day',
     name: 'Full Day Workshop',
     cost: 3500,
-    duration: '8 hours',
+    duration: '8 hours of training',
     focusAreas: 2,
     description: 'Comprehensive full-day workshop addressing your top 2 critical areas with hands-on exercises'
   },
   'month-long': {
     type: 'month-long',
     name: 'Month-Long Engagement',
-    cost: 50000,
-    duration: '4 weeks',
+    cost: 30000,
+    duration: '80 hours of training, coaching, and consulting',
     focusAreas: 7,
     description: 'Comprehensive month-long program covering all 7 drivers with ongoing support and implementation'
   },

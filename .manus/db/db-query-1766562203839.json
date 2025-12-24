@@ -1,0 +1,34 @@
+{
+  "query": "SELECT testId, testName, givenContext, whenAction, thenOutcome, additionalExpectations FROM testRegistry WHERE testType = 'bdd' ORDER BY testSuite, testId",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TnkFjGBKdfpupi.root --database B3x5NWCFiG4wF9DctXvqsL --execute SELECT testId, testName, givenContext, whenAction, thenOutcome, additionalExpectations FROM testRegistry WHERE testType = 'bdd' ORDER BY testSuite, testId",
+  "rows": [
+    {
+      "testId": "bdd-epic11-11.2",
+      "testName": "Half Day Workshop focuses on #1 critical area",
+      "givenContext": "a user selects \"Half Day Workshop\" as their training type",
+      "whenAction": "they complete the assessment and view results",
+      "thenOutcome": "they should see: Training cost: $2,000, Duration: 4 hours, Focus: Only the #1 highest priority driver",
+      "additionalExpectations": "recommendations should be filtered to show only that driver AND ROI should be calculated based on improving 1/7 of the gap"
+    },
+    {
+      "testId": "bdd-epic14-14.1",
+      "testName": "ROI calculated using gap-based improvement model",
+      "givenContext": "a user completes an assessment with specific scores",
+      "whenAction": "the system calculates ROI",
+      "thenOutcome": "it should use this formula: totalGap = 0.85 - currentReadiness, improvementPerDriver = totalGap / 7, totalImprovement = improvementPerDriver × focusAreas, currentDysfunction = 1 - currentReadiness, projectedSavings = annualCostOfDysfunction × (totalImprovement / currentDysfunction), roi = (projectedSavings - trainingCost) / trainingCost",
+      "additionalExpectations": "NULL"
+    },
+    {
+      "testId": "bdd-epic1-1.1",
+      "testName": "Training type descriptions meet 4.5:1 contrast ratio",
+      "givenContext": "a user views the training options on the assessment page",
+      "whenAction": "they read the training type descriptions",
+      "thenOutcome": "the text should have a contrast ratio of at least 4.5:1 against the background",
+      "additionalExpectations": "the text should be readable in both light and dark modes"
+    }
+  ],
+  "messages": [],
+  "stdout": "testId\ttestName\tgivenContext\twhenAction\tthenOutcome\tadditionalExpectations\nbdd-epic11-11.2\tHalf Day Workshop focuses on #1 critical area\ta user selects \"Half Day Workshop\" as their training type\tthey complete the assessment and view results\tthey should see: Training cost: $2,000, Duration: 4 hours, Focus: Only the #1 highest priority driver\trecommendations should be filtered to show only that driver AND ROI should be calculated based on improving 1/7 of the gap\nbdd-epic14-14.1\tROI calculated using gap-based improvement model\ta user completes an assessment with specific scores\tthe system calculates ROI\tit should use this formula: totalGap = 0.85 - currentReadiness, improvementPerDriver = totalGap / 7, totalImprovement = improvementPerDriver × focusAreas, currentDysfunction = 1 - currentReadiness, projectedSavings = annualCostOfDysfunction × (totalImprovement / currentDysfunction), roi = (projectedSavings - trainingCost) / trainingCost\tNULL\nbdd-epic1-1.1\tTraining type descriptions meet 4.5:1 contrast ratio\ta user views the training options on the assessment page\tthey read the training type descriptions\tthe text should have a contrast ratio of at least 4.5:1 against the background\tthe text should be readable in both light and dark modes\n",
+  "stderr": "",
+  "execution_time_ms": 48
+}

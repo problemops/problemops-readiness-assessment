@@ -707,3 +707,47 @@
 - [x] Run full regression test suite (79 tests passing)
 - [x] Fix Moderate Concern badge color from green to yellow
 - [x] Save checkpoint: Training-type-based deliverables implementation
+
+## Add Training Duration Information
+- [x] Add duration to Half Day Workshop: 4 hours of training
+- [x] Add duration to Full Day Workshop: 8 hours of training
+- [x] Add duration to Month-Long Engagement: 80 hours of training, coaching, and consulting
+- [x] Update training comparison table UI to show duration (uses TRAINING_OPTIONS constant)
+- [x] Update Assessment page training options to show duration
+- [x] Update Results page training recommendations to show duration (uses TRAINING_OPTIONS constant)
+- [x] Update PDF export to include duration (uses TRAINING_OPTIONS constant)
+- [x] Update Word export to include duration (uses TRAINING_OPTIONS constant)
+
+## Update Month-Long Engagement Pricing
+- [x] Change price from $50,000 to $30,000 in trainingRecommendations.ts constants
+- [x] Update Assessment page UI display (uses TRAINING_OPTIONS constant)
+- [x] Update Results page training comparison table (uses TRAINING_OPTIONS constant)
+- [x] Update ROI calculation logic (uses TRAINING_OPTIONS constant)
+- [x] Update PDF generator
+- [x] Update Word generator (uses TRAINING_OPTIONS constant, no hardcoded prices)
+- [x] Update all test fixtures and expectations
+- [x] Verify calculations are correct with new price (79 tests passing)
+
+## Convert BDD Scenarios to Automated Tests
+- [ ] Audit all 86+ BDD scenarios in tests/bdd-test-database.md
+- [ ] Create automated tests for WCAG accessibility scenarios (browser tests)
+- [ ] Create automated tests for training options logic (unit tests)
+- [ ] Create automated tests for ROI calculations (unit tests)
+- [ ] Create automated tests for data flow scenarios (integration tests)
+- [ ] Create automated tests for UI/UX scenarios (browser tests)
+- [ ] Create automated tests for dark mode scenarios (browser tests)
+- [ ] Create automated tests for navigation scenarios (browser tests)
+- [ ] Run all automated tests and verify 100% pass rate
+
+## Create Master Test Database
+- [x] Design schema for master test registry table
+- [x] Create migration for test_registry table (testRegistry table with 22 columns)
+- [x] Populate database with sample unit tests (5 representative tests)
+- [x] Populate database with sample BDD scenarios (3 representative scenarios)
+- [x] Create SQL queries to retrieve full test suite
+- [x] Demonstrate retrieving tests from database (8 tests retrieved successfully)
+- [x] Demonstrate test coverage statistics by category
+- [x] Demonstrate BDD scenario retrieval with Given-When-Then structure
+- [ ] Populate remaining 71 unit tests (script ready: populate-test-registry.sql)
+- [ ] Populate remaining 83 BDD scenarios from tests/bdd-test-database.md
+- [ ] Save checkpoint: Master test database infrastructure

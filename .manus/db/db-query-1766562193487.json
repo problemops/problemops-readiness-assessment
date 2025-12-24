@@ -1,0 +1,90 @@
+{
+  "query": "SELECT testId, testType, testCategory, testSuite, testName, priority, isAutomated, testCoverageMethod FROM testRegistry WHERE status = 'ACTIVE' ORDER BY priority, testSuite, testName",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TnkFjGBKdfpupi.root --database B3x5NWCFiG4wF9DctXvqsL --execute SELECT testId, testType, testCategory, testSuite, testName, priority, isAutomated, testCoverageMethod FROM testRegistry WHERE status = 'ACTIVE' ORDER BY priority, testSuite, testName",
+  "rows": [
+    {
+      "testId": "bdd-epic11-11.2",
+      "testType": "bdd",
+      "testCategory": "training-options",
+      "testSuite": "Epic 11: Training Option Configuration",
+      "testName": "Half Day Workshop focuses on #1 critical area",
+      "priority": "P0",
+      "isAutomated": "1",
+      "testCoverageMethod": "vitest unit test + browser verification"
+    },
+    {
+      "testId": "bdd-epic14-14.1",
+      "testType": "bdd",
+      "testCategory": "roi-calculation",
+      "testSuite": "Epic 14: ROI Calculation Logic",
+      "testName": "ROI calculated using gap-based improvement model",
+      "priority": "P0",
+      "isAutomated": "1",
+      "testCoverageMethod": "Mathematical verification with test cases"
+    },
+    {
+      "testId": "bdd-epic1-1.1",
+      "testType": "bdd",
+      "testCategory": "accessibility",
+      "testSuite": "Epic 1: Color Contrast Compliance",
+      "testName": "Training type descriptions meet 4.5:1 contrast ratio",
+      "priority": "P0",
+      "isAutomated": "0",
+      "testCoverageMethod": "Manual visual inspection + color contrast analyzer"
+    },
+    {
+      "testId": "unit-assessment-002",
+      "testType": "unit",
+      "testCategory": "data-flow",
+      "testSuite": "assessment.test.ts",
+      "testName": "should calculate readiness score correctly",
+      "priority": "P0",
+      "isAutomated": "1",
+      "testCoverageMethod": "vitest unit test"
+    },
+    {
+      "testId": "unit-assessment-001",
+      "testType": "unit",
+      "testCategory": "data-flow",
+      "testSuite": "assessment.test.ts",
+      "testName": "should create assessment with valid data",
+      "priority": "P0",
+      "isAutomated": "1",
+      "testCoverageMethod": "vitest unit test"
+    },
+    {
+      "testId": "unit-deliverables-001",
+      "testType": "unit",
+      "testCategory": "training-options",
+      "testSuite": "deliverables-by-training.test.ts",
+      "testName": "Half Day: should show top 1 priority in recommended",
+      "priority": "P0",
+      "isAutomated": "1",
+      "testCoverageMethod": "vitest unit test"
+    },
+    {
+      "testId": "unit-driver-007",
+      "testType": "unit",
+      "testCategory": "driver-scoring",
+      "testSuite": "driverImpactContent.test.ts",
+      "testName": "should return yellow badge for moderate",
+      "priority": "P0",
+      "isAutomated": "1",
+      "testCoverageMethod": "vitest unit test"
+    },
+    {
+      "testId": "unit-training-003",
+      "testType": "unit",
+      "testCategory": "roi-calculation",
+      "testSuite": "trainingRecommendations.test.ts",
+      "testName": "Half Day: should use ONLY top 1 priority driver cost",
+      "priority": "P0",
+      "isAutomated": "1",
+      "testCoverageMethod": "vitest unit test"
+    }
+  ],
+  "messages": [],
+  "stdout": "testId\ttestType\ttestCategory\ttestSuite\ttestName\tpriority\tisAutomated\ttestCoverageMethod\nbdd-epic11-11.2\tbdd\ttraining-options\tEpic 11: Training Option Configuration\tHalf Day Workshop focuses on #1 critical area\tP0\t1\tvitest unit test + browser verification\nbdd-epic14-14.1\tbdd\troi-calculation\tEpic 14: ROI Calculation Logic\tROI calculated using gap-based improvement model\tP0\t1\tMathematical verification with test cases\nbdd-epic1-1.1\tbdd\taccessibility\tEpic 1: Color Contrast Compliance\tTraining type descriptions meet 4.5:1 contrast ratio\tP0\t0\tManual visual inspection + color contrast analyzer\nunit-assessment-002\tunit\tdata-flow\tassessment.test.ts\tshould calculate readiness score correctly\tP0\t1\tvitest unit test\nunit-assessment-001\tunit\tdata-flow\tassessment.test.ts\tshould create assessment with valid data\tP0\t1\tvitest unit test\nunit-deliverables-001\tunit\ttraining-options\tdeliverables-by-training.test.ts\tHalf Day: should show top 1 priority in recommended\tP0\t1\tvitest unit test\nunit-driver-007\tunit\tdriver-scoring\tdriverImpactContent.test.ts\tshould return yellow badge for moderate\tP0\t1\tvitest unit test\nunit-training-003\tunit\troi-calculation\ttrainingRecommendations.test.ts\tHalf Day: should use ONLY top 1 priority driver cost\tP0\t1\tvitest unit test\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

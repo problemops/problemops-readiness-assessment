@@ -269,7 +269,7 @@ export class SlidePDFGenerator {
       const trainingLabels: Record<string, string> = {
         'half-day': 'Half Day Workshop ($2,000)',
         'full-day': 'Full Day Workshop ($3,500)',
-        'month-long': 'Month-Long Engagement ($50,000)',
+        'month-long': 'Month-Long Engagement ($30,000)',
         'not-sure': 'Exploring Options (PDF shows Month-Long option)'
       };
       const trainingLabel = trainingLabels[this.data.trainingType] || 'Not specified';

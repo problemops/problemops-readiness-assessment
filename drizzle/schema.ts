@@ -122,3 +122,52 @@ export const pdfCache = mysqlTable("pdfCache", {
 
 export type PdfCache = typeof pdfCache.$inferSelect;
 export type InsertPdfCache = typeof pdfCache.$inferInsert;
+// Table 5: Master Test Registry
+// Centralized registry of all tests (unit, integration, BDD, browser, API)
+export const testRegistry = mysqlTable("testRegistry", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Test Identification
+  testId: varchar("testId", { length: 100 }).notNull().unique(),
+  testType: mysqlEnum("testType", ["unit", "integration", "bdd", "browser", "api"]).notNull(),
+  testCategory: varchar("testCategory", { length: 50 }).notNull(),
+  
+  // Test Details
+  testSuite: varchar("testSuite", { length: 255 }).notNull(),
+  testName: varchar("testName", { length: 500 }).notNull(),
+  description: text("description"),
+  
+  // BDD Structure (for BDD scenarios)
+  givenContext: text("givenContext"),
+  whenAction: text("whenAction"),
+  thenOutcome: text("thenOutcome"),
+  additionalExpectations: text("additionalExpectations"),
+  
+  // Test Metadata
+  priority: mysqlEnum("priority", ["P0", "P1", "P2", "P3"]).default("P2").notNull(),
+  status: mysqlEnum("status", ["ACTIVE", "PENDING", "SKIPPED", "DEPRECATED"]).default("ACTIVE").notNull(),
+  isAutomated: int("isAutomated").default(0).notNull(), // 0 = manual, 1 = automated
+  
+  // Implementation Details
+  filePath: varchar("filePath", { length: 500 }),
+  implementationLocation: varchar("implementationLocation", { length: 500 }),
+  testCoverageMethod: varchar("testCoverageMethod", { length: 255 }),
+  
+  // Tracking
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  lastRunAt: timestamp("lastRunAt"),
+  lastRunStatus: mysqlEnum("lastRunStatus", ["PASS", "FAIL", "SKIPPED"]),
+  
+  // Notes
+  notes: text("notes"),
+}, (table) => ({
+  testTypeIdx: index("idx_test_type").on(table.testType),
+  testCategoryIdx: index("idx_test_category").on(table.testCategory),
+  priorityIdx: index("idx_priority").on(table.priority),
+  statusIdx: index("idx_status").on(table.status),
+  isAutomatedIdx: index("idx_is_automated").on(table.isAutomated),
+}));
+
+export type TestRegistry = typeof testRegistry.$inferSelect;
+export type InsertTestRegistry = typeof testRegistry.$inferInsert;

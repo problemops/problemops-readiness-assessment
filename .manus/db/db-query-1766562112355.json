@@ -1,0 +1,9 @@
+{
+  "query": "DELETE FROM testRegistry",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TnkFjGBKdfpupi.root --database B3x5NWCFiG4wF9DctXvqsL --execute DELETE FROM testRegistry",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 48
+}

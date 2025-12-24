@@ -1,0 +1,40 @@
+{
+  "query": "SELECT testCategory, COUNT(*) as total_tests, SUM(CASE WHEN isAutomated = 1 THEN 1 ELSE 0 END) as automated_tests, SUM(CASE WHEN isAutomated = 0 THEN 1 ELSE 0 END) as manual_tests FROM testRegistry GROUP BY testCategory ORDER BY total_tests DESC",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TnkFjGBKdfpupi.root --database B3x5NWCFiG4wF9DctXvqsL --execute SELECT testCategory, COUNT(*) as total_tests, SUM(CASE WHEN isAutomated = 1 THEN 1 ELSE 0 END) as automated_tests, SUM(CASE WHEN isAutomated = 0 THEN 1 ELSE 0 END) as manual_tests FROM testRegistry GROUP BY testCategory ORDER BY total_tests DESC",
+  "rows": [
+    {
+      "testCategory": "roi-calculation",
+      "total_tests": "2",
+      "automated_tests": "2",
+      "manual_tests": "0"
+    },
+    {
+      "testCategory": "training-options",
+      "total_tests": "2",
+      "automated_tests": "2",
+      "manual_tests": "0"
+    },
+    {
+      "testCategory": "data-flow",
+      "total_tests": "2",
+      "automated_tests": "2",
+      "manual_tests": "0"
+    },
+    {
+      "testCategory": "driver-scoring",
+      "total_tests": "1",
+      "automated_tests": "1",
+      "manual_tests": "0"
+    },
+    {
+      "testCategory": "accessibility",
+      "total_tests": "1",
+      "automated_tests": "0",
+      "manual_tests": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "testCategory\ttotal_tests\tautomated_tests\tmanual_tests\nroi-calculation\t2\t2\t0\ntraining-options\t2\t2\t0\ndata-flow\t2\t2\t0\ndriver-scoring\t1\t1\t0\naccessibility\t1\t0\t1\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

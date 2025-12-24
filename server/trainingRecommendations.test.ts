@@ -150,8 +150,8 @@ describe('Scoped ROI Calculations', () => {
       const priorityAreas = getPriorityAreas(driverScores, DRIVER_WEIGHTS);
       const driverCosts = calculateDriverCosts(driverScores, DRIVER_WEIGHTS, teamSize, avgSalary);
 
-      // Month-Long: $50,000 investment, fixes all 7 drivers
-      const roi = calculateTrainingROI(50000, priorityAreas, driverCosts, 7);
+      // Month-Long: $30,000 investment, fixes all 7 drivers
+      const roi = calculateTrainingROI(30000, priorityAreas, driverCosts, 7);
 
       // All drivers at 2.0/7 = 71.4% dysfunction
       // Total cost = sum of all 7 driver costs
@@ -186,7 +186,7 @@ describe('Scoped ROI Calculations', () => {
 
       const halfDay = calculateTrainingROI(2000, priorityAreas, driverCosts, 1);
       const fullDay = calculateTrainingROI(3500, priorityAreas, driverCosts, 2);
-      const monthLong = calculateTrainingROI(50000, priorityAreas, driverCosts, 7);
+      const monthLong = calculateTrainingROI(30000, priorityAreas, driverCosts, 7);
 
       // Half day should have highest ROI % (smallest investment, 1 driver)
       // Full day should have middle ROI % (medium investment, 2 drivers)
