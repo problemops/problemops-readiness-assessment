@@ -35,7 +35,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
     <div className="flex h-full gap-6">
       {/* Table of Contents - Fixed Sidebar */}
       <nav role="navigation" aria-label="Table of Contents" className="w-64 flex-shrink-0 bg-gray-50 dark:bg-gray-800 p-6 rounded-lg overflow-y-auto">
-        <h3 className="text-lg font-semibold mb-4">Table of Contents</h3>
+        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Table of Contents</h3>
         <ol className="space-y-2 text-sm">
           <li>
             <button
@@ -137,10 +137,10 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
       </nav>
 
       {/* Content Area - Scrollable */}
-      <div ref={contentRef} className="flex-1 overflow-y-auto space-y-8 pr-4">
+      <div ref={contentRef} className="flex-1 overflow-y-auto space-y-8 pr-4 text-gray-900 dark:text-gray-100">
         {/* Section 1: What is ProblemOps? */}
         <section id="what-is-problemops" tabIndex={-1} role="region" aria-labelledby="what-is-problemops-title" className="scroll-mt-4">
-        <h2 id="what-is-problemops-title" className="text-2xl font-bold mb-4">1. What is ProblemOps?</h2>
+        <h2 id="what-is-problemops-title" className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">1. What is ProblemOps?</h2>
         
         <div className="space-y-4 text-base">
           <p>
@@ -154,14 +154,14 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
           </p>
 
           <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-            <h4 className="font-semibold mb-2">The Big Idea:</h4>
+            <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">The Big Idea:</h4>
             <p className="text-sm">
               Most teams struggle because they don't have a <strong>shared language</strong> for talking about problems. 
               ProblemOps gives teams this shared language so everyone can understand each other and work together better.
             </p>
           </div>
 
-          <h3 className="text-xl font-semibold mt-6">Core Principles</h3>
+          <h3 className="text-xl font-semibold mt-6 text-gray-900 dark:text-white">Core Principles</h3>
           
           <p>ProblemOps is built on three main ideas:</p>
 
@@ -181,7 +181,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
           </ol>
 
           <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg mt-4">
-            <h4 className="font-semibold mb-2">Why This Matters:</h4>
+            <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">Why This Matters:</h4>
             <p className="text-sm">
               When teams use ProblemOps, they waste less time on confusion and miscommunication. 
               They can focus their energy on actually solving problems instead of arguing about what the problems are.
@@ -192,7 +192,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
 
       {/* Section 2: Tool Purpose */}
       <section id="tool-purpose" tabIndex={-1} role="region" aria-labelledby="tool-purpose-title" className="scroll-mt-20">
-        <h2 id="tool-purpose-title" className="text-2xl font-bold mb-4">2. What is This Tool?</h2>
+        <h2 id="tool-purpose-title" className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">2. What is This Tool?</h2>
         
         <div className="space-y-4 text-base">
           <p>
@@ -205,11 +205,11 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
             this tool checks seven important parts of how your team works together.
           </p>
 
-          <h3 className="text-xl font-semibold mt-6">What Makes This Tool Special?</h3>
+          <h3 className="text-xl font-semibold mt-6 text-gray-900 dark:text-white">What Makes This Tool Special?</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-              <h4 className="font-semibold mb-2">📊 Based on Science</h4>
+              <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">📊 Based on Science</h4>
               <p className="text-sm">
                 Every question comes from research studies by university professors. 
                 This isn't guesswork—it's proven science about what makes teams work well.
@@ -217,7 +217,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
             </div>
 
             <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-              <h4 className="font-semibold mb-2">💰 Shows Real Money</h4>
+              <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">💰 Shows Real Money</h4>
               <p className="text-sm">
                 The tool calculates how much money your team is losing due to teamwork problems. 
                 This helps you make a business case for improving.
@@ -225,7 +225,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
             </div>
 
             <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-              <h4 className="font-semibold mb-2">🎯 Gives Clear Next Steps</h4>
+              <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">🎯 Gives Clear Next Steps</h4>
               <p className="text-sm">
                 You don't just get a score—you get specific recommendations for what to fix first 
                 and how to fix it.
@@ -233,7 +233,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
             </div>
 
             <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-              <h4 className="font-semibold mb-2">⚡ Quick and Easy</h4>
+              <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">⚡ Quick and Easy</h4>
               <p className="text-sm">
                 The assessment takes only 5-7 minutes to complete. 
                 You get instant results with detailed reports.
@@ -245,7 +245,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
 
       {/* Section 3: Why Valuable */}
       <section id="why-valuable" tabIndex={-1} role="region" aria-labelledby="why-valuable-title" className="scroll-mt-20">
-        <h2 id="why-valuable-title" className="text-2xl font-bold mb-4">3. Why is This Valuable?</h2>
+        <h2 id="why-valuable-title" className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">3. Why is This Valuable?</h2>
         
         <div className="space-y-4 text-base">
           <p>
@@ -254,7 +254,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
 
           <div className="space-y-4">
             <div className="border-l-4 border-blue-500 pl-4">
-              <h4 className="font-semibold">For Team Leaders & Managers:</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white">For Team Leaders & Managers:</h4>
               <ul className="list-disc list-inside ml-4 mt-2 space-y-1 text-sm">
                 <li>See exactly where your team is struggling</li>
                 <li>Get data to justify training budgets to executives</li>
@@ -264,7 +264,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
             </div>
 
             <div className="border-l-4 border-green-500 pl-4">
-              <h4 className="font-semibold">For HR & Learning & Development:</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white">For HR & Learning & Development:</h4>
               <ul className="list-disc list-inside ml-4 mt-2 space-y-1 text-sm">
                 <li>Identify training needs based on real data, not guesses</li>
                 <li>Show ROI for team development programs</li>
@@ -274,7 +274,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
             </div>
 
             <div className="border-l-4 border-purple-500 pl-4">
-              <h4 className="font-semibold">For Executives & Business Owners:</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white">For Executives & Business Owners:</h4>
               <ul className="list-disc list-inside ml-4 mt-2 space-y-1 text-sm">
                 <li>Understand the financial cost of team dysfunction</li>
                 <li>Make data-driven decisions about team investments</li>
@@ -284,7 +284,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
             </div>
 
             <div className="border-l-4 border-orange-500 pl-4">
-              <h4 className="font-semibold">For Team Members:</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white">For Team Members:</h4>
               <ul className="list-disc list-inside ml-4 mt-2 space-y-1 text-sm">
                 <li>Understand why teamwork feels hard</li>
                 <li>Have language to talk about team problems</li>
@@ -295,7 +295,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
           </div>
 
           <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg mt-6">
-            <h4 className="font-semibold mb-2">The Bottom Line:</h4>
+            <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">The Bottom Line:</h4>
             <p className="text-sm">
               Most teams lose 30-50% of their potential productivity to teamwork problems. 
               That's like paying for 10 people but only getting the work of 5-7 people. 
@@ -307,7 +307,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
 
       {/* Section 4: The 4 C's */}
       <section id="four-cs" tabIndex={-1} role="region" aria-labelledby="four-cs-title" className="scroll-mt-20">
-        <h2 id="four-cs-title" className="text-2xl font-bold mb-4">4. The 4 C's: Language of Change</h2>
+        <h2 id="four-cs-title" className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">4. The 4 C's: Language of Change</h2>
         
         <div className="space-y-4 text-base">
           <p>
@@ -318,7 +318,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
           <div className="space-y-6 mt-6">
             {/* Criteria */}
             <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold mb-3">1. Criteria (Developing Shared Language)</h3>
+              <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">1. Criteria (Developing Shared Language)</h3>
               <p className="mb-3">
                 <strong>What it means:</strong> Creating a common way to talk about problems and solutions.
               </p>
@@ -343,7 +343,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
 
             {/* Commitment */}
             <div className="bg-green-50 dark:bg-green-900/20 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold mb-3">2. Commitment (Agreeing on What to Work On)</h3>
+              <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">2. Commitment (Agreeing on What to Work On)</h3>
               <p className="mb-3">
                 <strong>What it means:</strong> The team agrees together on what problems to solve and how to solve them.
               </p>
@@ -368,7 +368,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
 
             {/* Collaboration */}
             <div className="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold mb-3">3. Collaboration (Working Together)</h3>
+              <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">3. Collaboration (Working Together)</h3>
               <p className="mb-3">
                 <strong>What it means:</strong> Team members actually work together to solve the problem.
               </p>
@@ -393,7 +393,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
 
             {/* Change */}
             <div className="bg-orange-50 dark:bg-orange-900/20 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold mb-3">4. Change (Implementing and Measuring)</h3>
+              <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">4. Change (Implementing and Measuring)</h3>
               <p className="mb-3">
                 <strong>What it means:</strong> The team puts the solution into action and measures if it worked.
               </p>
@@ -418,7 +418,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
           </div>
 
           <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mt-6">
-            <h4 className="font-semibold mb-2">Important: These Steps Repeat</h4>
+            <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">Important: These Steps Repeat</h4>
             <p className="text-sm">
               The 4 C's aren't a one-time thing. Teams go through this cycle over and over again for each new problem. 
               It's like brushing your teeth—you do it every day to stay healthy.
