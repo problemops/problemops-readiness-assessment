@@ -600,3 +600,14 @@
 
 ## Known Issues
 - [ ] Word document generation failing (needs debugging - teamStory data issue)
+
+
+## "Where to Focus Your Efforts" Categorization Bug (URGENT)
+- [x] Investigate why drivers with score 1 appear in "Key Strengths" instead of "Critical"
+- [x] Find the categorization logic in PriorityMatrix.tsx (not Results.tsx)
+- [x] Fix the severity thresholds - changed from relative (avgScore) to absolute (5.5 threshold)
+- [ ] Test with all-1s assessment to verify Critical categorization
+- [ ] Test with all-7s assessment to verify Strengths categorization
+- [ ] Test with mixed scores to verify all 4 categories work correctly
+- [ ] Run all unit tests to ensure no regressions
+- [ ] Save checkpoint with fix

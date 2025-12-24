@@ -13,19 +13,23 @@ type PriorityMatrixProps = {
 };
 
 export default function PriorityMatrix({ drivers }: PriorityMatrixProps) {
-  // Calculate thresholds for quadrants
-  const avgWeight = drivers.reduce((sum, d) => sum + d.weight, 0) / drivers.length;
-  const avgScore = drivers.reduce((sum, d) => sum + d.value, 0) / drivers.length;
-
-  // Categorize drivers into quadrants
+  // Categorize drivers using absolute score ranges only
   const getQuadrant = (driver: Driver) => {
-    const highImpact = driver.weight >= avgWeight;
-    const highPerformance = driver.value >= avgScore;
-
-    if (highImpact && !highPerformance) return "critical";
-    if (highImpact && highPerformance) return "strength";
-    if (!highImpact && !highPerformance) return "monitor";
-    return "stable";
+    // Pure 4-tier score-based categorization:
+    // 1.0 - 2.5: Critical (needs immediate attention)
+    // 2.51 - 4.0: Monitor (needs improvement)
+    // 4.01 - 5.5: Stable (adequate performance)
+    // 5.51 - 7.0: Strength (excellent performance)
+    
+    if (driver.value <= 2.5) {
+      return "critical";
+    } else if (driver.value <= 4.0) {
+      return "monitor";
+    } else if (driver.value <= 5.5) {
+      return "stable";
+    } else {
+      return "strength";
+    }
   };
 
   const quadrantInfo = {
