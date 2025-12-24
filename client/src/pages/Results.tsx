@@ -4,9 +4,10 @@ import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Download, Home, TrendingUp, AlertTriangle, BarChart3, CheckCircle2, Target } from "lucide-react";
+import { Download, Home, TrendingUp, AlertTriangle, BarChart3, CheckCircle2, Target, Presentation } from "lucide-react";
 import { motion } from "framer-motion";
 import { SlidePDFGenerator } from "@/lib/pdfGenerator";
+import { downloadPowerPoint, type PPTXGenerationData } from "@/lib/pptxGenerator";
 import PriorityMatrix from "@/components/PriorityMatrix";
 import { FourCsChart } from "@/components/FourCsChart";
 import { ProblemOpsPrinciples } from "@/components/ProblemOpsPrinciples";
@@ -268,6 +269,54 @@ export default function Results() {
     }
   };
 
+  const handleDownloadPowerPoint = async () => {
+    if (isGenerating) return;
+    
+    setIsGenerating(true);
+    setStatusMessage('Generating PowerPoint presentation. Please wait...');
+    try {
+      // Prepare data for PowerPoint - use appropriate ROI data based on training type
+      let pptxROIData;
+      if (results.trainingType === 'not-sure') {
+        // For "not sure", use the month-long option for the PowerPoint
+        pptxROIData = results.roiData.monthLong;
+      } else {
+        pptxROIData = results.roiData;
+      }
+
+      const pptxData: PPTXGenerationData = {
+        companyInfo: results.companyInfo,
+        drivers: results.drivers,
+        readinessScore: results.readinessScore,
+        teamSize: results.teamSize,
+        avgSalary: results.avgSalary,
+        dysfunctionCost: results.dysfunctionCost,
+        roiData: {
+          cost: pptxROIData.cost,
+          savings: pptxROIData.savings,
+          roi: pptxROIData.roi,
+          paybackMonths: pptxROIData.paybackMonths
+        },
+        fourCsAnalysis: results.fourCsAnalysis,
+        trainingType: results.trainingType,
+        trainingOption: results.trainingOption,
+        recommendedAreas: results.recommendedAreas,
+        priorityAreas: results.priorityAreas,
+        assessmentId: assessmentId || 'unknown'
+      };
+      
+      const filename = `${results.companyInfo.name || 'Team'}_Readiness_Assessment.pptx`.replace(/\s+/g, '_');
+      downloadPowerPoint(pptxData, filename);
+      setStatusMessage('PowerPoint presentation downloaded successfully.');
+    } catch (error) {
+      console.error('Failed to generate PowerPoint:', error);
+      setStatusMessage('Error: Failed to generate PowerPoint presentation. Please try again.');
+      alert('Failed to generate PowerPoint presentation. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   if (!results) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -342,25 +391,20 @@ export default function Results() {
               <Button 
                 onClick={handleDownloadPDF}
                 disabled={isGenerating}
+                variant="outline"
                 className="gap-2 bg-white text-primary hover:bg-white/90"
               >
                 <Download className="h-4 w-4" />
-                {isGenerating ? 'Generating...' : 'Download PDF Report'}
+                {isGenerating ? 'Generating...' : 'PDF'}
               </Button>
-            </div>
-            
-            {/* Mobile: Show theme toggle and download button */}
-            <div className="md:hidden flex items-center gap-2">
-              <ThemeToggle />
               <Button 
-              onClick={handleDownloadPDF}
-              disabled={isGenerating}
-              size="sm"
-              className="md:hidden gap-2 bg-white text-primary hover:bg-white/90"
-            >
-              <Download className="h-4 w-4" />
-              {isGenerating ? 'Generating...' : 'PDF'}
-            </Button>
+                onClick={handleDownloadPowerPoint}
+                disabled={isGenerating}
+                className="gap-2 bg-white text-primary hover:bg-white/90"
+              >
+                <Presentation className="h-4 w-4" />
+                {isGenerating ? 'Generating...' : 'PPT'}
+              </Button>
             </div>
           </div>
           
@@ -1053,7 +1097,16 @@ export default function Results() {
             className="gap-2"
           >
             <Download className="h-4 w-4" />
-            {isGenerating ? 'Generating...' : 'Generate Report PDF'}
+            {isGenerating ? 'Generating...' : 'Download PDF'}
+          </Button>
+          <Button 
+            onClick={handleDownloadPowerPoint}
+            disabled={isGenerating}
+            variant="outline"
+            className="gap-2"
+          >
+            <Presentation className="h-4 w-4" />
+            {isGenerating ? 'Generating...' : 'Download PowerPoint'}
           </Button>
           <Button 
             variant="secondary" 

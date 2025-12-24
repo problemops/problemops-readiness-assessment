@@ -491,3 +491,12 @@
 - [x] Import sample BDD scenarios from /tests/bdd-test-database.md (11 key scenarios)
 - [x] Add indexes for efficient querying by epic, status, priority
 - [ ] Create API endpoint to retrieve test scenarios (future enhancement)
+
+## Slide Deck Generation Feature
+- [ ] Design slide deck outline for assessment results presentation
+- [ ] Create slide generation function that accepts assessment data
+- [ ] Add "Create Slide Deck" button to Results page
+- [ ] Implement slide deck generation with company branding
+- [ ] Include key metrics, 4Cs analysis, priority areas, and recommendations
+- [ ] Test slide deck generation with sample data
+- [ ] Verify all charts and data display correctly in slides
