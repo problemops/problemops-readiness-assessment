@@ -120,42 +120,74 @@ export function generateTrainingPlan(analysis: FourCsAnalysis): TrainingPlan {
 }
 
 /**
- * Get recommended focus areas based on 4 C's scores
+ * Convert normalized score (0-1) back to raw score (1-7)
  */
-export function getTrainingPriorities(analysis: FourCsAnalysis): Array<{ area: string; reason: string; urgency: 'high' | 'medium' | 'low' }> {
-  const priorities: Array<{ area: string; reason: string; urgency: 'high' | 'medium' | 'low' }> = [];
+function denormalizeScore(normalizedScore: number): number {
+  return normalizedScore * 6 + 1;
+}
+
+/**
+ * Get urgency level based on raw score (1-7 scale)
+ * - 1.0 - 2.5: Critical Risk
+ * - 2.51 - 4.0: High Risk
+ * - 4.01 - 5.5: Medium Risk
+ * - 5.51 - 7.0: Low Risk
+ */
+function getUrgencyFromScore(normalizedScore: number): 'critical' | 'high' | 'medium' | 'low' {
+  const rawScore = denormalizeScore(normalizedScore);
+  if (rawScore <= 2.5) return 'critical';
+  if (rawScore <= 4.0) return 'high';
+  if (rawScore <= 5.5) return 'medium';
+  return 'low';
+}
+
+/**
+ * Get recommended focus areas based on 4 C's scores
+ * Urgency is determined by the raw score thresholds:
+ * - Critical Risk: 1.0 - 2.5
+ * - High Risk: 2.51 - 4.0
+ * - Medium Risk: 4.01 - 5.5
+ * - Low Risk: 5.51 - 7.0
+ */
+export function getTrainingPriorities(analysis: FourCsAnalysis): Array<{ area: string; reason: string; urgency: 'critical' | 'high' | 'medium' | 'low' }> {
+  const priorities: Array<{ area: string; reason: string; urgency: 'critical' | 'high' | 'medium' | 'low' }> = [];
   
-  if (analysis.scores.criteria < 0.6) {
+  // Only include areas that are below target (85%)
+  if (analysis.scores.criteria < analysis.target) {
     priorities.push({
       area: 'Criteria',
       reason: 'Your team lacks a shared language. Start here to build a foundation for all other improvements.',
-      urgency: 'high',
+      urgency: getUrgencyFromScore(analysis.scores.criteria),
     });
   }
   
-  if (analysis.scores.commitment < 0.6) {
+  if (analysis.scores.commitment < analysis.target) {
     priorities.push({
       area: 'Commitment',
       reason: 'Your team struggles to align on priorities. Focus on building agreement around vision and scope.',
-      urgency: analysis.scores.criteria < 0.6 ? 'medium' : 'high',
+      urgency: getUrgencyFromScore(analysis.scores.commitment),
     });
   }
   
-  if (analysis.scores.collaboration < 0.6) {
+  if (analysis.scores.collaboration < analysis.target) {
     priorities.push({
       area: 'Collaboration',
       reason: 'Your team needs better systems for working together. Improve communication and coordination practices.',
-      urgency: 'medium',
+      urgency: getUrgencyFromScore(analysis.scores.collaboration),
     });
   }
   
-  if (analysis.scores.change < 0.6) {
+  if (analysis.scores.change < analysis.target) {
     priorities.push({
       area: 'Change',
       reason: 'Your team needs to close the loop on measuring impact. Build feedback systems to learn from changes.',
-      urgency: 'medium',
+      urgency: getUrgencyFromScore(analysis.scores.change),
     });
   }
+  
+  // Sort by urgency: critical > high > medium > low
+  const urgencyOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+  priorities.sort((a, b) => urgencyOrder[a.urgency] - urgencyOrder[b.urgency]);
   
   return priorities;
 }

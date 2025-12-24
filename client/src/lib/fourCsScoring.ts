@@ -24,10 +24,10 @@ export interface FourCsAnalysis {
 /**
  * Calculate 4 C's scores from driver scores
  * 
- * Mapping:
- * - Criteria: Communication Quality
- * - Commitment: Goal Clarity
- * - Collaboration: Coordination, Trust, Psychological Safety, Transactive Memory
+ * 4 C's Mapping:
+ * - Criteria: Communication Quality, Goal Clarity, Coordination
+ * - Commitment: Communication Quality, Trust, Goal Clarity
+ * - Collaboration: Transactive Memory, Trust, Psychological Safety, Coordination, Team Cognition
  * - Change: Goal Clarity, Coordination
  */
 export function calculate4CsScores(driverScores: Record<string, number>): FourCsAnalysis {
@@ -36,18 +36,29 @@ export function calculate4CsScores(driverScores: Record<string, number>): FourCs
   // Normalize scores to 0-1 scale (drivers are 1-7)
   const normalize = (score: number) => (score - 1) / 6;
   
-  // Criteria: Communication Quality only
-  const criteriaScore = normalize(driverScores['Communication Quality'] || 1);
-  
-  // Commitment: Goal Clarity only
-  const commitmentScore = normalize(driverScores['Goal Clarity'] || 1);
-  
-  // Collaboration: Average of Coordination, Trust, Psych Safety, TMS
-  const collaborationDrivers = [
+  // Criteria: Average of Communication Quality, Goal Clarity, Coordination
+  const criteriaDrivers = [
+    driverScores['Communication Quality'] || 1,
+    driverScores['Goal Clarity'] || 1,
     driverScores['Coordination'] || 1,
+  ];
+  const criteriaScore = criteriaDrivers.reduce((sum, score) => sum + normalize(score), 0) / criteriaDrivers.length;
+  
+  // Commitment: Average of Communication Quality, Trust, Goal Clarity
+  const commitmentDrivers = [
+    driverScores['Communication Quality'] || 1,
+    driverScores['Trust'] || 1,
+    driverScores['Goal Clarity'] || 1,
+  ];
+  const commitmentScore = commitmentDrivers.reduce((sum, score) => sum + normalize(score), 0) / commitmentDrivers.length;
+  
+  // Collaboration: Average of Transactive Memory, Trust, Psychological Safety, Coordination, Team Cognition
+  const collaborationDrivers = [
+    driverScores['Transactive Memory'] || 1,
     driverScores['Trust'] || 1,
     driverScores['Psychological Safety'] || 1,
-    driverScores['Transactive Memory'] || 1,
+    driverScores['Coordination'] || 1,
+    driverScores['Team Cognition'] || 1,
   ];
   const collaborationScore = collaborationDrivers.reduce((sum, score) => sum + normalize(score), 0) / collaborationDrivers.length;
   

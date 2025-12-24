@@ -1113,11 +1113,14 @@ export default function Results() {
                     .map((priority: any, index: number) => (
                       <div key={index} className="flex items-start gap-3">
                         <div className={`px-2 py-1 rounded text-xs font-bold ${
-                          priority.urgency === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                          priority.urgency === 'critical' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                          priority.urgency === 'high' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
                           priority.urgency === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                          'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                          'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                         }`}>
-                          {priority.urgency.toUpperCase()}
+                          {priority.urgency === 'critical' ? 'CRITICAL RISK' : 
+                           priority.urgency === 'high' ? 'HIGH RISK' : 
+                           priority.urgency === 'medium' ? 'MEDIUM RISK' : 'LOW RISK'}
                         </div>
                         <div>
                           <div className="font-semibold">{priority.area}</div>

@@ -787,3 +787,27 @@
 - [ ] Achieve 100% pass rate (currently 5/20 passing = 25%)
 - [ ] Update package.json with test scripts
 - [ ] Save checkpoint: P0 test automation infrastructure complete
+
+
+## Fix 4 C's Priority Level Calculation Bug
+- [ ] Create BDD specification for 4 C's priority level calculation
+- [ ] Investigate current priority level logic in fourCsScoring.ts
+- [ ] Fix priority level thresholds to match: Critical (1-2.5), High (2.51-4), Medium (4.01-5.5), Low (5.51-7)
+- [ ] Create automated tests for all threshold boundaries
+- [ ] Test with all 1's scenario (all 4 C's should show Critical)
+- [ ] Test with mixed scores scenario
+- [ ] Verify fix in browser
+- [ ] Save checkpoint: Fixed 4 C's priority level calculation
+
+
+## Fix 4 C's Priority Level Calculation Bug (COMPLETED)
+- [x] Create BDD specification for priority level calculation (bdd-4cs-priority-levels.md)
+- [x] Investigate current priority level calculation logic
+- [x] Fix priority level thresholds (1-2.5: Critical, 2.51-4: High, 4.01-5.5: Medium, 5.51-7: Low)
+- [x] Update 4 C's formulas: Commitment = avg(CommQuality, Trust, GoalClarity)
+- [x] Update 4 C's formulas: Collaboration = avg(TMS, Trust, PsychSafety, Coordination, TeamCognition)
+- [x] Update 4 C's formulas: Criteria = avg(CommQuality, GoalClarity, Coordination)
+- [x] Update Results.tsx to display 'critical' urgency level with red badge
+- [x] Update all test expectations to match new formulas
+- [x] All 79 tests passing
+- [x] Save checkpoint: 4 C's formula and priority level fix
