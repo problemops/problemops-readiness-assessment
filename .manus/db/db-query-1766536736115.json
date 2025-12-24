@@ -1,0 +1,98 @@
+{
+  "query": "SELECT epic_number, epic_name, scenario_number, scenario_title, status, priority FROM bdd_test_scenarios ORDER BY epic_number, scenario_number;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TnkFjGBKdfpupi.root --database B3x5NWCFiG4wF9DctXvqsL --execute SELECT epic_number, epic_name, scenario_number, scenario_title, status, priority FROM bdd_test_scenarios ORDER BY epic_number, scenario_number;",
+  "rows": [
+    {
+      "epic_number": "0",
+      "epic_name": "BDD Test Database Metadata",
+      "scenario_number": "0.0",
+      "scenario_title": "BDD Test Database Information",
+      "status": "PASSED",
+      "priority": "P0"
+    },
+    {
+      "epic_number": "1",
+      "epic_name": "Color Contrast Compliance",
+      "scenario_number": "1.1",
+      "scenario_title": "Training type descriptions meet 4.5:1 contrast ratio",
+      "status": "PASSED",
+      "priority": "P0"
+    },
+    {
+      "epic_number": "1",
+      "epic_name": "Color Contrast Compliance",
+      "scenario_number": "1.2",
+      "scenario_title": "Input placeholders meet 4.5:1 contrast ratio",
+      "status": "PASSED",
+      "priority": "P0"
+    },
+    {
+      "epic_number": "11",
+      "epic_name": "Training Option Configuration",
+      "scenario_number": "11.2",
+      "scenario_title": "Half Day Workshop focuses on #1 critical area",
+      "status": "PASSED",
+      "priority": "P0"
+    },
+    {
+      "epic_number": "11",
+      "epic_name": "Training Option Configuration",
+      "scenario_number": "11.3",
+      "scenario_title": "Full Day Workshop focuses on top 2 critical areas",
+      "status": "PASSED",
+      "priority": "P0"
+    },
+    {
+      "epic_number": "14",
+      "epic_name": "ROI Calculation Logic",
+      "scenario_number": "14.1",
+      "scenario_title": "ROI calculated using gap-based improvement model",
+      "status": "PASSED",
+      "priority": "P0"
+    },
+    {
+      "epic_number": "14",
+      "epic_name": "ROI Calculation Logic",
+      "scenario_number": "14.2",
+      "scenario_title": "Half Day ROI calculation for 10-person team",
+      "status": "PASSED",
+      "priority": "P0"
+    },
+    {
+      "epic_number": "24",
+      "epic_name": "Dark Mode Toggle",
+      "scenario_number": "24.1",
+      "scenario_title": "Dark mode toggle accessible and functional",
+      "status": "PASSED",
+      "priority": "P1"
+    },
+    {
+      "epic_number": "24",
+      "epic_name": "Dark Mode Toggle",
+      "scenario_number": "24.2",
+      "scenario_title": "Dark mode preference persists across sessions",
+      "status": "PASSED",
+      "priority": "P1"
+    },
+    {
+      "epic_number": "26",
+      "epic_name": "Page Autofocus Behavior",
+      "scenario_number": "26.1",
+      "scenario_title": "Assessment page loads at absolute top",
+      "status": "PASSED",
+      "priority": "P1"
+    },
+    {
+      "epic_number": "26",
+      "epic_name": "Page Autofocus Behavior",
+      "scenario_number": "26.2",
+      "scenario_title": "Autofocus on Tell us about your team text",
+      "status": "PASSED",
+      "priority": "P1"
+    }
+  ],
+  "messages": [],
+  "stdout": "epic_number\tepic_name\tscenario_number\tscenario_title\tstatus\tpriority\n0\tBDD Test Database Metadata\t0.0\tBDD Test Database Information\tPASSED\tP0\n1\tColor Contrast Compliance\t1.1\tTraining type descriptions meet 4.5:1 contrast ratio\tPASSED\tP0\n1\tColor Contrast Compliance\t1.2\tInput placeholders meet 4.5:1 contrast ratio\tPASSED\tP0\n11\tTraining Option Configuration\t11.2\tHalf Day Workshop focuses on #1 critical area\tPASSED\tP0\n11\tTraining Option Configuration\t11.3\tFull Day Workshop focuses on top 2 critical areas\tPASSED\tP0\n14\tROI Calculation Logic\t14.1\tROI calculated using gap-based improvement model\tPASSED\tP0\n14\tROI Calculation Logic\t14.2\tHalf Day ROI calculation for 10-person team\tPASSED\tP0\n24\tDark Mode Toggle\t24.1\tDark mode toggle accessible and functional\tPASSED\tP1\n24\tDark Mode Toggle\t24.2\tDark mode preference persists across sessions\tPASSED\tP1\n26\tPage Autofocus Behavior\t26.1\tAssessment page loads at absolute top\tPASSED\tP1\n26\tPage Autofocus Behavior\t26.2\tAutofocus on Tell us about your team text\tPASSED\tP1\n",
+  "stderr": "",
+  "execution_time_ms": 75
+}

@@ -485,3 +485,9 @@
 - [x] Fix autofocus to scroll to very top of page (currently scrolls to middle)
 - [x] Remove focus on title element (causes mid-page scroll)
 - [x] Ensure user sees header and logo when page loads
+
+## BDD Test Database Storage
+- [x] Create bdd_test_scenarios table in database
+- [x] Import sample BDD scenarios from /tests/bdd-test-database.md (11 key scenarios)
+- [x] Add indexes for efficient querying by epic, status, priority
+- [ ] Create API endpoint to retrieve test scenarios (future enhancement)

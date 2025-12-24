@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO bdd_test_scenarios (epic_number, epic_name, scenario_number, scenario_title, given_context, when_action, then_outcome, additional_expectations, status, priority, notes) VALUES\n(0, 'BDD Test Database Metadata', '0.0', 'BDD Test Database Information', 'This database stores all BDD test scenarios for the ProblemOps ROI Calculator', 'Developers need to run regression tests', 'They can query this table to get all test scenarios organized by epic, priority, and status', 'This database is now your permanent QA knowledge base for regression testing!', 'PASSED', 'P0', 'Created: December 23, 2025. Full documentation: /tests/bdd-test-database.md. Total scenarios: 100+. Epics: 26. Coverage: WCAG accessibility, training options, ROI calculations, data flow, edge cases, dark mode, navigation.');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TnkFjGBKdfpupi.root --database B3x5NWCFiG4wF9DctXvqsL --execute INSERT INTO bdd_test_scenarios (epic_number, epic_name, scenario_number, scenario_title, given_context, when_action, then_outcome, additional_expectations, status, priority, notes) VALUES\n(0, 'BDD Test Database Metadata', '0.0', 'BDD Test Database Information', 'This database stores all BDD test scenarios for the ProblemOps ROI Calculator', 'Developers need to run regression tests', 'They can query this table to get all test scenarios organized by epic, priority, and status', 'This database is now your permanent QA knowledge base for regression testing!', 'PASSED', 'P0', 'Created: December 23, 2025. Full documentation: /tests/bdd-test-database.md. Total scenarios: 100+. Epics: 26. Coverage: WCAG accessibility, training options, ROI calculations, data flow, edge cases, dark mode, navigation.');",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 65
+}
