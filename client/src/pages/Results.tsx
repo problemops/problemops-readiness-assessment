@@ -276,6 +276,17 @@ export default function Results() {
     setStatusMessage('Generating Word document. Please wait...');
     try {
       // Prepare data for Word document
+      console.log('Preparing Word document data...');
+      console.log('results.drivers:', results.drivers);
+      console.log('results.fourCsAnalysis:', results.fourCsAnalysis);
+      console.log('results.priorityAreas:', results.priorityAreas);
+      
+      // Convert drivers array to object with driver names as keys
+      const driverScores: Record<string, number> = {};
+      results.drivers.forEach((d: any) => {
+        driverScores[d.id] = d.value;
+      });
+      
       const wordData = {
         id: assessmentId || 'unknown',
         companyName: results.companyInfo.name || 'Unknown Company',
@@ -283,12 +294,14 @@ export default function Results() {
         avgSalary: results.avgSalary,
         readinessScore: results.readinessScore,
         dysfunctionCost: results.dysfunctionCost,
-        driverScores: results.drivers,
-        fourCsScores: results.fourCsAnalysis,
-        priorityAreas: results.priorityAreas,
+        driverScores: driverScores,
+        fourCsScores: results.fourCsAnalysis || {},
+        priorityAreas: results.priorityAreas || [],
         trainingType: results.trainingType,
-        recommendedAreas: results.recommendedAreas,
+        recommendedAreas: results.recommendedAreas || [],
       };
+      
+      console.log('Word data prepared:', wordData);
       
       const blob = await generateWordDocument(wordData);
       const url = URL.createObjectURL(blob);
