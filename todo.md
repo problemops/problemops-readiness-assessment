@@ -921,3 +921,10 @@
 - [x] Ensure text is readable (dark text on light background)
 - [x] Test in both light and dark modes
 - [ ] Save checkpoint
+
+## Remove Bottom Download Buttons (December 24, 2024)
+
+- [x] Remove Download PDF and Download Word buttons from bottom of Results page
+- [x] Keep only "New Assessment" button at bottom
+- [x] Test to ensure no broken functionality
+- [ ] Save checkpoint

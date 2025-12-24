@@ -1304,23 +1304,6 @@ export default function Results() {
         {/* Bottom Action Buttons */}
         <section className="flex gap-3">
           <Button 
-            onClick={handleDownloadPDF}
-            disabled={isGenerating}
-            className="gap-2"
-          >
-            <Download className="h-4 w-4" />
-            {isGenerating ? 'Generating...' : 'Download PDF'}
-          </Button>
-          <Button 
-            onClick={handleDownloadWord}
-            disabled={isGenerating}
-            variant="outline"
-            className="gap-2"
-          >
-            <FileText className="h-4 w-4" />
-            {isGenerating ? 'Generating...' : 'Download Word'}
-          </Button>
-          <Button 
             variant="secondary" 
             onClick={() => {
               navigate('/');
