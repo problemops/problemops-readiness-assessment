@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
+import { LoadingScreen, type LoadingStatus } from "@/components/LoadingScreen";
 import { trpc } from "@/lib/trpc";
 import { TRAINING_OPTIONS } from "@/lib/trainingRecommendations";
 import { Button } from "@/components/ui/button";
@@ -147,6 +149,13 @@ export default function Assessment() {
     trainingType: 'not-sure'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState<LoadingStatus | null>(null);
+  const [loadingError, setLoadingError] = useState<string | undefined>(undefined);
+  const [pendingSubmitData, setPendingSubmitData] = useState<{
+    companyInfo: typeof companyInfo;
+    driverScores: Record<string, number>;
+    answers: Record<number, number>;
+  } | null>(null);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   
   // Refs for focus management
@@ -497,6 +506,81 @@ export default function Assessment() {
     }
   };
 
+  // Minimum time to show loading screen (in ms) for better UX
+  const MINIMUM_LOADING_TIME = 2000;
+
+  // Perform the actual API submission
+  const performSubmission = useCallback(async (submitData: {
+    companyInfo: typeof companyInfo;
+    driverScores: Record<string, number>;
+    answers: Record<number, number>;
+  }) => {
+    const startTime = Date.now();
+    
+    try {
+      console.log('=== SUBMITTING ASSESSMENT ===');
+      console.log('Company Info:', submitData.companyInfo);
+      console.log('Driver Scores:', submitData.driverScores);
+      console.log('Answers count:', Object.keys(submitData.answers).length);
+      
+      const result = await Promise.race([
+        createAssessment.mutateAsync({
+          companyInfo: submitData.companyInfo,
+          scores: submitData.driverScores,
+          answers: submitData.answers,
+        }),
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Request timeout after 60 seconds')), 60000)
+        )
+      ]);
+      
+      console.log('API Response:', result);
+      
+      if (!result) {
+        throw new Error('No response from server');
+      }
+      
+      if (result.redirectUrl) {
+        console.log('Navigating to:', result.redirectUrl);
+        
+        // Ensure minimum loading time for better UX
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, MINIMUM_LOADING_TIME - elapsedTime);
+        
+        await new Promise(resolve => setTimeout(resolve, remainingTime));
+        
+        setLoadingStatus('success');
+        // Brief delay to show success state before navigation
+        setTimeout(() => {
+          navigate(result.redirectUrl);
+        }, 500);
+      } else {
+        throw new Error('Invalid API response: missing redirectUrl');
+      }
+    } catch (error) {
+      console.error('Failed to submit assessment:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      
+      // Ensure minimum loading time even for errors
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, MINIMUM_LOADING_TIME - elapsedTime);
+      await new Promise(resolve => setTimeout(resolve, remainingTime));
+      
+      setLoadingError(errorMessage);
+      setLoadingStatus('error');
+      setAnnouncement(`Error: ${errorMessage}`);
+    }
+  }, [createAssessment, navigate, setAnnouncement]);
+
+  // Handle retry from loading screen
+  const handleRetry = useCallback(() => {
+    if (pendingSubmitData) {
+      setLoadingStatus('loading');
+      setLoadingError(undefined);
+      performSubmission(pendingSubmitData);
+    }
+  }, [pendingSubmitData, performSubmission]);
+
   const handleSubmit = async () => {
     console.log('!!! HANDLE SUBMIT CALLED !!!');
     console.log('Current URL:', window.location.href);
@@ -507,57 +591,34 @@ export default function Assessment() {
       return;
     }
     
+    // Calculate driver scores
+    const driverScores: Record<string, number> = {};
+    DRIVER_SECTIONS.forEach(section => {
+      const sectionQuestions = section.questions.map(q => q.id);
+      const sectionAnswers = sectionQuestions.map(qId => answers[qId]).filter(Boolean);
+      const avgScore = sectionAnswers.reduce((sum, score) => sum + score, 0) / sectionAnswers.length;
+      driverScores[section.id] = avgScore;
+    });
+    
+    // Store data for potential retry
+    const submitData = { companyInfo, driverScores, answers };
+    setPendingSubmitData(submitData);
+    
+    // Show loading screen
+    console.log('=== SHOWING LOADING SCREEN ===');
     setIsSubmitting(true);
+    setLoadingStatus('loading');
+    setLoadingError(undefined);
     setAnnouncement('Generating your results...');
     
-    try {
-      const driverScores: Record<string, number> = {};
-      DRIVER_SECTIONS.forEach(section => {
-        const sectionQuestions = section.questions.map(q => q.id);
-        const sectionAnswers = sectionQuestions.map(qId => answers[qId]).filter(Boolean);
-        const avgScore = sectionAnswers.reduce((sum, score) => sum + score, 0) / sectionAnswers.length;
-        driverScores[section.id] = avgScore;
-      });
-      
-      console.log('=== SUBMITTING ASSESSMENT ===');
-      console.log('Company Info:', companyInfo);
-      console.log('Driver Scores:', driverScores);
-      console.log('Answers count:', Object.keys(answers).length);
-      
-      const result = await Promise.race([
-        createAssessment.mutateAsync({
-          companyInfo,
-          scores: driverScores,
-          answers,
-        }),
-        new Promise<never>((_, reject) => 
-          setTimeout(() => reject(new Error('Request timeout after 60 seconds')), 60000)
-        )
-      ]);
-      
-      console.log('API Response:', result);
-      console.log('Response type:', typeof result);
-      console.log('Response keys:', result ? Object.keys(result) : 'null');
-      
-      if (!result) {
-        throw new Error('No response from server');
-      }
-      
-      // tRPC automatically unwraps the response, so result is the data directly
-      if (result.redirectUrl) {
-        console.log('Navigating to:', result.redirectUrl);
-        navigate(result.redirectUrl);
-      } else {
-        console.error('Missing redirectUrl in response:', result);
-        throw new Error('Invalid API response: missing redirectUrl');
-      }
-    } catch (error) {
-      console.error('Failed to submit assessment:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      setAnnouncement(`Error: ${errorMessage}`);
-      alert(`Failed to submit assessment: ${errorMessage}\n\nPlease check the console for details.`);
-      setIsSubmitting(false);
-    }
+    // Wait for React to render the loading screen before starting submission
+    // This ensures the user sees the loading animation
+    console.log('Waiting 100ms for loading screen to render...');
+    await new Promise(resolve => setTimeout(resolve, 100));
+    console.log('Starting submission...');
+    
+    // Perform submission
+    performSubmission(submitData);
   };
 
   const allSectionsComplete = DRIVER_SECTIONS.every(section => isSectionComplete(section));
@@ -568,9 +629,22 @@ export default function Assessment() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      {/* Skip Link for accessibility */}
-      <SkipLink targetId="main-content" />
+    <>
+      {/* Loading Screen Overlay */}
+      {console.log('Rendering check - loadingStatus:', loadingStatus)}
+      <AnimatePresence>
+        {loadingStatus && (
+          <LoadingScreen
+            status={loadingStatus}
+            onRetry={handleRetry}
+            errorMessage={loadingError}
+          />
+        )}
+      </AnimatePresence>
+
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+        {/* Skip Link for accessibility */}
+        <SkipLink targetId="main-content" />
       
       {/* Aria Live Region for announcements */}
       <div 
@@ -1090,5 +1164,6 @@ export default function Assessment() {
         )}
       </main>
     </div>
+    </>
   );
 }

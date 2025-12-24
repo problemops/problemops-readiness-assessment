@@ -834,3 +834,30 @@
 ## Bug Fixes
 - [x] Fix assessment submission timeout error (5 second timeout too short for LLM industry classification)
 - [x] Run all unit tests to verify system stability (96 tests passing)
+
+
+## Animated Loading Screen Feature
+- [ ] Write BDD specification for loading screen
+- [ ] Copy ProblemOps logo to project assets
+- [ ] Install and configure Lottie animation library
+- [ ] Create LoadingScreen component with animated logo
+- [ ] Add rotating progress messages
+- [ ] Update Assessment page to show loading screen during submission
+- [ ] Add accessible fade transition to Results page
+- [ ] Test complete flow and verify accessibility
+
+
+## Loading Screen Feature (COMPLETED)
+- [x] Create LoadingScreen component with animated ProblemOps logo
+- [x] Implement CSS animations (pulse, float effects)
+- [x] Add rotating progress messages
+- [x] Ensure centered, responsive design across all viewports
+- [x] Add accessibility features (prefers-reduced-motion support)
+- [x] Add ARIA live regions for screen readers
+- [x] Integrate with Assessment submission flow
+- [x] Fix timeout error (increased from 5s to 60s for LLM classification)
+- [x] Fix z-index visibility issue (changed from z-50 to z-[9999])
+- [x] Restore proper dark charcoal background (#3D3D3D)
+- [x] Write BDD specification (15 scenarios)
+- [x] Write 39 unit tests (all passing)
+- [x] User testing verified - loading screen displays correctly
