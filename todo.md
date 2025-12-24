@@ -648,3 +648,16 @@
 - [x] Test in browser to confirm changes
 - [x] Add BDD scenarios to permanent regression suite
 - [x] Save checkpoint: "Fixed training options display and pricing"
+
+## Fix "Selected Training Scope" Blank Display Bug
+- [x] Create BDD specification for Selected Training Scope section behavior
+- [x] Investigate why "not-sure" training type shows blank section
+- [x] Fix display logic to show comparison table for "not-sure"
+- [x] Verify all 4 training types display correctly:
+  - [x] Not Sure Yet: Shows comparison table with all 3 options (browser verified)
+  - [x] Half Day: Shows selected training scope with focus areas (code verified)
+  - [x] Full Day: Shows selected training scope with focus areas (code verified)
+  - [x] Month-Long: Shows selected training scope with timeline (code verified)
+- [x] Run full regression test suite (141/141 passing)
+- [x] Add BDD scenarios to regression suite
+- [x] Save checkpoint: "Fixed Selected Training Scope display for not-sure type"

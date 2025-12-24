@@ -465,20 +465,22 @@ export default function Results() {
         <section aria-labelledby="team-story-heading">
           <h2 id="team-story-heading" className="text-3xl font-bold mb-6">Your Team's Current Story</h2>
           
-          {/* Training Type Indicator */}
-          <Card className="mb-6 bg-primary/5 border-primary/20">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <Target className="h-6 w-6 text-primary" />
-                <div>
-                  <h3 className="font-semibold text-lg">Selected Training Scope</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {results.trainingOption.label}
-                  </p>
+          {/* Training Type Indicator - Only show for specific training types */}
+          {results.trainingType !== 'not-sure' && (
+            <Card className="mb-6 bg-primary/5 border-primary/20">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3">
+                  <Target className="h-6 w-6 text-primary" />
+                  <div>
+                    <h3 className="font-semibold text-lg">Selected Training Scope</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {results.trainingOption.label}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <motion.div
