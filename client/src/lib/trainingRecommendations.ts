@@ -273,38 +273,66 @@ export function getRecommendedDeliverables(
 }
 
 /**
+ * Calculate per-driver dysfunction costs
+ * 
+ * Each driver's cost = (its dysfunction) × (its weight) × (total payroll)
+ * Where dysfunction = (1 - normalizedScore)
+ */
+export function calculateDriverCosts(
+  driverScores: Record<string, number>,
+  driverWeights: Record<string, number>,
+  teamSize: number,
+  avgSalary: number
+): Record<string, number> {
+  const totalSalary = teamSize * avgSalary;
+  const costs: Record<string, number> = {};
+  
+  // Calculate each driver's individual dysfunction cost
+  for (const [driver, score] of Object.entries(driverScores)) {
+    const normalizedScore = score / 7; // Convert 1-7 scale to 0-1
+    const dysfunction = 1 - normalizedScore; // How far from perfect (1.0)
+    const weight = driverWeights[driver] || 0.143;
+    
+    // This driver's cost = its dysfunction × its impact weight × total payroll
+    costs[driver] = dysfunction * weight * totalSalary;
+  }
+  
+  return costs;
+}
+
+/**
  * Calculate ROI for a specific training option
  * 
- * Formula:
- * - Half Day (1 driver): Improves 1/7th of total gap
- * - Full Day (2 drivers): Improves 2/7th of total gap  
- * - Month-Long (7 drivers): Improves full gap to 85% target
+ * NEW APPROACH:
+ * - Half Day: Uses ONLY the cost of the #1 priority driver
+ * - Full Day: Uses ONLY the cost of the top 2 priority drivers
+ * - Month-Long: Uses the cost of all 7 drivers
+ * 
+ * This provides realistic ROI based on actual addressable waste
  */
 export function calculateTrainingROI(
   trainingCost: number,
-  annualCostOfDysfunction: number,
-  currentReadiness: number,
-  focusAreas: number,
-  totalAreas: number = 7
+  priorityAreas: PriorityArea[],
+  driverCosts: Record<string, number>,
+  focusAreas: number
 ): {
   cost: number;
   savings: number;
   roi: number;
   paybackMonths: number;
-  improvementPercentage: number;
+  addressedDrivers: string[];
 } {
-  const target = 0.85;
-  const currentScore = currentReadiness;
+  // Get the top N priority drivers being addressed
+  const addressedDrivers = priorityAreas.slice(0, focusAreas);
   
-  // Calculate improvement based on focus areas
-  // Each driver addressed contributes 1/7th of the total gap
-  const totalGap = target - currentScore;
-  const improvementPerDriver = totalGap / totalAreas;
-  const totalImprovement = improvementPerDriver * focusAreas;
+  // Sum ONLY the costs of drivers being addressed
+  const scopedDysfunctionCost = addressedDrivers.reduce((sum, area) => {
+    return sum + (driverCosts[area.id] || 0);
+  }, 0);
   
-  // Calculate savings from dysfunction reduction
-  const currentDysfunction = 1 - currentScore;
-  const projectedSavings = annualCostOfDysfunction * (totalImprovement / currentDysfunction);
+  // Assume training can achieve 85% improvement in addressed drivers
+  // This means reducing their dysfunction by 85%
+  const projectedSavings = scopedDysfunctionCost * 0.85;
   
   // Calculate ROI metrics
   const roi = (projectedSavings - trainingCost) / trainingCost;
@@ -315,6 +343,6 @@ export function calculateTrainingROI(
     savings: projectedSavings,
     roi,
     paybackMonths,
-    improvementPercentage: totalImprovement * 100
+    addressedDrivers: addressedDrivers.map(d => d.name)
   };
 }

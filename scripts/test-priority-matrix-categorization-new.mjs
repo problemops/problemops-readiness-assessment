@@ -95,6 +95,136 @@ const testScenarios = [
       { id: "d7", name: "Driver 7", value: 6.5, weight: 0.14 },    // Strength
     ],
     expected: { critical: 2, monitor: 2, stable: 2, strength: 1 }
+  },
+  {
+    name: "All Critical except one Strength",
+    drivers: [
+      { id: "d1", name: "Driver 1", value: 1.0, weight: 0.14 },    // Critical
+      { id: "d2", name: "Driver 2", value: 1.5, weight: 0.14 },    // Critical
+      { id: "d3", name: "Driver 3", value: 2.0, weight: 0.14 },    // Critical
+      { id: "d4", name: "Driver 4", value: 2.5, weight: 0.14 },    // Critical
+      { id: "d5", name: "Driver 5", value: 2.0, weight: 0.14 },    // Critical
+      { id: "d6", name: "Driver 6", value: 1.5, weight: 0.14 },    // Critical
+      { id: "d7", name: "Driver 7", value: 7.0, weight: 0.14 },    // Strength
+    ],
+    expected: { critical: 6, monitor: 0, stable: 0, strength: 1 }
+  },
+  {
+    name: "All Strength except one Critical",
+    drivers: [
+      { id: "d1", name: "Driver 1", value: 6.0, weight: 0.14 },    // Strength
+      { id: "d2", name: "Driver 2", value: 6.5, weight: 0.14 },    // Strength
+      { id: "d3", name: "Driver 3", value: 7.0, weight: 0.14 },    // Strength
+      { id: "d4", name: "Driver 4", value: 6.5, weight: 0.14 },    // Strength
+      { id: "d5", name: "Driver 5", value: 6.0, weight: 0.14 },    // Strength
+      { id: "d6", name: "Driver 6", value: 5.51, weight: 0.14 },   // Strength
+      { id: "d7", name: "Driver 7", value: 1.0, weight: 0.14 },    // Critical
+    ],
+    expected: { critical: 1, monitor: 0, stable: 0, strength: 6 }
+  },
+  {
+    name: "Half Critical, half Strength",
+    drivers: [
+      { id: "d1", name: "Driver 1", value: 1.5, weight: 0.14 },    // Critical
+      { id: "d2", name: "Driver 2", value: 2.0, weight: 0.14 },    // Critical
+      { id: "d3", name: "Driver 3", value: 2.5, weight: 0.14 },    // Critical
+      { id: "d4", name: "Driver 4", value: 6.0, weight: 0.14 },    // Strength
+      { id: "d5", name: "Driver 5", value: 6.5, weight: 0.14 },    // Strength
+      { id: "d6", name: "Driver 6", value: 7.0, weight: 0.14 },    // Strength
+      { id: "d7", name: "Driver 7", value: 5.51, weight: 0.14 },   // Strength
+    ],
+    expected: { critical: 3, monitor: 0, stable: 0, strength: 4 }
+  },
+  {
+    name: "All Monitor except boundaries",
+    drivers: [
+      { id: "d1", name: "Driver 1", value: 2.51, weight: 0.14 },   // Monitor
+      { id: "d2", name: "Driver 2", value: 3.0, weight: 0.14 },    // Monitor
+      { id: "d3", name: "Driver 3", value: 3.5, weight: 0.14 },    // Monitor
+      { id: "d4", name: "Driver 4", value: 4.0, weight: 0.14 },    // Monitor
+      { id: "d5", name: "Driver 5", value: 3.25, weight: 0.14 },   // Monitor
+      { id: "d6", name: "Driver 6", value: 3.75, weight: 0.14 },   // Monitor
+      { id: "d7", name: "Driver 7", value: 2.75, weight: 0.14 },   // Monitor
+    ],
+    expected: { critical: 0, monitor: 7, stable: 0, strength: 0 }
+  },
+  {
+    name: "All Stable except boundaries",
+    drivers: [
+      { id: "d1", name: "Driver 1", value: 4.01, weight: 0.14 },   // Stable
+      { id: "d2", name: "Driver 2", value: 4.5, weight: 0.14 },    // Stable
+      { id: "d3", name: "Driver 3", value: 5.0, weight: 0.14 },    // Stable
+      { id: "d4", name: "Driver 4", value: 5.5, weight: 0.14 },    // Stable
+      { id: "d5", name: "Driver 5", value: 4.75, weight: 0.14 },   // Stable
+      { id: "d6", name: "Driver 6", value: 5.25, weight: 0.14 },   // Stable
+      { id: "d7", name: "Driver 7", value: 4.25, weight: 0.14 },   // Stable
+    ],
+    expected: { critical: 0, monitor: 0, stable: 7, strength: 0 }
+  },
+  {
+    name: "Boundary test: exactly on all thresholds",
+    drivers: [
+      { id: "d1", name: "Driver 1", value: 1.0, weight: 0.14 },    // Critical
+      { id: "d2", name: "Driver 2", value: 2.5, weight: 0.14 },    // Critical
+      { id: "d3", name: "Driver 3", value: 2.51, weight: 0.14 },   // Monitor
+      { id: "d4", name: "Driver 4", value: 4.0, weight: 0.14 },    // Monitor
+      { id: "d5", name: "Driver 5", value: 4.01, weight: 0.14 },   // Stable
+      { id: "d6", name: "Driver 6", value: 5.5, weight: 0.14 },    // Stable
+      { id: "d7", name: "Driver 7", value: 5.51, weight: 0.14 },   // Strength
+    ],
+    expected: { critical: 2, monitor: 2, stable: 2, strength: 1 }
+  },
+  {
+    name: "Two in each category except Critical (3)",
+    drivers: [
+      { id: "d1", name: "Driver 1", value: 1.5, weight: 0.14 },    // Critical
+      { id: "d2", name: "Driver 2", value: 2.0, weight: 0.14 },    // Critical
+      { id: "d3", name: "Driver 3", value: 2.5, weight: 0.14 },    // Critical
+      { id: "d4", name: "Driver 4", value: 3.0, weight: 0.14 },    // Monitor
+      { id: "d5", name: "Driver 5", value: 3.5, weight: 0.14 },    // Monitor
+      { id: "d6", name: "Driver 6", value: 5.0, weight: 0.14 },    // Stable
+      { id: "d7", name: "Driver 7", value: 6.0, weight: 0.14 },    // Strength
+    ],
+    expected: { critical: 3, monitor: 2, stable: 1, strength: 1 }
+  },
+  {
+    name: "Realistic scenario: mostly Stable with some gaps",
+    drivers: [
+      { id: "d1", name: "Driver 1", value: 3.5, weight: 0.14 },    // Monitor
+      { id: "d2", name: "Driver 2", value: 4.5, weight: 0.14 },    // Stable
+      { id: "d3", name: "Driver 3", value: 5.0, weight: 0.14 },    // Stable
+      { id: "d4", name: "Driver 4", value: 4.75, weight: 0.14 },   // Stable
+      { id: "d5", name: "Driver 5", value: 5.25, weight: 0.14 },   // Stable
+      { id: "d6", name: "Driver 6", value: 6.0, weight: 0.14 },    // Strength
+      { id: "d7", name: "Driver 7", value: 2.5, weight: 0.14 },    // Critical
+    ],
+    expected: { critical: 1, monitor: 1, stable: 4, strength: 1 }
+  },
+  {
+    name: "Edge case: all at lower boundaries",
+    drivers: [
+      { id: "d1", name: "Driver 1", value: 1.0, weight: 0.14 },    // Critical
+      { id: "d2", name: "Driver 2", value: 2.51, weight: 0.14 },   // Monitor
+      { id: "d3", name: "Driver 3", value: 4.01, weight: 0.14 },   // Stable
+      { id: "d4", name: "Driver 4", value: 5.51, weight: 0.14 },   // Strength
+      { id: "d5", name: "Driver 5", value: 1.0, weight: 0.14 },    // Critical
+      { id: "d6", name: "Driver 6", value: 2.51, weight: 0.14 },   // Monitor
+      { id: "d7", name: "Driver 7", value: 4.01, weight: 0.14 },   // Stable
+    ],
+    expected: { critical: 2, monitor: 2, stable: 2, strength: 1 }
+  },
+  {
+    name: "Edge case: all at upper boundaries",
+    drivers: [
+      { id: "d1", name: "Driver 1", value: 2.5, weight: 0.14 },    // Critical
+      { id: "d2", name: "Driver 2", value: 4.0, weight: 0.14 },    // Monitor
+      { id: "d3", name: "Driver 3", value: 5.5, weight: 0.14 },    // Stable
+      { id: "d4", name: "Driver 4", value: 7.0, weight: 0.14 },    // Strength
+      { id: "d5", name: "Driver 5", value: 2.5, weight: 0.14 },    // Critical
+      { id: "d6", name: "Driver 6", value: 4.0, weight: 0.14 },    // Monitor
+      { id: "d7", name: "Driver 7", value: 5.5, weight: 0.14 },    // Stable
+    ],
+    expected: { critical: 2, monitor: 2, stable: 2, strength: 1 }
   }
 ];
 

@@ -24,6 +24,7 @@ import {
   getMonthLongTimeline,
   getRecommendedDeliverables as getTrainingDeliverables,
   calculateTrainingROI,
+  calculateDriverCosts,
   type TrainingType 
 } from "@/lib/trainingRecommendations";
 
@@ -118,22 +119,25 @@ export default function Results() {
       const priorityAreas = getPriorityAreas(driverScoresForPriority, DRIVER_WEIGHTS);
       const recommendedAreas = getRecommendedAreas(trainingType, priorityAreas);
       
-      // Calculate ROI based on training type
+      // Calculate per-driver dysfunction costs
+      const driverCosts = calculateDriverCosts(driverScoresForPriority, DRIVER_WEIGHTS, teamSize, avgSalary);
+      
+      // Calculate ROI based on training type (using scoped driver costs)
       const trainingOption = TRAINING_OPTIONS[trainingType];
       let roiData;
       
       if (trainingType === 'not-sure') {
-        // Calculate for all three options
+        // Calculate for all three options with scoped costs
         roiData = {
-          halfDay: calculateTrainingROI(2000, dysfunctionCost, readinessScore, 1),
-          fullDay: calculateTrainingROI(3500, dysfunctionCost, readinessScore, 2),
-          monthLong: calculateTrainingROI(25000, dysfunctionCost, readinessScore, 7)
+          halfDay: calculateTrainingROI(2000, priorityAreas, driverCosts, 1),
+          fullDay: calculateTrainingROI(3500, priorityAreas, driverCosts, 2),
+          monthLong: calculateTrainingROI(25000, priorityAreas, driverCosts, 7)
         };
       } else {
         roiData = calculateTrainingROI(
           trainingOption.cost,
-          dysfunctionCost,
-          readinessScore,
+          priorityAreas,
+          driverCosts,
           trainingOption.focusAreas
         );
       }

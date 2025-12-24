@@ -611,3 +611,19 @@
 - [ ] Test with mixed scores to verify all 4 categories work correctly
 - [ ] Run all unit tests to ensure no regressions
 - [ ] Save checkpoint with fix
+
+## Fix ROI Calculation Scoping by Training Type
+- [x] Analyze current ROI calculation in trainingRecommendations.ts
+- [x] Update calculateTrainingROI to scope savings by training type:
+  - [x] Half Day: Calculate savings from top 1 critical driver only
+  - [x] Full Day: Calculate savings from top 2 critical drivers only
+  - [x] Month-Long: Calculate savings from all 7 drivers (current behavior)
+  - [x] Not Sure: Show all three scoped calculations in comparison
+- [x] Update Results.tsx to use scoped ROI values
+- [x] Update training comparison table to show correct scoped ROI
+- [x] Write unit tests for scoped ROI calculations (8/8 passing)
+- [x] Test in browser with example: Trust=1.5, Psych Safety=2.0
+- [x] Verify Half Day ROI uses only highest priority driver cost ($120k savings, 5,910% ROI)
+- [x] Verify Full Day ROI uses top 2 priority drivers cost ($217k savings, 6,110% ROI)
+- [x] Verify Month-Long ROI uses all 7 drivers cost ($342k savings, 1,267% ROI)
+- [ ] Save checkpoint: "Fixed ROI calculation scoping by training type"
