@@ -336,7 +336,11 @@ export function calculateTrainingROI(
   
   // Calculate ROI metrics
   const roi = (projectedSavings - trainingCost) / trainingCost;
-  const paybackMonths = projectedSavings > 0 ? (trainingCost / projectedSavings) * 12 : 999;
+  
+  // Add 3-month implementation buffer to account for training delivery and behavior change adoption
+  const IMPLEMENTATION_BUFFER_MONTHS = 3;
+  const financialPayback = projectedSavings > 0 ? (trainingCost / projectedSavings) * 12 : 999;
+  const paybackMonths = financialPayback + IMPLEMENTATION_BUFFER_MONTHS;
   
   return {
     cost: trainingCost,

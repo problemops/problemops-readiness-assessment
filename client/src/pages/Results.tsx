@@ -474,7 +474,7 @@ export default function Results() {
                   <div>
                     <h3 className="font-semibold text-lg">Selected Training Scope</h3>
                     <p className="text-sm text-muted-foreground">
-                      {results.trainingOption.label}
+                      {results.trainingOption.name}
                     </p>
                   </div>
                 </div>
@@ -657,7 +657,7 @@ export default function Results() {
                       {formatCurrency(displayROI!.savings)}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      From {results.trainingOption?.label?.toLowerCase() || 'training'}
+                      From {results.trainingOption?.name?.toLowerCase() || 'training'}
                     </p>
                   </CardContent>
                 </Card>
@@ -720,9 +720,13 @@ export default function Results() {
             <CardContent className="pt-6 space-y-6">
               {/* Overview Narrative */}
               <div className="prose prose-lg max-w-none">
-                <p className="text-foreground/90 leading-relaxed">
-                  {results.teamStory?.narrative || results.enhancedNarrative}
-                </p>
+                <p 
+                  className="text-foreground/90 leading-relaxed"
+                  dangerouslySetInnerHTML={{
+                    __html: (results.teamStory?.narrative || results.enhancedNarrative || '')
+                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                  }}
+                />
               </div>
 
               {/* Areas Causing Waste */}
@@ -748,7 +752,8 @@ export default function Results() {
                       <div key={impact.driverKey} className={`w-full p-6 rounded-lg border-l-4 ${
                         impact.severityLevel === 'critical' ? 'bg-red-50 dark:bg-red-950/20 border-l-red-500' :
                         impact.severityLevel === 'high' ? 'bg-orange-50 dark:bg-orange-950/20 border-l-orange-500' :
-                        'bg-yellow-50 dark:bg-yellow-950/20 border-l-yellow-500'
+                        impact.severityLevel === 'medium' ? 'bg-yellow-50 dark:bg-yellow-950/20 border-l-yellow-500' :
+                        'bg-green-50 dark:bg-green-950/20 border-l-green-500'
                       }`}>
                         {/* Driver Title and Badge */}
                         <div className="mb-4">
@@ -757,7 +762,8 @@ export default function Results() {
                             <span className={`px-3 py-1 rounded text-sm font-bold ${
                                 impact.severityLevel === 'critical' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
                                 impact.severityLevel === 'high' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
-                                'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                                impact.severityLevel === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                                'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                             }`}>
                               {impact.severityLabel}
                             </span>
@@ -946,7 +952,7 @@ export default function Results() {
                 <CardContent className="pt-6 space-y-6">
                   <div className="prose prose-lg max-w-none">
                     <p className="text-foreground/90 leading-relaxed">
-                      Based on your selection of <strong>{results.trainingOption.label}</strong>, your training will focus on the following areas ranked by priority and impact:
+                      Based on your selection of <strong>{results.trainingOption.name}</strong>, your training will focus on the following areas ranked by priority and impact:
                     </p>
                   </div>
 

@@ -661,3 +661,31 @@
 - [x] Run full regression test suite (141/141 passing)
 - [x] Add BDD scenarios to regression suite
 - [x] Save checkpoint: "Fixed Selected Training Scope display for not-sure type"
+
+## Add 3 Months to Payback Period Calculations
+- [ ] Create BDD specification for payback period adjustment
+- [ ] Update payback calculation formula to add 3 months implementation time
+- [ ] Update unit tests to reflect new payback periods
+- [ ] Verify in browser that all training options show +3 months
+- [ ] Update regression test suite with new expected values
+- [ ] Save checkpoint: "Added 3-month implementation buffer to payback calculations"
+
+## Fix Markdown Bold Syntax Not Rendering
+- [ ] Find where "**However, there are significant concerns**" text is displayed
+- [ ] Add markdown-to-HTML rendering or convert to proper HTML bold tags
+- [ ] Verify bold text displays correctly in browser
+- [ ] Check all driver impact narratives for proper formatting
+- [ ] Save checkpoint: "Fixed markdown bold syntax rendering"
+
+## Fix "Selected Training Scope" Blank for Full Day Workshop
+- [ ] Investigate why full-day workshop shows blank "Selected Training Scope"
+- [ ] Check conditional rendering logic
+- [ ] Verify trainingOption data is being passed correctly
+- [ ] Test all 4 training types in browser
+- [ ] Save checkpoint: "Fixed Selected Training Scope display for all training types"
+
+## Fix "Team Strength" Badge Color
+- [ ] Find where "Team Strength" badge is rendered
+- [ ] Change color from yellow to green
+- [ ] Verify in browser that Team Strength shows green
+- [ ] Save checkpoint: "Fixed Team Strength badge color to green"

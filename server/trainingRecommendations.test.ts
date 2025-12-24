@@ -96,8 +96,8 @@ describe('Scoped ROI Calculations', () => {
       // ROI = ($109,286 - $2,000) / $2,000 = 53.64 = 5,364%
       expect(roi.roi).toBeCloseTo(53.64, 1);
 
-      // Payback = ($2,000 / $109,286) × 12 = 0.22 months
-      expect(roi.paybackMonths).toBeLessThan(1);
+      // Payback = ($2,000 / $109,286) × 12 + 3 = 0.22 + 3 = 3.22 months
+      expect(roi.paybackMonths).toBeCloseTo(3.2, 1);
 
       // Should only address 1 driver
       expect(roi.addressedDrivers).toHaveLength(1);
@@ -223,13 +223,13 @@ describe('Scoped ROI Calculations', () => {
       const halfDay = calculateTrainingROI(2000, priorityAreas, driverCosts, 1);
       const fullDay = calculateTrainingROI(3500, priorityAreas, driverCosts, 2);
 
-      // Payback should be less than 12 months for workshops
-      expect(halfDay.paybackMonths).toBeLessThan(12);
-      expect(fullDay.paybackMonths).toBeLessThan(12);
+      // Payback should be less than 15 months for workshops (includes 3-month buffer)
+      expect(halfDay.paybackMonths).toBeLessThan(15);
+      expect(fullDay.paybackMonths).toBeLessThan(15);
 
-      // Payback should be measured in weeks/months, not days
-      expect(halfDay.paybackMonths).toBeGreaterThan(0.1);
-      expect(fullDay.paybackMonths).toBeGreaterThan(0.1);
+      // Payback should include 3-month implementation buffer
+      expect(halfDay.paybackMonths).toBeGreaterThan(3);
+      expect(fullDay.paybackMonths).toBeGreaterThan(3);
     });
 
     it('should handle edge case: perfect scores (no dysfunction)', () => {
@@ -253,7 +253,7 @@ describe('Scoped ROI Calculations', () => {
       // No dysfunction = no savings = negative ROI
       expect(halfDay.savings).toBe(0);
       expect(halfDay.roi).toBe(-1); // Lost 100% of investment
-      expect(halfDay.paybackMonths).toBe(999); // Never pays back
+      expect(halfDay.paybackMonths).toBe(1002); // 999 + 3 = Never pays back
     });
   });
 });
