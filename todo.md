@@ -920,11 +920,20 @@
 - [x] Fix white text on white background in User Guide modal
 - [x] Ensure text is readable (dark text on light background)
 - [x] Test in both light and dark modes
-- [ ] Save checkpoint
+- [x] Save checkpoint
 
 ## Remove Bottom Download Buttons (December 24, 2024)
 
 - [x] Remove Download PDF and Download Word buttons from bottom of Results page
 - [x] Keep only "New Assessment" button at bottom
 - [x] Test to ensure no broken functionality
+- [x] Save checkpoint
+
+
+## GitHub Button Styling Fix (December 24, 2024)
+
+- [x] Update GitHub button to match theme toggle styling
+- [x] Use bg-white/10 and text-primary-foreground for theme adaptation
+- [x] Black icon in light mode, white icon in dark mode
+- [x] Test in both light and dark modes
 - [ ] Save checkpoint

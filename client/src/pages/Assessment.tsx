@@ -705,11 +705,11 @@ export default function Assessment() {
                 href="https://github.com/problemops/problemops-readiness-assessment"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-white hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
+                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
                 aria-label="View source code on GitHub"
                 title="View on GitHub"
               >
-                <Github className="w-5 h-5 text-black" />
+                <Github className="w-5 h-5 text-primary-foreground" />
               </a>
               <UserGuideButton />
               <ThemeToggle />
