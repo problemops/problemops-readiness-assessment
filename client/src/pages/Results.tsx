@@ -13,7 +13,7 @@ import { FourCsChart } from "@/components/FourCsChart";
 import { ProblemOpsPrinciples } from "@/components/ProblemOpsPrinciples";
 import { ProgressStepper } from "@/components/ProgressStepper";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { calculate4CsScores, getRecommendedDeliverables } from "@/lib/fourCsScoring";
+import { calculate4CsScores, getRecommendedDeliverables, getOtherDeliverables, getRecommendedDeliverablesByTraining, getOtherDeliverablesByTraining } from "@/lib/fourCsScoring";
 import { generateTrainingPlan, getTrainingPriorities } from "@/lib/problemOpsTrainingPlan";
 import { generateTeamNarrative as generateEnhancedNarrative, type CompanyContext } from "@/lib/companyAnalysis";
 import { generateTeamStory, getSeverityColorClass, getSeverityBadgeClass, getSeverityTextClass, type DriverImpactNarrative } from "@/lib/driverImpactContent";
@@ -150,7 +150,10 @@ export default function Results() {
       const fourCsAnalysis = calculate4CsScores(driverScoresMap);
       const trainingPlan = generateTrainingPlan(fourCsAnalysis);
       const trainingPriorities = getTrainingPriorities(fourCsAnalysis);
-      const recommendedDeliverables = getRecommendedDeliverables(fourCsAnalysis);
+      
+      // Get deliverables based on training type
+      const recommendedDeliverables = getRecommendedDeliverablesByTraining(fourCsAnalysis, trainingType);
+      const otherDeliverables = getOtherDeliverablesByTraining(fourCsAnalysis, trainingType);
       
       // Generate enhanced narrative
       const companyContext: CompanyContext = {
@@ -188,6 +191,7 @@ export default function Results() {
         trainingPlan,
         trainingPriorities,
         recommendedDeliverables,
+        otherDeliverables,
         enhancedNarrative,
         teamStory,
       });
@@ -1175,7 +1179,7 @@ export default function Results() {
               <Card>
                 <CardContent className="pt-6">
                   <p className="text-muted-foreground mb-6">
-                    Based on your 4 C's scores, these are the specific ProblemOps artifacts your team should focus on creating:
+                    Based on your 4 C's scores, these are the specific ProblemOps artifacts your team should focus on creating during your training:
                   </p>
                   <div className="space-y-6">
                     {Object.entries(results.recommendedDeliverables).map(([category, deliverables]: [string, any]) => (
@@ -1185,6 +1189,40 @@ export default function Results() {
                           {deliverables.map((deliverable: string, index: number) => (
                             <li key={index} className="flex items-start gap-2 text-sm">
                               <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                              <span>{deliverable}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
+            <Separator />
+          </>
+        )}
+
+        {/* Other Deliverables */}
+        {results.otherDeliverables && Object.keys(results.otherDeliverables).length > 0 && (
+          <>
+            <section>
+              <h2 id="other-deliverables-heading" className="text-3xl font-bold mb-6">The Other Deliverables For the 4 C's of ProblemOps</h2>
+              <Card>
+                <CardContent className="pt-6">
+                  <p className="text-muted-foreground mb-6">
+                    {Object.keys(results.recommendedDeliverables).length > 0
+                      ? `For your reference, here are the other ProblemOps deliverables you may consider after addressing your top ${results.trainingType === 'half-day' ? 'priority' : 'priorities'}:`
+                      : "Your team is performing well across all 4 C's. For your reference, here are the ProblemOps deliverables you may consider for continuous improvement:"}
+                  </p>
+                  <div className="space-y-6">
+                    {Object.entries(results.otherDeliverables).map(([category, deliverables]: [string, any]) => (
+                      <div key={category}>
+                        <h3 className="text-lg font-semibold mb-3">{category}</h3>
+                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          {deliverables.map((deliverable: string, index: number) => (
+                            <li key={index} className="flex items-start gap-2 text-sm">
+                              <CheckCircle2 className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                               <span>{deliverable}</span>
                             </li>
                           ))}

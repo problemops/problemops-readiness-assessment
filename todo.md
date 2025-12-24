@@ -689,3 +689,21 @@
 - [ ] Change color from yellow to green
 - [ ] Verify in browser that Team Strength shows green
 - [ ] Save checkpoint: "Fixed Team Strength badge color to green"
+
+## Update Recommended Deliverables Section
+- [x] Update "Recommended ProblemOps Deliverables" heading to add "during your training"
+- [x] Create BDD specification for training-type-based deliverables display
+- [x] Implement getRecommendedDeliverablesByTraining() function
+- [x] Implement getOtherDeliverablesByTraining() function
+- [x] Update Results.tsx to use training-type-based deliverables logic
+- [x] Add "The Other Deliverables For the 4 C's of ProblemOps" section to Results page
+- [x] Test Half Day Workshop scenario (top 1 priority)
+- [x] Test Full Day Workshop scenario (top 2 priorities)
+- [x] Test Month-Long Engagement scenario (all priorities)
+- [x] Test Not Sure Yet scenario (all priorities)
+- [x] Test edge case: All C's above 60%
+- [x] Test edge case: Only 1 C below 60% with Half Day
+- [x] Test edge case: Only 1 C below 60% with Full Day
+- [x] Run full regression test suite (79 tests passing)
+- [x] Fix Moderate Concern badge color from green to yellow
+- [x] Save checkpoint: Training-type-based deliverables implementation

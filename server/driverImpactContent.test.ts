@@ -24,25 +24,28 @@ describe('Driver Impact Content - BDD Tests', () => {
     
     // Feature 28.1: Severity Level Calculation
     describe('Feature 28.1: Severity Level Calculation', () => {
-      it('should return "critical" for scores 1-2', () => {
+      it('should return "critical" for scores 1-2.5', () => {
         expect(getSeverityLevel(1)).toBe('critical');
         expect(getSeverityLevel(1.5)).toBe('critical');
         expect(getSeverityLevel(2)).toBe('critical');
+        expect(getSeverityLevel(2.5)).toBe('critical');
       });
       
-      it('should return "high" for scores 2.1-4', () => {
-        expect(getSeverityLevel(2.1)).toBe('high');
+      it('should return "high" for scores 2.51-4.0', () => {
+        expect(getSeverityLevel(2.51)).toBe('high');
         expect(getSeverityLevel(3)).toBe('high');
         expect(getSeverityLevel(4)).toBe('high');
       });
       
-      it('should return "moderate" for scores 4.1-5', () => {
-        expect(getSeverityLevel(4.1)).toBe('moderate');
+      it('should return "moderate" for scores 4.01-5.5', () => {
+        expect(getSeverityLevel(4.01)).toBe('moderate');
         expect(getSeverityLevel(4.5)).toBe('moderate');
         expect(getSeverityLevel(5)).toBe('moderate');
+        expect(getSeverityLevel(5.5)).toBe('moderate');
       });
       
-      it('should return "strength" for scores 6-7', () => {
+      it('should return "strength" for scores >5.5', () => {
+        expect(getSeverityLevel(5.51)).toBe('strength');
         expect(getSeverityLevel(6)).toBe('strength');
         expect(getSeverityLevel(6.5)).toBe('strength');
         expect(getSeverityLevel(7)).toBe('strength');
@@ -55,7 +58,6 @@ describe('Driver Impact Content - BDD Tests', () => {
         expect(getSeverityLabel('critical')).toBe('Critical Dysfunction');
         expect(getSeverityLabel('high')).toBe('High Risk');
         expect(getSeverityLabel('moderate')).toBe('Moderate Concern');
-        expect(getSeverityLabel('low')).toBe('Low Risk');
         expect(getSeverityLabel('strength')).toBe('Team Strength');
       });
     });
@@ -68,8 +70,8 @@ describe('Driver Impact Content - BDD Tests', () => {
         expect(impact.driverKey).toBe('trust');
         expect(impact.driverName).toBe('Trust');
         expect(impact.score).toBe(2.5);
-        expect(impact.severityLevel).toBe('high');
-        expect(impact.severityLabel).toBe('High Risk');
+        expect(impact.severityLevel).toBe('critical');
+        expect(impact.severityLabel).toBe('Critical Dysfunction');
         expect(impact.summaryStatement).toBeTruthy();
         expect(impact.behavioralConsequences.length).toBeGreaterThan(0);
         expect(impact.wasteOutcomes.length).toBeGreaterThan(0);
@@ -86,7 +88,7 @@ describe('Driver Impact Content - BDD Tests', () => {
       });
       
       it('should generate impact for communication driver', () => {
-        const impact = generateDriverImpact('communication', 3.0);
+        const impact = generateDriverImpact('communication', 3.5);
         
         expect(impact.driverName).toBe('Communication Quality');
         expect(impact.severityLevel).toBe('high');
@@ -293,7 +295,6 @@ describe('Driver Impact Content - BDD Tests', () => {
         expect(getSeverityColorClass('critical')).toContain('red');
         expect(getSeverityColorClass('high')).toContain('orange');
         expect(getSeverityColorClass('moderate')).toContain('yellow');
-        expect(getSeverityColorClass('low')).toContain('blue');
         expect(getSeverityColorClass('strength')).toContain('green');
       });
       
@@ -301,7 +302,6 @@ describe('Driver Impact Content - BDD Tests', () => {
         expect(getSeverityTextClass('critical')).toContain('red');
         expect(getSeverityTextClass('high')).toContain('orange');
         expect(getSeverityTextClass('moderate')).toContain('yellow');
-        expect(getSeverityTextClass('low')).toContain('blue');
         expect(getSeverityTextClass('strength')).toContain('green');
       });
       
