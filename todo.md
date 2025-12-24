@@ -936,4 +936,15 @@
 - [x] Use bg-white/10 and text-primary-foreground for theme adaptation
 - [x] Black icon in light mode, white icon in dark mode
 - [x] Test in both light and dark modes
+- [x] Save checkpoint
+
+
+## Button Styling Consistency (December 24, 2024)
+
+- [x] Update User Guide button to match GitHub button visual style
+- [x] Add icon + text labels to all header buttons (GitHub, User Guide, Theme Toggle, Shortcuts, New Assessment)
+- [x] Add icon + text labels to all bottom buttons (New Assessment)
+- [x] Ensure dark mode styling: semi-transparent buttons with theme-adaptive text
+- [x] Apply consistent styling across all buttons (bg-white/10, text-primary-foreground)
+- [x] Test in both light and dark modes
 - [ ] Save checkpoint

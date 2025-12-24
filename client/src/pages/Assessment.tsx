@@ -705,21 +705,23 @@ export default function Assessment() {
                 href="https://github.com/problemops/problemops-readiness-assessment"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-primary-foreground bg-white/10 hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
                 aria-label="View source code on GitHub"
                 title="View on GitHub"
               >
-                <Github className="w-5 h-5 text-primary-foreground" />
+                <Github className="w-5 h-5" />
+                <span>GitHub</span>
               </a>
               <UserGuideButton />
               <ThemeToggle />
               <button
                 onClick={() => setShowShortcuts(true)}
-                className="p-2 rounded-lg hover:bg-primary-foreground/10 transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-primary-foreground bg-white/10 hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
                 aria-label="Show keyboard shortcuts (press ? key)"
                 title="Keyboard shortcuts (?)"
               >
-                <Keyboard className="h-5 w-5" />
+                <Keyboard className="w-5 h-5" />
+                <span>Shortcuts</span>
               </button>
             </div>
           </div>

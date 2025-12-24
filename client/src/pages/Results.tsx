@@ -410,25 +410,25 @@ export default function Results() {
                 href="https://github.com/problemops/problemops-readiness-assessment"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-primary-foreground bg-white/10 hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
                 aria-label="View source code on GitHub"
                 title="View on GitHub"
               >
-                <Github className="w-5 h-5 text-primary-foreground" />
+                <Github className="w-5 h-5" />
+                <span>GitHub</span>
               </a>
               <UserGuideButton />
               <ThemeToggle />
-              <Button 
-                variant="secondary" 
+              <button
                 onClick={() => {
                   navigate('/');
                   setTimeout(() => window.scrollTo(0, 0), 0);
                 }}
-                className="gap-2"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-primary-foreground bg-white/10 hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
               >
-                <Home className="h-4 w-4" />
-                New Assessment
-              </Button>
+                <Home className="w-5 h-5" />
+                <span>New Assessment</span>
+              </button>
             </div>
           </div>
           
@@ -1303,17 +1303,16 @@ export default function Results() {
 
         {/* Bottom Action Buttons */}
         <section className="flex gap-3">
-          <Button 
-            variant="secondary" 
+          <button
             onClick={() => {
               navigate('/');
               setTimeout(() => window.scrollTo(0, 0), 0);
             }}
-            className="gap-2"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-background text-foreground border border-border hover:bg-accent hover:text-accent-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
           >
-            <Home className="h-4 w-4" />
-            New Assessment
-          </Button>
+            <Home className="w-5 h-5" />
+            <span>New Assessment</span>
+          </button>
         </section>
       </main>
     </div>

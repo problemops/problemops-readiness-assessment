@@ -29,13 +29,19 @@ export function ThemeToggle() {
     <button
       onClick={toggleTheme}
       aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-      className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
+      className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-primary-foreground bg-white/10 hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
       type="button"
     >
       {theme === "light" ? (
-        <Moon className="w-5 h-5 text-primary-foreground" aria-hidden="true" />
+        <>
+          <Moon className="w-5 h-5" aria-hidden="true" />
+          <span>Dark Mode</span>
+        </>
       ) : (
-        <Sun className="w-5 h-5 text-primary-foreground" aria-hidden="true" />
+        <>
+          <Sun className="w-5 h-5" aria-hidden="true" />
+          <span>Light Mode</span>
+        </>
       )}
     </button>
   );
