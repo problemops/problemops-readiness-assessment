@@ -751,3 +751,25 @@
 - [ ] Populate remaining 71 unit tests (script ready: populate-test-registry.sql)
 - [ ] Populate remaining 83 BDD scenarios from tests/bdd-test-database.md
 - [ ] Save checkpoint: Master test database infrastructure
+
+## Populate Complete Test Registry (Task A)
+- [ ] Run populate-test-registry script to insert all 79 unit tests
+- [ ] Parse BDD scenarios from tests/bdd-test-database.md
+- [ ] Insert all 86 BDD scenarios into testRegistry
+- [ ] Verify total count: 165 tests in database
+- [ ] Create summary report of test coverage
+
+## Convert Critical BDD Scenarios to Automated Tests (Task B)
+- [x] Audit all 86 BDD scenarios and prioritize P0 scenarios (created bdd-automation-priority.md)
+- [x] Set up Playwright test infrastructure
+- [x] Install Playwright and configure for the project (@playwright/test 1.57.0 + playwright.config.ts)
+- [x] Create test utilities and helpers (tests/helpers/test-data.ts)
+- [ ] Convert P0 accessibility scenarios (color contrast, keyboard nav)
+- [ ] Convert P0 training options scenarios (Half Day, Full Day, Month-Long)
+- [x] Convert P0 ROI calculation scenarios (5 tests in tests/e2e/roi-calculations.spec.ts)
+- [ ] Convert P0 UI/UX scenarios (navigation, forms, validation)
+- [ ] Convert P0 data flow scenarios (assessment creation, retrieval)
+- [ ] Fix test selectors and verify Playwright tests pass
+- [ ] Run all automated tests (unit + browser) and verify 100% pass
+- [ ] Update test registry with automation status
+- [x] Save checkpoint: BDD automation infrastructure + 5 P0 ROI tests
