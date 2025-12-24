@@ -480,3 +480,8 @@
 ## Assess Page Navigation Fix
 - [x] Fix autofocus on Assess page to scroll to top/title on navigation
 - [x] Ensure users see "Tell Us About Your Team" title when landing on page
+
+## Autofocus Fix - Assess Page
+- [x] Fix autofocus to scroll to very top of page (currently scrolls to middle)
+- [x] Remove focus on title element (causes mid-page scroll)
+- [x] Ensure user sees header and logo when page loads

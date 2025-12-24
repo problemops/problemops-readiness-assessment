@@ -162,13 +162,13 @@ export default function Assessment() {
   const totalQuestions = 35;
   const progress = (Object.keys(answers).length / totalQuestions) * 100;
 
-  // Scroll to top and focus on page title when component mounts
+  // Scroll to very top of page when component mounts
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    const titleElement = document.getElementById('page-title');
-    if (titleElement) {
-      titleElement.focus();
-    }
+    // Scroll to absolute top (0, 0)
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    // Also scroll the document element to ensure we're at the very top
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }, []);
 
   // Announce progress changes
@@ -675,7 +675,7 @@ export default function Assessment() {
           >
             {/* Common Region: Header section */}
             <div className="mb-12 space-y-4">
-              <h1 className="text-4xl md:text-5xl font-bold" id="page-title" tabIndex={-1}>Team Cross-Functional Efficiency Readiness Assessment</h1>
+              <h1 className="text-4xl md:text-5xl font-bold" id="page-title">Team Cross-Functional Efficiency Readiness Assessment</h1>
               <p className="text-muted-foreground text-lg">
                 Tell us about your company and team so we can provide personalized insights and calculate the financial impact of team effectiveness.
               </p>
