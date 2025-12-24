@@ -883,4 +883,4 @@
 - [x] Test with keyboard only (no mouse)
 - [x] Test with screen reader
 - [x] Run accessibility audit
-- [ ] Save checkpoint
+- [x] Save checkpoint
