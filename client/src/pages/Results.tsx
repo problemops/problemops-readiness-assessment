@@ -11,6 +11,8 @@ import { generateWordDocument } from "@/lib/docxGenerator";
 import PriorityMatrix from "@/components/PriorityMatrix";
 import { FourCsChart } from "@/components/FourCsChart";
 import { ProblemOpsPrinciples } from "@/components/ProblemOpsPrinciples";
+import HowItWorksButton from "@/components/HowItWorksButton";
+import UserGuideButton from "@/components/UserGuideButton";
 import { ProgressStepper } from "@/components/ProgressStepper";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { calculate4CsScores, getRecommendedDeliverables, getOtherDeliverables, getRecommendedDeliverablesByTraining, getOtherDeliverablesByTraining } from "@/lib/fourCsScoring";
@@ -404,6 +406,7 @@ export default function Results() {
             
             {/* Action Buttons - Right on desktop, hidden on mobile */}
             <div className="hidden md:flex items-center gap-3 md:absolute md:right-5">
+              <UserGuideButton />
               <ThemeToggle />
               <Button 
                 variant="secondary" 
@@ -494,12 +497,15 @@ export default function Results() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <Card className="border-l-4 border-l-destructive">
+              <Card className="border-l-4 border-l-destructive" role="region" aria-labelledby="dysfunction-cost-title">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                    <AlertTriangle className="h-4 w-4" />
-                    Annual Cost of Dysfunction
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle id="dysfunction-cost-title" className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4" />
+                      Annual Cost of Dysfunction
+                    </CardTitle>
+                    <HowItWorksButton section="dysfunction" />
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-4xl font-bold text-destructive mb-2">
@@ -517,11 +523,14 @@ export default function Results() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <Card className="border-l-4 border-l-primary">
+              <Card className="border-l-4 border-l-primary" role="region" aria-labelledby="readiness-score-title">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Team Readiness Score
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle id="readiness-score-title" className="text-sm font-medium text-muted-foreground">
+                      Team Readiness Score
+                    </CardTitle>
+                    <HowItWorksButton section="readiness" />
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-4xl font-bold text-primary mb-2">
@@ -651,12 +660,15 @@ export default function Results() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <Card className="border-l-4 border-l-primary">
+                <Card className="border-l-4 border-l-primary" role="region" aria-labelledby="training-roi-title">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4" />
-                      Projected Annual Savings
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle id="training-roi-title" className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                        <TrendingUp className="h-4 w-4" />
+                        Projected Annual Savings
+                      </CardTitle>
+                      <HowItWorksButton section="roi" />
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <div className="text-4xl font-bold text-primary mb-2">
@@ -1013,8 +1025,11 @@ export default function Results() {
         )}
 
         {/* Priority Matrix */}
-        <section>
-          <h2 id="priority-areas-heading" className="text-3xl font-bold mb-6">Where to Focus Your Efforts</h2>
+        <section role="region" aria-labelledby="priority-matrix-heading">
+          <div className="flex items-center justify-between mb-6">
+            <h2 id="priority-matrix-heading" className="text-3xl font-bold">Where to Focus Your Efforts</h2>
+            <HowItWorksButton section="priorityMatrix" />
+          </div>
           <PriorityMatrix 
             drivers={results.drivers} 
             detectedIndustry={results.detectedIndustry}
@@ -1025,8 +1040,11 @@ export default function Results() {
         <Separator />
 
         {/* Driver Performance Summary */}
-        <section>
-          <h2 id="driver-summary-heading" className="text-3xl font-bold mb-6">Driver Performance Summary</h2>
+        <section role="region" aria-labelledby="driver-scores-heading">
+          <div className="flex items-center justify-between mb-6">
+            <h2 id="driver-scores-heading" className="text-3xl font-bold">Driver Performance Summary</h2>
+            <HowItWorksButton section="drivers" />
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {results.drivers.map((driver: any, index: number) => (
               <motion.div
@@ -1078,7 +1096,11 @@ export default function Results() {
         <Separator />
 
         {/* 4 C's Framework Analysis */}
-        <section>
+        <section role="region" aria-labelledby="four-cs-heading">
+          <div className="flex items-center justify-between mb-6">
+            <h2 id="four-cs-heading" className="text-3xl font-bold">The 4 C's Framework</h2>
+            <HowItWorksButton section="fourCs" />
+          </div>
           <FourCsChart analysis={results.fourCsAnalysis} />
         </section>
 

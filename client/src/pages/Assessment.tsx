@@ -16,6 +16,7 @@ import { SkipLink } from "@/components/SkipLink";
 import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
 import { ProgressStepper } from "@/components/ProgressStepper";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import UserGuideButton from "@/components/UserGuideButton";
 
 const SCALE_LABELS = [
   { value: 1, label: "Strongly Disagree" },
@@ -700,6 +701,7 @@ export default function Assessment() {
             
             {/* Action Buttons - Right on desktop */}
             <div className="flex items-center gap-2 md:absolute md:right-5">
+              <UserGuideButton />
               <ThemeToggle />
               <button
                 onClick={() => setShowShortcuts(true)}

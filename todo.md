@@ -861,3 +861,26 @@
 - [x] Write BDD specification (15 scenarios)
 - [x] Write 39 unit tests (all passing)
 - [x] User testing verified - loading screen displays correctly
+
+
+## How It Works & User Guide Features (December 24, 2024)
+
+- [x] Write BDD tests for "How It Works" button functionality
+- [x] Write BDD tests for "User Guide" button functionality  
+- [x] Write BDD tests for keyboard navigation in modals
+- [x] Write BDD tests for WCAG 2.0 AA compliance
+- [x] Create reusable AccessibleModal component
+- [x] Implement focus trap in modal
+- [x] Implement keyboard navigation (Tab, Shift+Tab, Escape)
+- [x] Add "How It Works" buttons to all calculation sections
+- [x] Create calculation methodology content components
+- [x] Add "User Guide" button to header
+- [x] Create user guide content with table of contents navigation
+- [x] Implement smooth scrolling within modal
+- [x] Add proper ARIA labels and roles
+- [x] Ensure sufficient color contrast
+- [x] Add visible focus indicators
+- [x] Test with keyboard only (no mouse)
+- [x] Test with screen reader
+- [x] Run accessibility audit
+- [ ] Save checkpoint
