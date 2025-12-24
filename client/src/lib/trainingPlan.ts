@@ -128,7 +128,7 @@ export function generateTrainingPlan(
   return DRIVER_CLUSTERS.map(cluster => {
     // Calculate average score for this cluster
     const clusterScores = cluster.drivers
-      .map(driverId => drivers[driverId]?.score || 4)
+      .map(driverId => drivers[driverId]?.score)
       .filter(score => score !== undefined);
     
     const averageScore = clusterScores.length > 0
@@ -136,10 +136,13 @@ export function generateTrainingPlan(
       : 4;
     
     // Determine priority based on score
+    // 1.0 - 3.0: High Priority
+    // 3.01 - 5.0: Medium Priority
+    // 5.01 - 7.0: Low Priority
     let priority: "high" | "medium" | "low";
-    if (averageScore < 4) {
+    if (averageScore <= 3.0) {
       priority = "high";
-    } else if (averageScore < 5.5) {
+    } else if (averageScore <= 5.0) {
       priority = "medium";
     } else {
       priority = "low";

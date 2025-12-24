@@ -129,9 +129,9 @@ export default function Results() {
       if (trainingType === 'not-sure') {
         // Calculate for all three options with scoped costs
         roiData = {
-          halfDay: calculateTrainingROI(2000, priorityAreas, driverCosts, 1),
-          fullDay: calculateTrainingROI(3500, priorityAreas, driverCosts, 2),
-          monthLong: calculateTrainingROI(25000, priorityAreas, driverCosts, 7)
+          halfDay: calculateTrainingROI(TRAINING_OPTIONS['half-day'].cost, priorityAreas, driverCosts, 1),
+          fullDay: calculateTrainingROI(TRAINING_OPTIONS['full-day'].cost, priorityAreas, driverCosts, 2),
+          monthLong: calculateTrainingROI(TRAINING_OPTIONS['month-long'].cost, priorityAreas, driverCosts, 7)
         };
       } else {
         roiData = calculateTrainingROI(
@@ -546,7 +546,7 @@ export default function Results() {
                         <th className="text-left py-3 px-4 font-semibold">Option</th>
                         <th className="text-left py-3 px-4 font-semibold">Investment</th>
                         <th className="text-left py-3 px-4 font-semibold">Focus Areas</th>
-                        <th className="text-left py-3 px-4 font-semibold">Annual Savings</th>
+                        <th className="text-left py-3 px-4 font-semibold">Value If Fixed</th>
                         <th className="text-left py-3 px-4 font-semibold">ROI</th>
                         <th className="text-left py-3 px-4 font-semibold">Payback</th>
                       </tr>

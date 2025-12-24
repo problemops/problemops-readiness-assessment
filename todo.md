@@ -627,3 +627,24 @@
 - [x] Verify Full Day ROI uses top 2 priority drivers cost ($217k savings, 6,110% ROI)
 - [x] Verify Month-Long ROI uses all 7 drivers cost ($342k savings, 1,267% ROI)
 - [x] Save checkpoint: "Fixed ROI calculation scoping by training type"
+
+## Fix 4 C's Priority Calculation Bug
+- [ ] Investigate current priority calculation logic in fourCsScoring.ts or problemOpsTrainingPlan.ts
+- [ ] Fix priority thresholds to match specification:
+  - [ ] 1.0 - 3.0: High Priority
+  - [ ] 3.01 - 5.0: Medium Priority
+  - [ ] 5.01 - 7.0: Low Priority
+- [ ] Test with all 1's scenario (should show High Priority for all 4 C's)
+- [ ] Test with all 4's scenario (should show Medium Priority)
+- [ ] Test with all 6's scenario (should show Low Priority)
+- [ ] Verify fix in browser with test assessment
+- [ ] Save checkpoint: "Fixed 4 C's priority calculation thresholds"
+
+## Fix Training Options Display Issues
+- [x] Rename "Annual Savings" column to "Value If Fixed" in training comparison table
+- [x] Update Month-Long Engagement price from $25,000 to $50,000
+- [x] Fix annual savings calculation for Month-Long Engagement to match total dysfunction cost
+- [x] Verify all three training options show correct pricing and ROI
+- [x] Test in browser to confirm changes
+- [x] Add BDD scenarios to permanent regression suite
+- [x] Save checkpoint: "Fixed training options display and pricing"
