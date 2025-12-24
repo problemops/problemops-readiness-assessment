@@ -459,3 +459,24 @@
 
 ## Critical Bug Fix
 - [x] Fix TypeError: Cannot read properties of undefined (reading 'toLowerCase') on recommendations page
+
+## QA: Training Options Logic and Results
+- [ ] Test "Not Sure" option - shows all training options with comparative ROI
+- [ ] Test "Half Day" option - focuses on #1 critical area
+- [ ] Test "Full Day" option - focuses on top 2 critical areas
+- [ ] Test "Month-Long" option - comprehensive training across all areas
+- [ ] Verify ROI calculations are accurate for each training type
+- [ ] Verify priority areas match selected training option
+- [ ] Test recommendations filtering based on training type
+- [ ] Test edge cases: missing data, zero values, extreme values
+- [ ] Verify 4Cs scores calculation
+- [ ] Verify training plan generation logic
+
+## Dark Mode Readability Fix
+- [x] Fix field labels color in dark mode (currently black, unreadable)
+- [x] Fix placeholder text color in dark mode (currently black, unreadable)
+- [x] Verify all form fields are readable in dark mode
+
+## Assess Page Navigation Fix
+- [x] Fix autofocus on Assess page to scroll to top/title on navigation
+- [x] Ensure users see "Tell Us About Your Team" title when landing on page

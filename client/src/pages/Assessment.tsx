@@ -162,6 +162,15 @@ export default function Assessment() {
   const totalQuestions = 35;
   const progress = (Object.keys(answers).length / totalQuestions) * 100;
 
+  // Scroll to top and focus on page title when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    const titleElement = document.getElementById('page-title');
+    if (titleElement) {
+      titleElement.focus();
+    }
+  }, []);
+
   // Announce progress changes
   useEffect(() => {
     const answered = Object.keys(answers).length;
@@ -666,7 +675,7 @@ export default function Assessment() {
           >
             {/* Common Region: Header section */}
             <div className="mb-12 space-y-4">
-              <h1 className="text-4xl md:text-5xl font-bold" id="page-title">Team Cross-Functional Efficiency Readiness Assessment</h1>
+              <h1 className="text-4xl md:text-5xl font-bold" id="page-title" tabIndex={-1}>Team Cross-Functional Efficiency Readiness Assessment</h1>
               <p className="text-muted-foreground text-lg">
                 Tell us about your company and team so we can provide personalized insights and calculate the financial impact of team effectiveness.
               </p>
@@ -686,7 +695,7 @@ export default function Assessment() {
                 <h2 className="text-2xl font-semibold border-b border-border pb-3 w-full">Company Information</h2>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="company-name" className="text-base font-medium text-black">
+                  <Label htmlFor="company-name" className="text-base font-medium text-foreground">
                     Company Name <span className="text-destructive" aria-hidden="true">*</span>
                     <span className="sr-only">(required)</span>
                   </Label>
@@ -719,7 +728,7 @@ export default function Assessment() {
                 
 
                 <div className="space-y-2">
-                  <Label htmlFor="company-website" className="text-base font-medium text-black">
+                  <Label htmlFor="company-website" className="text-base font-medium text-foreground">
                     Company Website
                   </Label>
                   <Input
@@ -736,7 +745,7 @@ export default function Assessment() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="team-name" className="text-base font-medium text-black">
+                  <Label htmlFor="team-name" className="text-base font-medium text-foreground">
                     Team/Department Name
                   </Label>
                   <Input
@@ -756,7 +765,7 @@ export default function Assessment() {
                 
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="team-size" className="text-base font-medium text-black">
+                    <Label htmlFor="team-size" className="text-base font-medium text-foreground">
                       Team Size <span className="text-destructive" aria-hidden="true">*</span>
                       <span className="sr-only">(required)</span>
                     </Label>
@@ -789,7 +798,7 @@ export default function Assessment() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="avg-salary" className="text-base font-medium text-black">
+                    <Label htmlFor="avg-salary" className="text-base font-medium text-foreground">
                       Avg. Annual Salary <span className="text-destructive" aria-hidden="true">*</span>
                       <span className="sr-only">(required)</span>
                     </Label>
@@ -823,7 +832,7 @@ export default function Assessment() {
                 </div>
 
                 <div className="space-y-3">
-                  <Label id="training-type-label" className="text-base font-medium text-black">
+                  <Label id="training-type-label" className="text-base font-medium text-foreground">
                     What Kind of Corporate Training Do You Want? <span className="text-destructive" aria-hidden="true">*</span>
                     <span className="sr-only">(required)</span>
                   </Label>
