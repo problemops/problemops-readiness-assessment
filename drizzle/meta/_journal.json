@@ -15,6 +15,13 @@
       "when": 1766519310484,
       "tag": "0001_rich_lizard",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1766538841915,
+      "tag": "0002_unique_wrecker",
+      "breakpoints": true
     }
   ]
 }
