@@ -626,4 +626,4 @@
 - [x] Verify Half Day ROI uses only highest priority driver cost ($120k savings, 5,910% ROI)
 - [x] Verify Full Day ROI uses top 2 priority drivers cost ($217k savings, 6,110% ROI)
 - [x] Verify Month-Long ROI uses all 7 drivers cost ($342k savings, 1,267% ROI)
-- [ ] Save checkpoint: "Fixed ROI calculation scoping by training type"
+- [x] Save checkpoint: "Fixed ROI calculation scoping by training type"
