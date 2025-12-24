@@ -144,7 +144,7 @@ export default function AccessibleModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
       onClick={handleBackdropClick}
       role="presentation"
     >
@@ -156,9 +156,8 @@ export default function AccessibleModal({
         aria-describedby={ariaDescribedBy || descId.current}
         tabIndex={-1}
         className="
-          relative w-full h-full md:h-auto md:max-h-[90vh] md:max-w-4xl
+          relative w-screen h-screen
           bg-white dark:bg-gray-900
-          md:rounded-lg shadow-2xl
           flex flex-col
           focus:outline-none focus:ring-2 focus:ring-[#64563A] focus:ring-offset-2
         "
@@ -191,7 +190,7 @@ export default function AccessibleModal({
         {/* Content */}
         <div
           id={descId.current}
-          className="flex-1 overflow-y-auto p-6"
+          className="flex-1 overflow-y-auto p-6 h-full"
         >
           {children}
         </div>

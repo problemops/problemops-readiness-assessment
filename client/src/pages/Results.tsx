@@ -4,7 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Download, Home, TrendingUp, AlertTriangle, BarChart3, CheckCircle2, Target, FileText } from "lucide-react";
+import { Download, Home, TrendingUp, AlertTriangle, BarChart3, CheckCircle2, Target, FileText, Github } from "lucide-react";
 import { motion } from "framer-motion";
 import { SlidePDFGenerator } from "@/lib/pdfGenerator";
 import { generateWordDocument } from "@/lib/docxGenerator";
@@ -405,7 +405,17 @@ export default function Results() {
             />
             
             {/* Action Buttons - Right on desktop, hidden on mobile */}
-            <div className="hidden md:flex items-center gap-3 md:absolute md:right-5">
+            <div className="hidden md:flex items-center gap-2 md:absolute md:right-5">
+              <a
+                href="https://github.com/problemops/problemops-readiness-assessment"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-lg bg-white hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
+                aria-label="View source code on GitHub"
+                title="View on GitHub"
+              >
+                <Github className="w-5 h-5 text-black" />
+              </a>
               <UserGuideButton />
               <ThemeToggle />
               <Button 
@@ -418,23 +428,6 @@ export default function Results() {
               >
                 <Home className="h-4 w-4" />
                 New Assessment
-              </Button>
-              <Button 
-                onClick={handleDownloadPDF}
-                disabled={isGenerating}
-                variant="outline"
-                className="gap-2 bg-white text-primary hover:bg-white/90"
-              >
-                <Download className="h-4 w-4" />
-                {isGenerating ? 'Generating...' : 'PDF'}
-              </Button>
-              <Button 
-                onClick={handleDownloadWord}
-                disabled={isGenerating}
-                className="gap-2 bg-white text-primary hover:bg-white/90"
-              >
-                <FileText className="h-4 w-4" />
-                {isGenerating ? 'Generating...' : 'Word'}
               </Button>
             </div>
           </div>

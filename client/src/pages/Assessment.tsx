@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { CheckCircle2, Circle, Loader2, Keyboard } from "lucide-react";
+import { CheckCircle2, Circle, Loader2, Keyboard, Github } from "lucide-react";
 import { motion } from "framer-motion";
 import { SkipLink } from "@/components/SkipLink";
 import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
@@ -701,6 +701,16 @@ export default function Assessment() {
             
             {/* Action Buttons - Right on desktop */}
             <div className="flex items-center gap-2 md:absolute md:right-5">
+              <a
+                href="https://github.com/problemops/problemops-readiness-assessment"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-lg bg-white hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
+                aria-label="View source code on GitHub"
+                title="View on GitHub"
+              >
+                <Github className="w-5 h-5 text-black" />
+              </a>
               <UserGuideButton />
               <ThemeToggle />
               <button

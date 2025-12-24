@@ -22,16 +22,19 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element && contentRef.current) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Scroll within the content container
+      const container = contentRef.current;
+      const elementTop = element.offsetTop;
+      container.scrollTo({ top: elementTop - 20, behavior: 'smooth' });
       element.focus();
       onNavigate?.(sectionId);
     }
   };
 
   return (
-    <div ref={contentRef} className="space-y-8">
-      {/* Table of Contents */}
-      <nav role="navigation" aria-label="Table of Contents" className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg sticky top-0 z-10">
+    <div className="flex h-full gap-6">
+      {/* Table of Contents - Fixed Sidebar */}
+      <nav role="navigation" aria-label="Table of Contents" className="w-64 flex-shrink-0 bg-gray-50 dark:bg-gray-800 p-6 rounded-lg overflow-y-auto">
         <h3 className="text-lg font-semibold mb-4">Table of Contents</h3>
         <ol className="space-y-2 text-sm">
           <li>
@@ -133,8 +136,10 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
         </ol>
       </nav>
 
-      {/* Section 1: What is ProblemOps? */}
-      <section id="what-is-problemops" tabIndex={-1} role="region" aria-labelledby="what-is-problemops-title" className="scroll-mt-20">
+      {/* Content Area - Scrollable */}
+      <div ref={contentRef} className="flex-1 overflow-y-auto space-y-8 pr-4">
+        {/* Section 1: What is ProblemOps? */}
+        <section id="what-is-problemops" tabIndex={-1} role="region" aria-labelledby="what-is-problemops-title" className="scroll-mt-4">
         <h2 id="what-is-problemops-title" className="text-2xl font-bold mb-4">1. What is ProblemOps?</h2>
         
         <div className="space-y-4 text-base">
@@ -442,6 +447,7 @@ export default function UserGuideContent({ onNavigate }: UserGuideContentProps) 
         <p className="text-sm mt-3">
           The complete user guide document has been created and is available in the project files.
         </p>
+      </div>
       </div>
     </div>
   );
