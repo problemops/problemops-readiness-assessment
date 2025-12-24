@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import { SkipLink } from "@/components/SkipLink";
 import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
 import { ProgressStepper } from "@/components/ProgressStepper";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const SCALE_LABELS = [
   { value: 1, label: "Strongly Disagree" },
@@ -607,15 +608,18 @@ export default function Assessment() {
               className="hidden md:flex"
             />
             
-            {/* Keyboard Icon - Right on desktop */}
-            <button
-              onClick={() => setShowShortcuts(true)}
-              className="p-2 rounded-lg hover:bg-primary-foreground/10 transition-colors md:absolute md:right-5"
-              aria-label="Show keyboard shortcuts (press ? key)"
-              title="Keyboard shortcuts (?)"
-            >
-              <Keyboard className="h-5 w-5" />
-            </button>
+            {/* Action Buttons - Right on desktop */}
+            <div className="flex items-center gap-2 md:absolute md:right-5">
+              <ThemeToggle />
+              <button
+                onClick={() => setShowShortcuts(true)}
+                className="p-2 rounded-lg hover:bg-primary-foreground/10 transition-colors"
+                aria-label="Show keyboard shortcuts (press ? key)"
+                title="Keyboard shortcuts (?)"
+              >
+                <Keyboard className="h-5 w-5" />
+              </button>
+            </div>
           </div>
           
           {/* Mobile: Stacked Progress Stepper */}

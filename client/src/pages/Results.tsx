@@ -11,6 +11,7 @@ import PriorityMatrix from "@/components/PriorityMatrix";
 import { FourCsChart } from "@/components/FourCsChart";
 import { ProblemOpsPrinciples } from "@/components/ProblemOpsPrinciples";
 import { ProgressStepper } from "@/components/ProgressStepper";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { calculate4CsScores, getRecommendedDeliverables } from "@/lib/fourCsScoring";
 import { generateTrainingPlan, getTrainingPriorities } from "@/lib/problemOpsTrainingPlan";
 import { generateTeamNarrative as generateEnhancedNarrative, type CompanyContext } from "@/lib/companyAnalysis";
@@ -325,7 +326,8 @@ export default function Results() {
             />
             
             {/* Action Buttons - Right on desktop, hidden on mobile */}
-            <div className="hidden md:flex gap-3 md:absolute md:right-5">
+            <div className="hidden md:flex items-center gap-3 md:absolute md:right-5">
+              <ThemeToggle />
               <Button 
                 variant="secondary" 
                 onClick={() => {
@@ -347,8 +349,10 @@ export default function Results() {
               </Button>
             </div>
             
-            {/* Mobile: Show only download button */}
-            <Button 
+            {/* Mobile: Show theme toggle and download button */}
+            <div className="md:hidden flex items-center gap-2">
+              <ThemeToggle />
+              <Button 
               onClick={handleDownloadPDF}
               disabled={isGenerating}
               size="sm"
@@ -357,6 +361,7 @@ export default function Results() {
               <Download className="h-4 w-4" />
               {isGenerating ? 'Generating...' : 'PDF'}
             </Button>
+            </div>
           </div>
           
           {/* Mobile: Stacked Progress Stepper */}
@@ -584,7 +589,7 @@ export default function Results() {
                       {formatCurrency(displayROI!.savings)}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      From {results.trainingOption.label.toLowerCase()}
+                      From {results.trainingOption?.label?.toLowerCase() || 'training'}
                     </p>
                   </CardContent>
                 </Card>
@@ -902,9 +907,9 @@ export default function Results() {
                         return true; // Show all
                       }
                       // For half-day and full-day, only show priorities that match recommended areas
-                      const recommendedAreaNames = results.recommendedAreas.map((a: any) => a.name.toLowerCase());
+                      const recommendedAreaNames = results.recommendedAreas?.map((a: any) => a?.name?.toLowerCase()).filter(Boolean) || [];
                       return recommendedAreaNames.some((name: string) => 
-                        priority.area.toLowerCase().includes(name) || name.includes(priority.area.toLowerCase())
+                        priority.area?.toLowerCase()?.includes(name) || name?.includes(priority.area?.toLowerCase())
                       );
                     })
                     .map((priority: any, index: number) => (

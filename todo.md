@@ -447,3 +447,15 @@
 - [x] Document keyboard shortcuts in help dialog (already exists)ardShortcutsDialog
 - [ ] Add skip links for accordion sections
 - [ ] Add focus management after accordion open
+
+## Dark Mode Toggle Feature
+- [x] Create ThemeToggle component with sun/moon icons
+- [x] Add toggle button to Assessment page header
+- [x] Add toggle button to Results page header
+- [x] Ensure toggle is keyboard accessible with aria-label
+- [x] Persist theme preference in localStorage
+- [x] Test theme switching functionality
+- [x] Verify dark mode color contrast meets WCAG standards
+
+## Critical Bug Fix
+- [x] Fix TypeError: Cannot read properties of undefined (reading 'toLowerCase') on recommendations page
