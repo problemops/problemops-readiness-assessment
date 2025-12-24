@@ -542,29 +542,54 @@ export class SlidePDFGenerator {
       this.doc.setTextColor(0, 0, 0);
       y += 10;
       
-      for (const impact of this.data.teamStory.driverImpacts.slice(0, 3)) {
+      for (const impact of this.data.teamStory.driverImpacts) {
         // Check if we need a new page
-        if (y > PAGE_HEIGHT - 80) {
+        if (y > PAGE_HEIGHT - 100) {
           this.addFooter(12);
           this.addPage();
           y = 30;
         }
         
-        // Driver name and severity
-        this.doc.setFontSize(12);
-        this.doc.setFont('helvetica', 'bold');
-        this.doc.text(`${impact.driverName} (Score: ${impact.score.toFixed(1)}/7.0)`, MARGIN, y);
-        y += 6;
+        // Calculate driver cost
+        const driver = this.data.drivers.find(d => d.id === impact.driverKey);
+        const driverGap = driver ? (1 - (driver.value / 7)) : 0;
+        const driverCost = driver ? (this.data.teamSize * this.data.avgSalary) * driver.weight * driverGap : 0;
+        const gapPercent = Math.round(driverGap * 100);
+        const impactWeight = driver ? Math.round(driver.weight * 100) : 0;
         
-        // Severity badge
-        this.doc.setFontSize(9);
+        // Driver name
+        this.doc.setFontSize(14);
+        this.doc.setFont('helvetica', 'bold');
+        this.doc.text(impact.driverName, MARGIN, y);
+        y += 7;
+        
+        // Severity badge and score
+        this.doc.setFontSize(10);
         this.doc.setFont('helvetica', 'normal');
         const severityColor = impact.severityLevel === 'critical' ? [220, 38, 38] : 
                               impact.severityLevel === 'high' ? [234, 88, 12] : [202, 138, 4];
         this.doc.setTextColor(severityColor[0], severityColor[1], severityColor[2]);
-        this.doc.text(`${impact.severityLabel}`, MARGIN, y);
+        this.doc.text(`${impact.severityLabel} | Score: ${impact.score.toFixed(1)}/7.0`, MARGIN, y);
+        this.doc.setTextColor(0, 0, 0);
+        y += 7;
+        
+        // Cost callout
+        this.doc.setFontSize(16);
+        this.doc.setFont('helvetica', 'bold');
+        this.doc.setTextColor(234, 88, 12); // Orange
+        const costText = `$${driverCost.toLocaleString('en-US', {maximumFractionDigits: 0})}`;
+        this.doc.text(costText, MARGIN, y);
         this.doc.setTextColor(0, 0, 0);
         y += 6;
+        
+        this.doc.setFontSize(9);
+        this.doc.setFont('helvetica', 'normal');
+        this.doc.setTextColor(100, 100, 100);
+        this.doc.text('Annual cost from this driver', MARGIN, y);
+        y += 4;
+        this.doc.text(`Gap: ${gapPercent}% • Impact weight: ${impactWeight}%`, MARGIN, y);
+        this.doc.setTextColor(0, 0, 0);
+        y += 7;
         
         // Summary statement
         this.doc.setFontSize(10);

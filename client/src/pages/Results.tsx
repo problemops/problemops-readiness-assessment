@@ -313,6 +313,8 @@ export default function Results() {
       };
       
       console.log('Word data prepared:', wordData);
+      console.log('teamStory.driverImpacts:', wordData.teamStory?.driverImpacts);
+      console.log('teamStory.driverImpacts length:', wordData.teamStory?.driverImpacts?.length);
       
       const blob = await generateWordDocument(wordData);
       const url = URL.createObjectURL(blob);
@@ -456,8 +458,8 @@ export default function Results() {
         </section>
 
         {/* Executive Summary */}
-        <section aria-labelledby="executive-summary-heading">
-          <h2 id="executive-summary-heading" className="text-2xl font-bold mb-6">Key Metrics</h2>
+        <section aria-labelledby="team-story-heading">
+          <h2 id="team-story-heading" className="text-3xl font-bold mb-6">Your Team's Current Story</h2>
           
           {/* Training Type Indicator */}
           <Card className="mb-6 bg-primary/5 border-primary/20">
@@ -707,7 +709,7 @@ export default function Results() {
 
         {/* Your Team's Current Story - Enhanced with Driver Impact Analysis */}
         <section>
-          <h2 id="team-story-heading" className="text-2xl font-bold mb-6">Your Team's Current Story</h2>
+          <h2 id="team-story-heading" className="text-3xl font-bold mb-6">Your Team's Current Story</h2>
           <Card>
             <CardContent className="pt-6 space-y-6">
               {/* Overview Narrative */}
@@ -719,46 +721,65 @@ export default function Results() {
 
               {/* Areas Causing Waste */}
               {results.teamStory?.driverImpacts && results.teamStory.driverImpacts.length > 0 && (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold flex items-center gap-2 text-destructive">
-                    <AlertTriangle className="h-5 w-5" />
+                <div className="space-y-6">
+                  <h2 className="text-3xl font-bold flex items-center gap-2 text-foreground">
+                    <AlertTriangle className="h-7 w-6" />
                     Where Your Team May Be Wasting Resources
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
+                  </h2>
+                  <p className="text-base text-muted-foreground">
                     Based on your scores, these drivers are likely contributing to lost productivity, rework, and delays:
                   </p>
-                  <div className="space-y-4">
-                    {results.teamStory.driverImpacts.map((impact: any, index: number) => (
-                      <div key={impact.driverKey} className={`p-4 rounded-lg border-l-4 ${
+                  <div className="space-y-6">
+                    {results.teamStory.driverImpacts.map((impact: any, index: number) => {
+                      // Calculate driver-specific cost using dbKey from impact
+                      const driver = results.drivers.find((d: any) => d.id === impact.dbKey);
+                      const driverGap = driver ? (1 - (driver.value / 7)) : 0;
+                      const driverCost = driver ? (results.teamSize * results.avgSalary) * driver.weight * driverGap : 0;
+                      const gapPercent = Math.round(driverGap * 100);
+                      const impactWeight = driver ? Math.round(driver.weight * 100) : 0;
+                      
+                      return (
+                      <div key={impact.driverKey} className={`w-full p-6 rounded-lg border-l-4 ${
                         impact.severityLevel === 'critical' ? 'bg-red-50 dark:bg-red-950/20 border-l-red-500' :
                         impact.severityLevel === 'high' ? 'bg-orange-50 dark:bg-orange-950/20 border-l-orange-500' :
                         'bg-yellow-50 dark:bg-yellow-950/20 border-l-yellow-500'
                       }`}>
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h4 className="font-semibold text-lg">{impact.driverName}</h4>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                        {/* Driver Title and Badge */}
+                        <div className="mb-4">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="text-2xl font-bold text-foreground">{impact.driverName}</h3>
+                            <span className={`px-3 py-1 rounded text-sm font-bold ${
                                 impact.severityLevel === 'critical' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
                                 impact.severityLevel === 'high' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
                                 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                              }`}>
-                                {impact.severityLabel}
-                              </span>
-                              <span className="text-sm text-muted-foreground">Score: {impact.score.toFixed(1)}/7.0</span>
-                            </div>
+                            }`}>
+                              {impact.severityLabel}
+                            </span>
                           </div>
+                          <p className="text-base text-muted-foreground mt-1">Score: {impact.score.toFixed(1)}/7.0</p>
                         </div>
                         
-                        <p className="text-sm text-foreground/80 mb-3">{impact.summaryStatement}</p>
+                        {/* Cost Callout */}
+                        <div className="mb-4 pb-4 border-b border-border">
+                          <div className="text-4xl font-bold text-orange-600 dark:text-orange-500 mb-1">
+                            {formatCurrency(driverCost)}
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-2">Annual cost from this driver</p>
+                          <p className="text-sm text-muted-foreground">
+                            Gap: {gapPercent}% • Impact weight: {impactWeight}%
+                          </p>
+                        </div>
+                        
+                        {/* Narrative */}
+                        <p className="text-sm text-foreground/90 mb-4 leading-relaxed">{impact.summaryStatement}</p>
                         
                         {/* Behavioral Consequences */}
-                        <div className="mb-3">
-                          <p className="text-xs font-semibold text-muted-foreground mb-1">Team Behaviors You May See:</p>
-                          <ul className="text-sm space-y-1">
+                        <div className="mb-4">
+                          <h4 className="text-base font-bold text-foreground mb-2">Team Behaviors You May See:</h4>
+                          <ul className="text-sm space-y-2">
                             {impact.behavioralConsequences.slice(0, 3).map((behavior: string, i: number) => (
-                              <li key={i} className="flex items-start gap-2">
-                                <span className="text-destructive">•</span>
+                              <li key={i} className="flex items-start gap-2 text-foreground/80">
+                                <span className="text-orange-600 dark:text-orange-500 font-bold">•</span>
                                 <span>{behavior}</span>
                               </li>
                             ))}
@@ -766,11 +787,11 @@ export default function Results() {
                         </div>
                         
                         {/* Waste Outcomes */}
-                        <div className="bg-white/50 dark:bg-black/20 rounded p-3">
-                          <p className="text-xs font-semibold text-muted-foreground mb-2">This Leads To Waste In:</p>
+                        <div className="mb-4">
+                          <h4 className="text-base font-bold text-foreground mb-2">This Leads To Waste In:</h4>
                           <div className="flex flex-wrap gap-2">
                             {impact.wasteOutcomes.map((waste: any, i: number) => (
-                              <span key={i} className="inline-flex items-center gap-1 px-2 py-1 bg-destructive/10 text-destructive text-xs rounded">
+                              <span key={i} className="inline-flex items-center px-3 py-1.5 bg-orange-100 dark:bg-orange-950/30 text-orange-700 dark:text-orange-400 text-sm rounded-full font-medium">
                                 {waste.category}
                               </span>
                             ))}
@@ -778,11 +799,12 @@ export default function Results() {
                         </div>
                         
                         {/* Academic Citation */}
-                        <p className="text-xs text-muted-foreground mt-3 italic">
+                        <p className="text-sm text-muted-foreground italic">
                           Research: {impact.citation.finding} ({impact.citation.authors}, {impact.citation.year})
                         </p>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -856,7 +878,7 @@ export default function Results() {
 
         {/* Cost of Dysfunction Breakdown */}
         <section aria-labelledby="cost-breakdown-heading">
-          <h2 id="cost-breakdown-heading" className="text-2xl font-bold mb-6">Understanding Your Cost of Dysfunction</h2>
+          <h2 id="cost-breakdown-heading" className="text-3xl font-bold mb-6">Understanding Your Cost of Dysfunction</h2>
           <Card>
             <CardContent className="pt-6 space-y-6">
               <div className="prose prose-lg max-w-none">
@@ -891,47 +913,14 @@ export default function Results() {
                 </p>
               </div>
 
-              <div className="bg-destructive/5 border border-destructive/20 p-6 rounded-lg space-y-4">
-                <h3 className="text-xl font-semibold">Where the Waste Comes From:</h3>
-                <p className="text-sm text-muted-foreground">Each driver contributes differently to your total dysfunction cost based on research showing which factors matter most for team performance.</p>
-                
-                <div className="space-y-3">
-                  {results.drivers.map((driver: any) => {
-                    const driverGap = (1 - (driver.value / 7));
-                    const driverCost = (results.teamSize * results.avgSalary) * driver.weight * driverGap;
-                    
-                    return (
-                      <div key={driver.id} className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium">{driver.name}</span>
-                          <span className="font-semibold text-destructive">{formatCurrency(driverCost)}</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                          <span>Score: {driver.value.toFixed(1)}/7.0</span>
-                          <span>•</span>
-                          <span>Gap: {Math.round(driverGap * 100)}%</span>
-                          <span>•</span>
-                          <span>Impact weight: {Math.round(driver.weight * 100)}%</span>
-                        </div>
-                        <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-destructive rounded-full"
-                            style={{ width: `${(driverCost / results.dysfunctionCost) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <Separator />
-                <div className="flex justify-between items-center text-xl pt-2">
-                  <span className="font-bold">Total Annual Cost of Dysfunction:</span>
-                  <span className="font-bold text-destructive text-2xl">{formatCurrency(results.dysfunctionCost)}</span>
+              <div className="bg-destructive/5 border border-destructive/20 p-6 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <span className="text-xl font-bold">Total Annual Cost of Dysfunction:</span>
+                  <span className="font-bold text-destructive text-3xl">{formatCurrency(results.dysfunctionCost)}</span>
                 </div>
               </div>
 
-              <div className="prose prose-lg max-w-none">
+              <div className="prose prose-lg max-w-none mt-4">
                 <p className="text-foreground/90 leading-relaxed">
                   This is how much money you're essentially leaving on the table each year because your team isn't working as effectively as it could. It's not that people aren't trying—it's that the system has friction that slows everyone down.
                 </p>
@@ -946,7 +935,7 @@ export default function Results() {
         {results.trainingType !== 'not-sure' && (
           <>
             <section>
-              <h2 className="text-2xl font-bold mb-6">Your Training Focus Areas</h2>
+              <h2 className="text-3xl font-bold mb-6">Your Training Focus Areas</h2>
               <Card>
                 <CardContent className="pt-6 space-y-6">
                   <div className="prose prose-lg max-w-none">
@@ -1007,7 +996,7 @@ export default function Results() {
 
         {/* Priority Matrix */}
         <section>
-          <h2 id="priority-areas-heading" className="text-2xl font-bold mb-6">Where to Focus Your Efforts</h2>
+          <h2 id="priority-areas-heading" className="text-3xl font-bold mb-6">Where to Focus Your Efforts</h2>
           <PriorityMatrix drivers={results.drivers} />
         </section>
 
@@ -1015,7 +1004,7 @@ export default function Results() {
 
         {/* Driver Performance Summary */}
         <section>
-          <h2 id="driver-summary-heading" className="text-2xl font-bold mb-6">Driver Performance Summary</h2>
+          <h2 id="driver-summary-heading" className="text-3xl font-bold mb-6">Driver Performance Summary</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {results.drivers.map((driver: any, index: number) => (
               <motion.div
@@ -1082,7 +1071,7 @@ export default function Results() {
 
         {/* Training Plan - Filtered based on training type */}
         <section>
-          <h2 id="training-plan-heading" className="text-2xl font-bold mb-6">Your ProblemOps Training Plan</h2>
+          <h2 id="training-plan-heading" className="text-3xl font-bold mb-6">Your ProblemOps Training Plan</h2>
           
           {/* Training Priorities */}
           {results.trainingPriorities.length > 0 && (
@@ -1170,7 +1159,7 @@ export default function Results() {
         {Object.keys(results.recommendedDeliverables).length > 0 && (
           <>
             <section>
-              <h2 id="deliverables-heading" className="text-2xl font-bold mb-6">Recommended ProblemOps Deliverables</h2>
+              <h2 id="deliverables-heading" className="text-3xl font-bold mb-6">Recommended ProblemOps Deliverables</h2>
               <Card>
                 <CardContent className="pt-6">
                   <p className="text-muted-foreground mb-6">
@@ -1200,7 +1189,7 @@ export default function Results() {
 
         {/* Next Steps */}
         <section>
-          <h2 id="next-steps-heading" className="text-2xl font-bold mb-6">Next Steps</h2>
+          <h2 id="next-steps-heading" className="text-3xl font-bold mb-6">Next Steps</h2>
           <Card>
             <CardContent className="pt-6 space-y-6">
               <div>

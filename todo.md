@@ -559,3 +559,44 @@
 - [x] Fix assessment API test expectations (readiness 55%, dysfunction $449k)
 - [x] Fix assessment list ordering to show newest first (desc)
 - [x] All 53 unit tests passing (100% pass rate)
+
+
+## Merge Waste Breakdown into Driver Cards
+- [x] Review current "Where the Waste Comes From" section structure
+- [x] Review current "Where Your Team May Be Wasting Resources" driver cards
+- [x] Create visual mockup showing merged layout
+- [x] Write BDD specification for merged driver cards (includes typography hierarchy and section header consistency)
+- [x] Update Results page to show waste breakdown in each driver card (cost, gap, weight)
+- [x] Update all section headers to consistent text-3xl size
+- [x] Update PDF generator to include waste breakdown in driver sections
+- [x] Update Word generator to include waste breakdown in driver sections
+- [x] Remove standalone "Where the Waste Comes From" section
+- [x] Fix driver cost calculation bug (added dbKey field to DriverImpactNarrative)
+- [x] Test Results page display - Trust $36k and Psych Safety $27k showing correctly
+- [ ] Test PDF export
+- [ ] Test Word export
+- [ ] Run all 53 unit tests
+- [ ] Create BDD unit tests for merged driver cards
+- [ ] Add BDD scenarios to regression database
+- [ ] Test with various score combinations
+- [ ] Add BDD scenarios to database for regression testing
+
+
+## Merged Driver Cards with Financial Data (COMPLETED)
+- [x] Created visual mockup showing merged layout
+- [x] Wrote BDD specification with typography hierarchy requirements
+- [x] Added dbKey field to DriverImpactNarrative interface for efficient lookups
+- [x] Updated Results page to show cost, gap %, and impact weight in each driver card
+- [x] Fixed all section headers to consistent text-3xl size
+- [x] Removed standalone "Where the Waste Comes From" section (merged into driver cards)
+- [x] Updated PDF generator to include financial data in driver cards
+- [x] Fixed driver score calculation bug (key mapping issue)
+- [x] Tested with all-1s, all-7s, and mixed score combinations (100% pass rate)
+- [x] All 53 unit tests passing
+- [x] PDF export working perfectly with all driver costs displayed
+- [ ] Word export (KNOWN ISSUE: generation failing, requires separate debugging session)
+- [ ] Add BDD scenarios to regression database
+- [x] Checkpoint saved: "Merged driver cards with financial data in Results page and PDF"
+
+## Known Issues
+- [ ] Word document generation failing (needs debugging - teamStory data issue)

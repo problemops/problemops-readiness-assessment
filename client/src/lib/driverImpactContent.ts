@@ -24,6 +24,7 @@ export interface AcademicCitation {
 export interface DriverImpactNarrative {
   driverName: string;
   driverKey: string;
+  dbKey: string; // Database key for lookups (e.g., 'psych_safety', 'tms')
   score: number;
   severityLevel: SeverityLevel;
   severityLabel: string;
@@ -381,7 +382,9 @@ const DRIVER_NAMES: Record<string, string> = {
 /**
  * Generate impact narrative for a single driver
  */
-export function generateDriverImpact(driverKey: string, score: number): DriverImpactNarrative {
+export function generateDriverImpact(driverKey: string, score: number, dbKey?: string): DriverImpactNarrative {
+  // If dbKey not provided, assume driverKey is the dbKey
+  const actualDbKey = dbKey || driverKey;
   const severity = getSeverityLevel(score);
   const severityLabel = getSeverityLabel(severity);
   const citation = CITATIONS[driverKey] || { authors: 'Research Team', year: 2024, finding: 'Team effectiveness research' };
@@ -393,6 +396,7 @@ export function generateDriverImpact(driverKey: string, score: number): DriverIm
     return {
       driverName,
       driverKey,
+      dbKey: actualDbKey,
       score,
       severityLevel: severity,
       severityLabel,
@@ -408,6 +412,7 @@ export function generateDriverImpact(driverKey: string, score: number): DriverIm
     return {
       driverName,
       driverKey,
+      dbKey: actualDbKey,
       score,
       severityLevel: severity,
       severityLabel,
@@ -418,39 +423,41 @@ export function generateDriverImpact(driverKey: string, score: number): DriverIm
     };
   } else if (severity === 'low') {
     // Low risk - show minimal concerns
-    const negContent = NEGATIVE_CONTENT[driverKey];
-    const modContent = MODERATE_CONTENT[driverKey];
-    return {
-      driverName,
-      driverKey,
-      score,
-      severityLevel: severity,
-      severityLabel,
-      behavioralConsequences: negContent.behaviors.slice(0, 1),
-      wasteOutcomes: negContent.wastes.slice(0, 1),
-      citation,
-      summaryStatement: modContent?.summary(score) || `This driver at ${score}/7 shows room for improvement.`
-    };
-  } else if (severity === 'moderate') {
-    const negContent = NEGATIVE_CONTENT[driverKey];
-    const modContent = MODERATE_CONTENT[driverKey];
-    return {
-      driverName,
-      driverKey,
-      score,
-      severityLevel: severity,
-      severityLabel,
-      behavioralConsequences: negContent.behaviors.slice(0, 2),
-      wasteOutcomes: negContent.wastes.slice(0, 2),
-      citation,
-      summaryStatement: modContent.summary(score)
-    };
-  } else {
-    // Critical or high severity
     const content = NEGATIVE_CONTENT[driverKey];
     return {
       driverName,
       driverKey,
+      dbKey: actualDbKey,
+      score,
+      severityLevel: severity,
+      severityLabel,
+      behavioralConsequences: content.behaviors.slice(0, 2),
+      wasteOutcomes: content.wastes.slice(0, 3),
+      citation,
+      summaryStatement: content.summary(score)
+    };
+  } else if (severity === 'moderate') {
+    // Moderate risk
+    const content = NEGATIVE_CONTENT[driverKey];
+    return {
+      driverName,
+      driverKey,
+      dbKey: actualDbKey,
+      score,
+      severityLevel: severity,
+      severityLabel,
+      behavioralConsequences: content.behaviors.slice(0, 3),
+      wasteOutcomes: content.wastes,
+      citation,
+      summaryStatement: content.summary(score)
+    };
+  } else {
+    // High or critical risk
+    const content = NEGATIVE_CONTENT[driverKey];
+    return {
+      driverName,
+      driverKey,
+      dbKey: actualDbKey,
       score,
       severityLevel: severity,
       severityLabel,
@@ -488,7 +495,7 @@ export function generateTeamStory(drivers: Record<string, number>): {
   Object.entries(drivers).forEach(([dbKey, score]) => {
     const contentKey = driverMapping[dbKey];
     if (contentKey) {
-      impacts.push(generateDriverImpact(contentKey, score));
+      impacts.push(generateDriverImpact(contentKey, score, dbKey));
     }
   });
   
