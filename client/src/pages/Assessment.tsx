@@ -162,13 +162,20 @@ export default function Assessment() {
   const totalQuestions = 35;
   const progress = (Object.keys(answers).length / totalQuestions) * 100;
 
-  // Scroll to very top of page when component mounts
+  // Scroll to top and focus on "Tell us about your team" text
   useEffect(() => {
-    // Scroll to absolute top (0, 0)
+    // Scroll to absolute top first
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    // Also scroll the document element to ensure we're at the very top
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
+    
+    // Then focus on the "Tell us about your team" description
+    setTimeout(() => {
+      const descElement = document.getElementById('tell-us-about-team');
+      if (descElement) {
+        descElement.focus();
+      }
+    }, 100);
   }, []);
 
   // Announce progress changes
@@ -676,7 +683,7 @@ export default function Assessment() {
             {/* Common Region: Header section */}
             <div className="mb-12 space-y-4">
               <h1 className="text-4xl md:text-5xl font-bold" id="page-title">Team Cross-Functional Efficiency Readiness Assessment</h1>
-              <p className="text-muted-foreground text-lg">
+              <p className="text-muted-foreground text-lg" id="tell-us-about-team" tabIndex={-1}>
                 Tell us about your company and team so we can provide personalized insights and calculate the financial impact of team effectiveness.
               </p>
               <p className="text-sm text-muted-foreground">
