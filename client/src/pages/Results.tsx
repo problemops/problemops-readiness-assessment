@@ -194,6 +194,8 @@ export default function Results() {
         otherDeliverables,
         enhancedNarrative,
         teamStory,
+        detectedIndustry: parsed.detectedIndustry,
+        priorityMatrixData: parsed.priorityMatrixData,
       });
       setIsLoading(false);
     }
@@ -1013,7 +1015,11 @@ export default function Results() {
         {/* Priority Matrix */}
         <section>
           <h2 id="priority-areas-heading" className="text-3xl font-bold mb-6">Where to Focus Your Efforts</h2>
-          <PriorityMatrix drivers={results.drivers} />
+          <PriorityMatrix 
+            drivers={results.drivers} 
+            detectedIndustry={results.detectedIndustry}
+            priorityMatrixData={results.priorityMatrixData}
+          />
         </section>
 
         <Separator />

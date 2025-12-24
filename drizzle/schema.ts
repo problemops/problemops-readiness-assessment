@@ -50,6 +50,10 @@ export const assessments = mysqlTable("assessments", {
   readinessScore: varchar("readinessScore", { length: 10 }).notNull(), // Stored as string to preserve precision
   dysfunctionCost: varchar("dysfunctionCost", { length: 20 }).notNull(),
   
+  // Industry detection (LLM-based)
+  detectedIndustry: varchar("detectedIndustry", { length: 100 }).default("Professional Services"),
+  industryConfidence: varchar("industryConfidence", { length: 10 }), // 0.00 - 1.00
+  
   // Timestamps
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, (table) => ({
@@ -70,6 +74,7 @@ export const assessmentData = mysqlTable("assessmentData", {
   driverScores: text("driverScores").notNull(), // JSON: {trust: 3.4, ...}
   priorityAreas: text("priorityAreas"), // JSON: cached priority rankings
   roiData: text("roiData"), // JSON: cached ROI calculations
+  priorityMatrixData: text("priorityMatrixData"), // JSON: priority matrix calculations with quadrant assignments
   
   // Timestamps
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

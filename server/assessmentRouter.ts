@@ -4,6 +4,14 @@ import { getDb } from "./db";
 import { assessments, assessmentData, emailLogs } from "../drizzle/schema";
 import { eq, desc } from "drizzle-orm";
 import { randomUUID } from "crypto";
+import { classifyIndustry } from "./industryClassifier";
+import { 
+  calculatePriorityMatrix, 
+  normalizeDriverScores,
+  isValidIndustry,
+  getDefaultIndustry,
+  type Industry 
+} from "../client/src/lib/priorityMatrixCalculations";
 
 // Input validation schemas
 const createAssessmentSchema = z.object({
@@ -67,6 +75,30 @@ export const assessmentRouter = router({
         const assessmentId = randomUUID();
         console.log('[Assessment] Generated ID:', assessmentId);
         
+        // Classify industry from website (async, batch processing)
+        console.log('[Assessment] Classifying industry from website...');
+        let detectedIndustry: Industry = getDefaultIndustry();
+        let industryConfidence = 0.5;
+        
+        if (companyInfo.website) {
+          try {
+            const classification = await classifyIndustry(companyInfo.website);
+            detectedIndustry = classification.industry;
+            industryConfidence = classification.confidence;
+            console.log('[Assessment] Detected industry:', detectedIndustry, 'confidence:', industryConfidence);
+          } catch (error) {
+            console.warn('[Assessment] Industry classification failed, using default:', error);
+          }
+        } else {
+          console.log('[Assessment] No website provided, using default industry');
+        }
+        
+        // Calculate priority matrix
+        console.log('[Assessment] Calculating priority matrix...');
+        const normalizedScores = normalizeDriverScores(scores);
+        const priorityMatrix = calculatePriorityMatrix(normalizedScores, detectedIndustry);
+        console.log('[Assessment] Priority matrix calculated:', priorityMatrix.quadrantCounts);
+        
         // Get database instance
         console.log('[Assessment] Getting database connection...');
         const db = await getDb();
@@ -89,6 +121,8 @@ export const assessmentRouter = router({
           trainingType: companyInfo.trainingType,
           readinessScore: readinessScore.toFixed(4),
           dysfunctionCost: dysfunctionCost.toFixed(2),
+          detectedIndustry: detectedIndustry,
+          industryConfidence: industryConfidence.toFixed(2),
         };
         console.log('[Assessment] Assessment values:', JSON.stringify(assessmentValues));
         
@@ -103,6 +137,7 @@ export const assessmentRouter = router({
           driverScores: JSON.stringify(scores),
           priorityAreas: null,
           roiData: null,
+          priorityMatrixData: JSON.stringify(priorityMatrix),
         };
         
         await db.insert(assessmentData).values(dataValues);
@@ -180,6 +215,7 @@ export const assessmentRouter = router({
       // Parse JSON fields
       const scores = JSON.parse(data.driverScores);
       const answers = JSON.parse(data.answers);
+      const priorityMatrixData = data.priorityMatrixData ? JSON.parse(data.priorityMatrixData) : null;
       
       console.log('[Assessment] Successfully retrieved assessment:', input.id);
       
@@ -197,6 +233,9 @@ export const assessmentRouter = router({
         answers,
         readinessScore: parseFloat(assessment.readinessScore),
         dysfunctionCost: parseFloat(assessment.dysfunctionCost),
+        detectedIndustry: assessment.detectedIndustry || 'Professional Services',
+        industryConfidence: assessment.industryConfidence ? parseFloat(assessment.industryConfidence) : 0.5,
+        priorityMatrixData,
         createdAt: assessment.createdAt,
       };
     }),

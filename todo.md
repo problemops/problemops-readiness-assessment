@@ -811,3 +811,21 @@
 - [x] Update all test expectations to match new formulas
 - [x] All 79 tests passing
 - [x] Save checkpoint: 4 C's formula and priority level fix
+
+
+## Action Priority Matrix Redesign (Research-Backed Two-Dimensional)
+- [x] Research team dynamics and business value correlations
+- [x] Design calculation model with research-backed weights from meta-analyses
+- [x] Create BDD specification with 33 scenarios
+- [x] Add database columns (detectedIndustry, industryConfidence, priorityMatrixData)
+- [x] Create priorityMatrixCalculations.ts utility with industry-specific weights
+- [x] Create industryClassifier.ts for LLM-based website analysis
+- [x] Update assessment router to calculate and store matrix data
+- [x] Build new PriorityMatrix component with two-dimensional visualization
+- [x] Add axis labels (Team Impact vs Business Value)
+- [x] Add quadrant labels (Critical, High, Medium, Low)
+- [x] Add industry detection display on Results page
+- [x] Add Priority Legend explaining each quadrant
+- [x] Write unit tests for priority matrix calculations
+- [x] Verify end-to-end flow with test assessment
+- [x] Create calculation methodology documentation
