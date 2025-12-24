@@ -27,9 +27,9 @@ export default function UserGuideButton({ className = '' }: UserGuideButtonProps
       <button
         onClick={() => setIsOpen(true)}
         aria-label="Open User Guide"
+        title="User Guide"
         className={`
-          inline-flex items-center gap-2 px-3 py-2 rounded-lg
-          text-sm font-medium
+          p-2 rounded-lg
           text-primary-foreground
           bg-white/10 hover:bg-white/20
           transition-colors
@@ -38,7 +38,6 @@ export default function UserGuideButton({ className = '' }: UserGuideButtonProps
         `}
       >
         <BookOpen className="w-5 h-5" />
-        <span>User Guide</span>
       </button>
 
       <AccessibleModal

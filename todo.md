@@ -947,4 +947,16 @@
 - [x] Ensure dark mode styling: semi-transparent buttons with theme-adaptive text
 - [x] Apply consistent styling across all buttons (bg-white/10, text-primary-foreground)
 - [x] Test in both light and dark modes
+- [x] Save checkpoint
+
+
+## Top Banner Buttons Icon-Only (December 24, 2024)
+
+- [x] Remove text labels from GitHub button (keep icon only)
+- [x] Remove text labels from User Guide button (keep icon only)
+- [x] Remove text labels from Theme Toggle button (keep icon only)
+- [x] Remove text labels from Shortcuts button (keep icon only)
+- [x] Remove text labels from New Assessment button in header (keep icon only)
+- [x] Ensure proper aria-label and title attributes for accessibility
+- [x] Test in both light and dark modes
 - [ ] Save checkpoint
