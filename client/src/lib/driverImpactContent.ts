@@ -38,10 +38,9 @@ export interface DriverImpactNarrative {
  * Get severity level based on score
  */
 export function getSeverityLevel(score: number): SeverityLevel {
-  if (score <= 2) return 'critical';
+  if (score <= 2.5) return 'critical';
   if (score <= 4) return 'high';
-  if (score <= 5) return 'moderate';
-  if (score < 6) return 'low';
+  if (score <= 5.5) return 'moderate';
   return 'strength';
 }
 
@@ -53,7 +52,6 @@ export function getSeverityLabel(severity: SeverityLevel): string {
     case 'critical': return 'Critical Dysfunction';
     case 'high': return 'High Risk';
     case 'moderate': return 'Moderate Concern';
-    case 'low': return 'Low Risk';
     case 'strength': return 'Team Strength';
     default: return 'Unknown';
   }
@@ -560,7 +558,6 @@ export function getSeverityColorClass(severity: SeverityLevel): string {
     case 'critical': return 'bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800';
     case 'high': return 'bg-orange-50 border-orange-200 dark:bg-orange-950 dark:border-orange-800';
     case 'moderate': return 'bg-yellow-50 border-yellow-200 dark:bg-yellow-950 dark:border-yellow-800';
-    case 'low': return 'bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800';
     case 'strength': return 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800';
     default: return 'bg-gray-50 border-gray-200 dark:bg-gray-950 dark:border-gray-800';
   }
@@ -574,7 +571,6 @@ export function getSeverityTextClass(severity: SeverityLevel): string {
     case 'critical': return 'text-red-700 dark:text-red-300';
     case 'high': return 'text-orange-700 dark:text-orange-300';
     case 'moderate': return 'text-yellow-700 dark:text-yellow-300';
-    case 'low': return 'text-blue-700 dark:text-blue-300';
     case 'strength': return 'text-green-700 dark:text-green-300';
     default: return 'text-gray-700 dark:text-gray-300';
   }
@@ -588,7 +584,6 @@ export function getSeverityBadgeClass(severity: SeverityLevel): string {
     case 'critical': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
     case 'high': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
     case 'moderate': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-    case 'low': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
     case 'strength': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
     default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
   }
