@@ -1,0 +1,60 @@
+{
+  "query": "SELECT COUNT(*) as total, epic_number, epic_name FROM bdd_test_scenarios GROUP BY epic_number, epic_name ORDER BY epic_number;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TnkFjGBKdfpupi.root --database B3x5NWCFiG4wF9DctXvqsL --execute SELECT COUNT(*) as total, epic_number, epic_name FROM bdd_test_scenarios GROUP BY epic_number, epic_name ORDER BY epic_number;",
+  "rows": [
+    {
+      "total": "1",
+      "epic_number": "0",
+      "epic_name": "BDD Test Database Metadata"
+    },
+    {
+      "total": "2",
+      "epic_number": "1",
+      "epic_name": "Color Contrast Compliance"
+    },
+    {
+      "total": "2",
+      "epic_number": "11",
+      "epic_name": "Training Option Configuration"
+    },
+    {
+      "total": "2",
+      "epic_number": "14",
+      "epic_name": "ROI Calculation Logic"
+    },
+    {
+      "total": "2",
+      "epic_number": "24",
+      "epic_name": "Dark Mode Toggle"
+    },
+    {
+      "total": "2",
+      "epic_number": "26",
+      "epic_name": "Page Autofocus Behavior"
+    },
+    {
+      "total": "7",
+      "epic_number": "27",
+      "epic_name": "PowerPoint Export Feature"
+    },
+    {
+      "total": "10",
+      "epic_number": "28",
+      "epic_name": "Dynamic Driver Impact Analysis"
+    },
+    {
+      "total": "5",
+      "epic_number": "29",
+      "epic_name": "Your Team Current Story Section"
+    },
+    {
+      "total": "3",
+      "epic_number": "30",
+      "epic_name": "Positive Impact Narratives"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tepic_number\tepic_name\n1\t0\tBDD Test Database Metadata\n2\t1\tColor Contrast Compliance\n2\t11\tTraining Option Configuration\n2\t14\tROI Calculation Logic\n2\t24\tDark Mode Toggle\n2\t26\tPage Autofocus Behavior\n7\t27\tPowerPoint Export Feature\n10\t28\tDynamic Driver Impact Analysis\n5\t29\tYour Team Current Story Section\n3\t30\tPositive Impact Narratives\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

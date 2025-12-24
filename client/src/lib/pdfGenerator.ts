@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+import { generateTeamStory, DriverImpactNarrative } from './driverImpactContent';
 
 type Driver = {
   id: string;
@@ -69,6 +70,12 @@ type AssessmentData = {
   trainingPriorities?: TrainingPriority[];
   recommendedDeliverables?: Record<string, string[]>;
   enhancedNarrative?: string;
+  teamStory?: {
+    narrative: string;
+    driverImpacts: DriverImpactNarrative[];
+    strengths: DriverImpactNarrative[];
+    overallSeverity: string;
+  };
   trainingType?: string;
   recommendedAreas?: Array<{id: string; name: string; score: number; weight: number; description: string}>;
 };
@@ -513,19 +520,173 @@ export class SlidePDFGenerator {
   // Page 12: Team Narrative
   private generateTeamNarrative() {
     this.addPage();
-    this.setTitle('Your Team Story');
-    this.setSubtitle('A Qualitative Analysis of Team Dynamics', 45);
+    this.setTitle('Your Team\'s Current Story');
+    this.setSubtitle('Understanding How Team Dynamics Impact Your Bottom Line', 45);
     
     let y = 70;
     
-    const narrative = this.generateNarrativeText();
-    
+    // Overview narrative
+    const narrative = this.data.teamStory?.narrative || this.generateNarrativeText();
     this.doc.setFontSize(11);
     this.doc.setFont('helvetica', 'normal');
     const lines = this.doc.splitTextToSize(narrative, CONTENT_WIDTH);
     this.doc.text(lines, MARGIN, y);
+    y += lines.length * 5 + 15;
+    
+    // Areas Causing Waste
+    if (this.data.teamStory?.driverImpacts && this.data.teamStory.driverImpacts.length > 0) {
+      this.doc.setFontSize(14);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.setTextColor(220, 38, 38); // Red
+      this.doc.text('Where Your Team May Be Wasting Resources', MARGIN, y);
+      this.doc.setTextColor(0, 0, 0);
+      y += 10;
+      
+      for (const impact of this.data.teamStory.driverImpacts.slice(0, 3)) {
+        // Check if we need a new page
+        if (y > PAGE_HEIGHT - 80) {
+          this.addFooter(12);
+          this.addPage();
+          y = 30;
+        }
+        
+        // Driver name and severity
+        this.doc.setFontSize(12);
+        this.doc.setFont('helvetica', 'bold');
+        this.doc.text(`${impact.driverName} (Score: ${impact.score.toFixed(1)}/7.0)`, MARGIN, y);
+        y += 6;
+        
+        // Severity badge
+        this.doc.setFontSize(9);
+        this.doc.setFont('helvetica', 'normal');
+        const severityColor = impact.severityLevel === 'critical' ? [220, 38, 38] : 
+                              impact.severityLevel === 'high' ? [234, 88, 12] : [202, 138, 4];
+        this.doc.setTextColor(severityColor[0], severityColor[1], severityColor[2]);
+        this.doc.text(`${impact.severityLabel}`, MARGIN, y);
+        this.doc.setTextColor(0, 0, 0);
+        y += 6;
+        
+        // Summary statement
+        this.doc.setFontSize(10);
+        const summaryLines = this.doc.splitTextToSize(impact.summaryStatement, CONTENT_WIDTH);
+        this.doc.text(summaryLines, MARGIN, y);
+        y += summaryLines.length * 4 + 4;
+        
+        // Behavioral consequences
+        this.doc.setFontSize(9);
+        this.doc.setFont('helvetica', 'bold');
+        this.doc.text('Team Behaviors:', MARGIN, y);
+        y += 5;
+        this.doc.setFont('helvetica', 'normal');
+        for (const behavior of impact.behavioralConsequences.slice(0, 2)) {
+          const behaviorLines = this.doc.splitTextToSize(`• ${behavior}`, CONTENT_WIDTH - 5);
+          this.doc.text(behaviorLines, MARGIN + 3, y);
+          y += behaviorLines.length * 4;
+        }
+        y += 4;
+        
+        // Waste outcomes
+        this.doc.setFontSize(9);
+        this.doc.setFont('helvetica', 'bold');
+        this.doc.text('Leads to Waste In:', MARGIN, y);
+        y += 5;
+        this.doc.setFont('helvetica', 'normal');
+        const wasteText = impact.wasteOutcomes.map((w: any) => w.category).join(', ');
+        const wasteLines = this.doc.splitTextToSize(wasteText, CONTENT_WIDTH);
+        this.doc.text(wasteLines, MARGIN, y);
+        y += wasteLines.length * 4 + 4;
+        
+        // Citation
+        this.doc.setFontSize(8);
+        this.doc.setTextColor(100, 100, 100);
+        const citationText = `Research: ${impact.citation.finding} (${impact.citation.authors}, ${impact.citation.year})`;
+        const citationLines = this.doc.splitTextToSize(citationText, CONTENT_WIDTH);
+        this.doc.text(citationLines, MARGIN, y);
+        this.doc.setTextColor(0, 0, 0);
+        y += citationLines.length * 4 + 10;
+      }
+    }
     
     this.addFooter(12);
+    
+    // Add strengths on a new page if they exist
+    if (this.data.teamStory?.strengths && this.data.teamStory.strengths.length > 0) {
+      this.generateTeamStrengths();
+    }
+  }
+  
+  private generateTeamStrengths() {
+    this.addPage();
+    this.setTitle('Where Your Team Excels');
+    this.setSubtitle('Drivers Contributing to Efficiency and Productivity', 45);
+    
+    let y = 70;
+    
+    for (const strength of this.data.teamStory!.strengths.slice(0, 4)) {
+      // Check if we need a new page
+      if (y > PAGE_HEIGHT - 70) {
+        this.addFooter(13);
+        this.addPage();
+        y = 30;
+      }
+      
+      // Driver name and score
+      this.doc.setFontSize(12);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.setTextColor(22, 163, 74); // Green
+      this.doc.text(`${strength.driverName} (Score: ${strength.score.toFixed(1)}/7.0)`, MARGIN, y);
+      this.doc.setTextColor(0, 0, 0);
+      y += 6;
+      
+      // Strength label
+      this.doc.setFontSize(9);
+      this.doc.setFont('helvetica', 'normal');
+      this.doc.setTextColor(22, 163, 74);
+      this.doc.text(`${strength.severityLabel}`, MARGIN, y);
+      this.doc.setTextColor(0, 0, 0);
+      y += 6;
+      
+      // Summary statement
+      this.doc.setFontSize(10);
+      const summaryLines = this.doc.splitTextToSize(strength.summaryStatement, CONTENT_WIDTH);
+      this.doc.text(summaryLines, MARGIN, y);
+      y += summaryLines.length * 4 + 4;
+      
+      // Positive behaviors
+      this.doc.setFontSize(9);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text('Positive Team Behaviors:', MARGIN, y);
+      y += 5;
+      this.doc.setFont('helvetica', 'normal');
+      for (const behavior of strength.behavioralConsequences.slice(0, 2)) {
+        const behaviorLines = this.doc.splitTextToSize(`✓ ${behavior}`, CONTENT_WIDTH - 5);
+        this.doc.text(behaviorLines, MARGIN + 3, y);
+        y += behaviorLines.length * 4;
+      }
+      y += 4;
+      
+      // Efficiency gains
+      this.doc.setFontSize(9);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text('Drives Efficiency In:', MARGIN, y);
+      y += 5;
+      this.doc.setFont('helvetica', 'normal');
+      const efficiencyText = strength.wasteOutcomes.map((w: any) => w.category).join(', ');
+      const efficiencyLines = this.doc.splitTextToSize(efficiencyText, CONTENT_WIDTH);
+      this.doc.text(efficiencyLines, MARGIN, y);
+      y += efficiencyLines.length * 4 + 4;
+      
+      // Citation
+      this.doc.setFontSize(8);
+      this.doc.setTextColor(100, 100, 100);
+      const citationText = `Research: ${strength.citation.finding} (${strength.citation.authors}, ${strength.citation.year})`;
+      const citationLines = this.doc.splitTextToSize(citationText, CONTENT_WIDTH);
+      this.doc.text(citationLines, MARGIN, y);
+      this.doc.setTextColor(0, 0, 0);
+      y += citationLines.length * 4 + 10;
+    }
+    
+    this.addFooter(13);
   }
 
   private generateNarrativeText(): string {

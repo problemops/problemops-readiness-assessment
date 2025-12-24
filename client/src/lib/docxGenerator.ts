@@ -1,4 +1,5 @@
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } from "docx";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle, ShadingType } from "docx";
+import { generateTeamStory, DriverImpactNarrative } from './driverImpactContent';
 
 interface AssessmentData {
   id: string;
@@ -12,6 +13,12 @@ interface AssessmentData {
   priorityAreas: Array<{ driver: string; score: number; priority: string }>;
   trainingType: string;
   recommendedAreas: string[];
+  teamStory?: {
+    narrative: string;
+    driverImpacts: DriverImpactNarrative[];
+    strengths: DriverImpactNarrative[];
+    overallSeverity: string;
+  };
 }
 
 export async function generateWordDocument(data: AssessmentData): Promise<Blob> {
@@ -88,6 +95,124 @@ export async function generateWordDocument(data: AssessmentData): Promise<Blob> 
           ],
           spacing: { after: 400 },
         }),
+        
+        // Page Break
+        new Paragraph({ text: "", pageBreakBefore: true }),
+        
+        // Your Team's Current Story
+        new Paragraph({
+          text: "Your Team's Current Story",
+          heading: HeadingLevel.HEADING_1,
+          spacing: { before: 400, after: 200 },
+        }),
+        new Paragraph({
+          text: data.teamStory?.narrative || `Your team demonstrates a readiness score of ${data.readinessScore.toFixed(1)}/7.0, indicating areas for improvement in cross-functional effectiveness.`,
+          spacing: { after: 300 },
+        }),
+        
+        // Areas Causing Waste
+        ...(data.teamStory?.driverImpacts && data.teamStory.driverImpacts.length > 0 ? [
+          new Paragraph({
+            text: "Where Your Team May Be Wasting Resources",
+            heading: HeadingLevel.HEADING_2,
+            spacing: { before: 300, after: 200 },
+          }),
+          new Paragraph({
+            text: "Based on your scores, these drivers are likely contributing to lost productivity, rework, and delays:",
+            spacing: { after: 200 },
+          }),
+          ...data.teamStory.driverImpacts.flatMap((impact: DriverImpactNarrative) => [
+            new Paragraph({
+              children: [
+                new TextRun({ text: `${impact.driverName} `, bold: true, size: 24 }),
+                new TextRun({ text: `(Score: ${impact.score.toFixed(1)}/7.0) - `, size: 22 }),
+                new TextRun({ text: impact.severityLabel, bold: true, color: impact.severityLevel === 'critical' ? 'DC2626' : impact.severityLevel === 'high' ? 'EA580C' : 'CA8A04' }),
+              ],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: impact.summaryStatement,
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Team Behaviors: ", bold: true }),
+              ],
+              spacing: { after: 50 },
+            }),
+            ...impact.behavioralConsequences.slice(0, 3).map((behavior: string) => 
+              new Paragraph({
+                text: `• ${behavior}`,
+                spacing: { after: 50 },
+              })
+            ),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Leads to Waste In: ", bold: true }),
+                new TextRun({ text: impact.wasteOutcomes.map((w: any) => w.category).join(', ') }),
+              ],
+              spacing: { after: 50 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `Research: ${impact.citation.finding} (${impact.citation.authors}, ${impact.citation.year})`, italics: true, size: 18 }),
+              ],
+              spacing: { after: 200 },
+            }),
+          ]),
+        ] : []),
+        
+        // Team Strengths
+        ...(data.teamStory?.strengths && data.teamStory.strengths.length > 0 ? [
+          new Paragraph({
+            text: "Where Your Team Excels",
+            heading: HeadingLevel.HEADING_2,
+            spacing: { before: 300, after: 200 },
+          }),
+          new Paragraph({
+            text: "These high-scoring drivers are contributing to your team's efficiency and productivity:",
+            spacing: { after: 200 },
+          }),
+          ...data.teamStory.strengths.flatMap((strength: DriverImpactNarrative) => [
+            new Paragraph({
+              children: [
+                new TextRun({ text: `${strength.driverName} `, bold: true, size: 24 }),
+                new TextRun({ text: `(Score: ${strength.score.toFixed(1)}/7.0) - `, size: 22 }),
+                new TextRun({ text: strength.severityLabel, bold: true, color: '16A34A' }),
+              ],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: strength.summaryStatement,
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Positive Team Behaviors: ", bold: true }),
+              ],
+              spacing: { after: 50 },
+            }),
+            ...strength.behavioralConsequences.slice(0, 3).map((behavior: string) => 
+              new Paragraph({
+                text: `✓ ${behavior}`,
+                spacing: { after: 50 },
+              })
+            ),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Drives Efficiency In: ", bold: true }),
+                new TextRun({ text: strength.wasteOutcomes.map((w: any) => w.category).join(', ') }),
+              ],
+              spacing: { after: 50 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: `Research: ${strength.citation.finding} (${strength.citation.authors}, ${strength.citation.year})`, italics: true, size: 18 }),
+              ],
+              spacing: { after: 200 },
+            }),
+          ]),
+        ] : []),
         
         // Page Break
         new Paragraph({ text: "", pageBreakBefore: true }),

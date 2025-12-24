@@ -16,6 +16,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { calculate4CsScores, getRecommendedDeliverables } from "@/lib/fourCsScoring";
 import { generateTrainingPlan, getTrainingPriorities } from "@/lib/problemOpsTrainingPlan";
 import { generateTeamNarrative as generateEnhancedNarrative, type CompanyContext } from "@/lib/companyAnalysis";
+import { generateTeamStory, getSeverityColorClass, getSeverityBadgeClass, getSeverityTextClass, type DriverImpactNarrative } from "@/lib/driverImpactContent";
 import { 
   TRAINING_OPTIONS, 
   getPriorityAreas, 
@@ -158,6 +159,13 @@ export default function Results() {
         companyContext,
         fourCsAnalysis.scores
       );
+
+      // Generate team story with driver impact analysis
+      const driverScoresForStory: Record<string, number> = {};
+      drivers.forEach(d => {
+        driverScoresForStory[d.id] = d.value;
+      });
+      const teamStory = generateTeamStory(driverScoresForStory);
       
       setResults({
         drivers,
@@ -177,6 +185,7 @@ export default function Results() {
         trainingPriorities,
         recommendedDeliverables,
         enhancedNarrative,
+        teamStory,
       });
       setIsLoading(false);
     }
@@ -694,6 +703,155 @@ export default function Results() {
 
         <Separator />
 
+        {/* Your Team's Current Story - Enhanced with Driver Impact Analysis */}
+        <section>
+          <h2 id="team-story-heading" className="text-2xl font-bold mb-6">Your Team's Current Story</h2>
+          <Card>
+            <CardContent className="pt-6 space-y-6">
+              {/* Overview Narrative */}
+              <div className="prose prose-lg max-w-none">
+                <p className="text-foreground/90 leading-relaxed">
+                  {results.teamStory?.narrative || results.enhancedNarrative}
+                </p>
+              </div>
+
+              {/* Areas Causing Waste */}
+              {results.teamStory?.driverImpacts && results.teamStory.driverImpacts.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold flex items-center gap-2 text-destructive">
+                    <AlertTriangle className="h-5 w-5" />
+                    Where Your Team May Be Wasting Resources
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Based on your scores, these drivers are likely contributing to lost productivity, rework, and delays:
+                  </p>
+                  <div className="space-y-4">
+                    {results.teamStory.driverImpacts.map((impact: any, index: number) => (
+                      <div key={impact.driverKey} className={`p-4 rounded-lg border-l-4 ${
+                        impact.severityLevel === 'critical' ? 'bg-red-50 dark:bg-red-950/20 border-l-red-500' :
+                        impact.severityLevel === 'high' ? 'bg-orange-50 dark:bg-orange-950/20 border-l-orange-500' :
+                        'bg-yellow-50 dark:bg-yellow-950/20 border-l-yellow-500'
+                      }`}>
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h4 className="font-semibold text-lg">{impact.driverName}</h4>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                                impact.severityLevel === 'critical' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                                impact.severityLevel === 'high' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
+                                'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                              }`}>
+                                {impact.severityLabel}
+                              </span>
+                              <span className="text-sm text-muted-foreground">Score: {impact.score.toFixed(1)}/7.0</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <p className="text-sm text-foreground/80 mb-3">{impact.summaryStatement}</p>
+                        
+                        {/* Behavioral Consequences */}
+                        <div className="mb-3">
+                          <p className="text-xs font-semibold text-muted-foreground mb-1">Team Behaviors You May See:</p>
+                          <ul className="text-sm space-y-1">
+                            {impact.behavioralConsequences.slice(0, 3).map((behavior: string, i: number) => (
+                              <li key={i} className="flex items-start gap-2">
+                                <span className="text-destructive">•</span>
+                                <span>{behavior}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        
+                        {/* Waste Outcomes */}
+                        <div className="bg-white/50 dark:bg-black/20 rounded p-3">
+                          <p className="text-xs font-semibold text-muted-foreground mb-2">This Leads To Waste In:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {impact.wasteOutcomes.map((waste: any, i: number) => (
+                              <span key={i} className="inline-flex items-center gap-1 px-2 py-1 bg-destructive/10 text-destructive text-xs rounded">
+                                {waste.category}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Academic Citation */}
+                        <p className="text-xs text-muted-foreground mt-3 italic">
+                          Research: {impact.citation.finding} ({impact.citation.authors}, {impact.citation.year})
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Team Strengths */}
+              {results.teamStory?.strengths && results.teamStory.strengths.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold flex items-center gap-2 text-green-600 dark:text-green-500">
+                    <CheckCircle2 className="h-5 w-5" />
+                    Where Your Team Excels
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    These high-scoring drivers are contributing to your team's efficiency and productivity:
+                  </p>
+                  <div className="space-y-4">
+                    {results.teamStory.strengths.map((strength: any, index: number) => (
+                      <div key={strength.driverKey} className="p-4 rounded-lg bg-green-50 dark:bg-green-950/20 border-l-4 border-l-green-500">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h4 className="font-semibold text-lg">{strength.driverName}</h4>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                                {strength.severityLabel}
+                              </span>
+                              <span className="text-sm text-muted-foreground">Score: {strength.score.toFixed(1)}/7.0</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <p className="text-sm text-foreground/80 mb-3">{strength.summaryStatement}</p>
+                        
+                        {/* Positive Behaviors */}
+                        <div className="mb-3">
+                          <p className="text-xs font-semibold text-muted-foreground mb-1">Positive Team Behaviors:</p>
+                          <ul className="text-sm space-y-1">
+                            {strength.behavioralConsequences.slice(0, 3).map((behavior: string, i: number) => (
+                              <li key={i} className="flex items-start gap-2">
+                                <span className="text-green-600">✓</span>
+                                <span>{behavior}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        
+                        {/* Efficiency Gains */}
+                        <div className="bg-white/50 dark:bg-black/20 rounded p-3">
+                          <p className="text-xs font-semibold text-muted-foreground mb-2">This Drives Efficiency In:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {strength.wasteOutcomes.map((outcome: any, i: number) => (
+                              <span key={i} className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs rounded">
+                                {outcome.category}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Academic Citation */}
+                        <p className="text-xs text-muted-foreground mt-3 italic">
+                          Research: {strength.citation.finding} ({strength.citation.authors}, {strength.citation.year})
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </section>
+
+        <Separator />
+
         {/* Cost of Dysfunction Breakdown */}
         <section aria-labelledby="cost-breakdown-heading">
           <h2 id="cost-breakdown-heading" className="text-2xl font-bold mb-6">Understanding Your Cost of Dysfunction</h2>
@@ -909,22 +1067,6 @@ export default function Results() {
         {/* 4 C's Framework Analysis */}
         <section>
           <FourCsChart analysis={results.fourCsAnalysis} />
-        </section>
-
-        <Separator />
-
-        {/* Team Narrative */}
-        <section>
-          <h2 id="team-story-heading" className="text-2xl font-bold mb-6">Your Team's Story</h2>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="prose prose-lg max-w-none">
-                <p className="text-foreground/90 leading-relaxed">
-                  {results.enhancedNarrative}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
         </section>
 
         <Separator />

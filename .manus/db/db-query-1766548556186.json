@@ -1,0 +1,35 @@
+{
+  "query": "SELECT id, companyName, readinessScore FROM assessments ORDER BY createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TnkFjGBKdfpupi.root --database B3x5NWCFiG4wF9DctXvqsL --execute SELECT id, companyName, readinessScore FROM assessments ORDER BY createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "eb0dbdaa-5950-48a8-93ae-0e59728f6637",
+      "companyName": "Minimal Company",
+      "readinessScore": "0.5503"
+    },
+    {
+      "id": "df8038b9-68d4-4469-b763-3db358cd5e90",
+      "companyName": "Minimal Company",
+      "readinessScore": "0.5503"
+    },
+    {
+      "id": "c9b6e442-3d7c-4f3a-a138-3cd678d0c906",
+      "companyName": "Minimal Company",
+      "readinessScore": "0.5503"
+    },
+    {
+      "id": "a7042220-e544-4cfb-92ef-0dbb39bd0925",
+      "companyName": "Minimal Company",
+      "readinessScore": "0.5503"
+    },
+    {
+      "id": "aeb15f87-334e-49b5-8a87-a831b6b8015a",
+      "companyName": "Minimal Company",
+      "readinessScore": "0.5503"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcompanyName\treadinessScore\neb0dbdaa-5950-48a8-93ae-0e59728f6637\tMinimal Company\t0.5503\ndf8038b9-68d4-4469-b763-3db358cd5e90\tMinimal Company\t0.5503\nc9b6e442-3d7c-4f3a-a138-3cd678d0c906\tMinimal Company\t0.5503\na7042220-e544-4cfb-92ef-0dbb39bd0925\tMinimal Company\t0.5503\naeb15f87-334e-49b5-8a87-a831b6b8015a\tMinimal Company\t0.5503\n",
+  "stderr": "",
+  "execution_time_ms": 48
+}

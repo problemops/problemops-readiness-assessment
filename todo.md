@@ -515,3 +515,20 @@
 - [x] Investigate "Failed to generate Word document" error
 - [x] Fix error in docxGenerator.ts or Results.tsx (converted drivers array to object, added null checks)
 - [x] Test Word document download successfully generates DOCX file
+
+## Driver Impact Analysis Feature
+- [x] Review literature review document for academic context on 7 drivers
+- [x] Review slide deck on performing teams for additional insights
+- [x] Review case study template for practical applications
+- [x] Create BDD scenarios for dynamic driver impact display
+- [x] Design driver impact content structure (consequences, waste metrics)
+- [x] Rename "Your Team's Story" to "Your Team's Current Story"
+- [x] Move section to above "Understanding Your Cost of Dysfunction"
+- [x] Add waste analysis showing how team behaviors lead to lost money
+- [x] Include specific waste examples: bugs, tickets, rework, cycle time, throughput
+- [x] Update Results page with driver impact analysis
+- [x] Update PDF generator with driver impact analysis
+- [x] Update Word document generator with driver impact analysis
+- [x] Include academic citations and research-backed insights
+- [x] Test all three outputs with various score combinations (38 unit tests passed)
+- [x] Add BDD scenarios to database for regression testing (18 scenarios added to Epics 28, 29, 30)
