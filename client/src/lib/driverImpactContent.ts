@@ -472,9 +472,25 @@ export function generateTeamStory(drivers: Record<string, number>): {
   concerns: DriverImpactNarrative[];
   overallSeverity: SeverityLevel;
 } {
-  const driverKeys = ['trust', 'communication', 'goalAlignment', 'psychologicalSafety', 'conflictResolution', 'roleClarity', 'decisionMaking'];
+  // Map from database driver IDs to content driver keys
+  const driverMapping: Record<string, string> = {
+    'trust': 'trust',
+    'psych_safety': 'psychologicalSafety',
+    'tms': 'roleClarity', // Transactive Memory = knowing who knows what
+    'comm_quality': 'communication',
+    'goal_clarity': 'goalAlignment',
+    'coordination': 'conflictResolution', // Coordination issues often stem from conflict
+    'team_cognition': 'decisionMaking' // Team cognition = collective decision making
+  };
   
-  const impacts = driverKeys.map(key => generateDriverImpact(key, drivers[key] || 4));
+  // Convert database driver IDs to content driver keys and generate impacts
+  const impacts: DriverImpactNarrative[] = [];
+  Object.entries(drivers).forEach(([dbKey, score]) => {
+    const contentKey = driverMapping[dbKey];
+    if (contentKey) {
+      impacts.push(generateDriverImpact(contentKey, score));
+    }
+  });
   
   // Separate strengths and concerns
   const strengths = impacts.filter(i => i.severityLevel === 'strength');

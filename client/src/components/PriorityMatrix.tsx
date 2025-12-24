@@ -35,6 +35,9 @@ export default function PriorityMatrix({ drivers }: PriorityMatrixProps) {
       color: "text-red-600",
       bgColor: "bg-red-50 dark:bg-red-950/20",
       borderColor: "border-red-600",
+      labelBg: "bg-red-100 dark:bg-red-900/60",
+      labelText: "text-red-800 dark:text-red-200",
+      labelBorder: "border-red-300 dark:border-red-700",
       description: "High impact, low performance - Fix these first for maximum ROI",
     },
     strength: {
@@ -43,6 +46,9 @@ export default function PriorityMatrix({ drivers }: PriorityMatrixProps) {
       color: "text-green-600",
       bgColor: "bg-green-50 dark:bg-green-950/20",
       borderColor: "border-green-600",
+      labelBg: "bg-green-100 dark:bg-green-900/60",
+      labelText: "text-green-800 dark:text-green-200",
+      labelBorder: "border-green-300 dark:border-green-700",
       description: "High impact, high performance - Maintain these",
     },
     monitor: {
@@ -51,6 +57,9 @@ export default function PriorityMatrix({ drivers }: PriorityMatrixProps) {
       color: "text-yellow-600",
       bgColor: "bg-yellow-50 dark:bg-yellow-950/20",
       borderColor: "border-yellow-600",
+      labelBg: "bg-yellow-100 dark:bg-yellow-900/60",
+      labelText: "text-yellow-800 dark:text-yellow-200",
+      labelBorder: "border-yellow-300 dark:border-yellow-700",
       description: "Lower impact, low performance - Address after critical priorities",
     },
     stable: {
@@ -59,6 +68,9 @@ export default function PriorityMatrix({ drivers }: PriorityMatrixProps) {
       color: "text-blue-600",
       bgColor: "bg-blue-50 dark:bg-blue-950/20",
       borderColor: "border-blue-600",
+      labelBg: "bg-blue-100 dark:bg-blue-900/60",
+      labelText: "text-blue-800 dark:text-blue-200",
+      labelBorder: "border-blue-300 dark:border-blue-700",
       description: "Lower impact, high performance - Keep doing what you're doing",
     },
   };
@@ -71,10 +83,25 @@ export default function PriorityMatrix({ drivers }: PriorityMatrixProps) {
   };
 
   // Calculate position in chart (0-100 scale for both axes)
+  // Add padding to keep labels within bounds
   const getPosition = (driver: Driver) => {
-    const x = ((driver.value - 1) / 6) * 100; // Score 1-7 mapped to 0-100
-    const y = ((driver.weight - 0.10) / 0.10) * 100; // Weight ~0.12-0.18 mapped to 0-100
+    const x = 10 + ((driver.value - 1) / 6) * 80; // Score 1-7 mapped to 10-90 (with padding)
+    const y = 10 + ((driver.weight - 0.10) / 0.10) * 80; // Weight ~0.12-0.18 mapped to 10-90
     return { x, y: 100 - y }; // Invert Y so high impact is at top
+  };
+
+  // Get abbreviated driver name for compact display
+  const getAbbreviatedName = (name: string) => {
+    const abbreviations: Record<string, string> = {
+      "Trust": "Trust",
+      "Psychological Safety": "Psych Safety",
+      "Transactive Memory": "Trans. Memory",
+      "Communication Quality": "Comm Quality",
+      "Goal Clarity": "Goal Clarity",
+      "Coordination": "Coordination",
+      "Team Cognition": "Team Cognition",
+    };
+    return abbreviations[name] || name;
   };
 
   return (
@@ -88,7 +115,12 @@ export default function PriorityMatrix({ drivers }: PriorityMatrixProps) {
           </p>
         </CardHeader>
         <CardContent>
-          <div className="relative w-full aspect-square max-w-2xl mx-auto border-2 border-border rounded-lg overflow-hidden">
+          <div 
+            className="relative w-full max-w-3xl mx-auto border-2 border-border rounded-lg overflow-visible"
+            style={{ aspectRatio: '4/3', minHeight: '400px' }}
+            role="img"
+            aria-label="Action Priority Matrix showing 7 drivers plotted by impact and performance"
+          >
             {/* Quadrant backgrounds */}
             <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
               <div className="bg-red-50/50 dark:bg-red-950/10 border-r border-b border-border" />
@@ -98,38 +130,32 @@ export default function PriorityMatrix({ drivers }: PriorityMatrixProps) {
             </div>
 
             {/* Axis labels */}
-            <div className="absolute top-2 left-2 text-xs font-medium text-muted-foreground bg-background/80 px-2 py-1 rounded">
-              High Impact
+            <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 -rotate-90 text-xs font-medium text-muted-foreground bg-background/90 px-2 py-1 rounded whitespace-nowrap">
+              ← Low Impact | High Impact →
             </div>
-            <div className="absolute bottom-2 left-2 text-xs font-medium text-muted-foreground bg-background/80 px-2 py-1 rounded">
-              Low Impact
-            </div>
-            <div className="absolute bottom-2 left-2 text-xs font-medium text-muted-foreground bg-background/80 px-2 py-1 rounded">
-              Low Score
-            </div>
-            <div className="absolute bottom-2 right-2 text-xs font-medium text-muted-foreground bg-background/80 px-2 py-1 rounded">
-              High Score
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full mt-2 text-xs font-medium text-muted-foreground bg-background/90 px-2 py-1 rounded whitespace-nowrap">
+              ← Low Score | High Score →
             </div>
 
             {/* Quadrant labels */}
-            <div className="absolute top-[15%] left-[15%] text-center">
-              <AlertTriangle className="h-6 w-6 text-red-600 mx-auto mb-1" />
-              <div className="text-xs font-semibold text-red-700 dark:text-red-400">Critical</div>
+            <div className="absolute top-2 left-2 text-center pointer-events-none">
+              <AlertTriangle className="h-5 w-5 text-red-600/60 mx-auto mb-0.5" />
+              <div className="text-[10px] font-semibold text-red-700/60 dark:text-red-400/60">CRITICAL</div>
             </div>
-            <div className="absolute top-[15%] right-[15%] text-center">
-              <CheckCircle2 className="h-6 w-6 text-green-600 mx-auto mb-1" />
-              <div className="text-xs font-semibold text-green-700 dark:text-green-400">Strengths</div>
+            <div className="absolute top-2 right-2 text-center pointer-events-none">
+              <CheckCircle2 className="h-5 w-5 text-green-600/60 mx-auto mb-0.5" />
+              <div className="text-[10px] font-semibold text-green-700/60 dark:text-green-400/60">STRENGTHS</div>
             </div>
-            <div className="absolute bottom-[15%] left-[15%] text-center">
-              <Eye className="h-6 w-6 text-yellow-600 mx-auto mb-1" />
-              <div className="text-xs font-semibold text-yellow-700 dark:text-yellow-400">Monitor</div>
+            <div className="absolute bottom-2 left-2 text-center pointer-events-none">
+              <Eye className="h-5 w-5 text-yellow-600/60 mx-auto mb-0.5" />
+              <div className="text-[10px] font-semibold text-yellow-700/60 dark:text-yellow-400/60">MONITOR</div>
             </div>
-            <div className="absolute bottom-[15%] right-[15%] text-center">
-              <TrendingUp className="h-6 w-6 text-blue-600 mx-auto mb-1" />
-              <div className="text-xs font-semibold text-blue-700 dark:text-blue-400">Stable</div>
+            <div className="absolute bottom-2 right-2 text-center pointer-events-none">
+              <TrendingUp className="h-5 w-5 text-blue-600/60 mx-auto mb-0.5" />
+              <div className="text-[10px] font-semibold text-blue-700/60 dark:text-blue-400/60">STABLE</div>
             </div>
 
-            {/* Plot drivers */}
+            {/* Plot drivers with always-visible labels */}
             {drivers.map((driver) => {
               const pos = getPosition(driver);
               const quadrant = getQuadrant(driver);
@@ -138,23 +164,50 @@ export default function PriorityMatrix({ drivers }: PriorityMatrixProps) {
               return (
                 <div
                   key={driver.id}
-                  className="absolute transform -translate-x-1/2 -translate-y-1/2 group"
+                  className="absolute transform -translate-x-1/2 -translate-y-1/2 z-10"
                   style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
+                  role="listitem"
+                  aria-label={`${driver.name}: Score ${driver.value.toFixed(1)} out of 7, ${quadrant} priority`}
                 >
+                  {/* Always-visible label badge */}
                   <div
-                    className={`w-3 h-3 rounded-full ${info.bgColor} ${info.borderColor} border-2 cursor-pointer transition-transform hover:scale-150`}
-                  />
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                    <div className="bg-popover text-popover-foreground text-xs px-3 py-2 rounded-lg shadow-lg border border-border whitespace-nowrap">
-                      <div className="font-semibold">{driver.name}</div>
-                      <div className="text-muted-foreground">
-                        Score: {driver.value.toFixed(1)} | Impact: {Math.round(driver.weight * 100)}%
-                      </div>
+                    className={`
+                      px-2 py-1.5 rounded-lg border shadow-sm
+                      ${info.labelBg} ${info.labelText} ${info.labelBorder}
+                      text-center whitespace-nowrap
+                      transition-transform hover:scale-105 hover:shadow-md
+                    `}
+                  >
+                    <div className="text-xs font-semibold leading-tight">
+                      {getAbbreviatedName(driver.name)}
+                    </div>
+                    <div className="text-[10px] font-medium opacity-80">
+                      {driver.value.toFixed(1)}/7
                     </div>
                   </div>
                 </div>
               );
             })}
+          </div>
+          
+          {/* Legend */}
+          <div className="mt-6 flex flex-wrap justify-center gap-4 text-xs">
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded bg-red-100 border border-red-300 dark:bg-red-900/60 dark:border-red-700" />
+              <span className="text-muted-foreground">Critical (fix first)</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded bg-green-100 border border-green-300 dark:bg-green-900/60 dark:border-green-700" />
+              <span className="text-muted-foreground">Strength (maintain)</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded bg-yellow-100 border border-yellow-300 dark:bg-yellow-900/60 dark:border-yellow-700" />
+              <span className="text-muted-foreground">Monitor (address later)</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded bg-blue-100 border border-blue-300 dark:bg-blue-900/60 dark:border-blue-700" />
+              <span className="text-muted-foreground">Stable (keep going)</span>
+            </div>
           </div>
         </CardContent>
       </Card>

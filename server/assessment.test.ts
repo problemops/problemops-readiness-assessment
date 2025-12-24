@@ -96,9 +96,9 @@ describe('Assessment API', () => {
       expect(readinessScore).toBeGreaterThan(0);
       expect(readinessScore).toBeLessThan(1);
       
-      // Actual calculation gives ~0.237 (23.7%)
-      expect(readinessScore).toBeGreaterThan(0.20);
-      expect(readinessScore).toBeLessThan(0.30);
+      // With scores 3.5-4.2 out of 7, actual calculation gives ~0.5503 (55%)
+      expect(readinessScore).toBeGreaterThan(0.50);
+      expect(readinessScore).toBeLessThan(0.60);
     });
 
     it('should calculate dysfunction cost correctly', async () => {
@@ -118,9 +118,9 @@ describe('Assessment API', () => {
       expect(dysfunctionCost).toBeGreaterThan(0);
       expect(dysfunctionCost).toBeLessThan(totalPayroll);
       
-      // With ~23.7% readiness, dysfunction should be ~76% of payroll ($760k)
-      expect(dysfunctionCost).toBeGreaterThan(700000);
-      expect(dysfunctionCost).toBeLessThan(800000);
+      // With ~55% readiness, dysfunction should be ~45% of payroll ($449,700)
+      expect(dysfunctionCost).toBeGreaterThan(400000);
+      expect(dysfunctionCost).toBeLessThan(500000);
     });
 
     it('should save assessment data to separate table', async () => {

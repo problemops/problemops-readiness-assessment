@@ -2,7 +2,7 @@ import { z } from "zod";
 import { publicProcedure, router } from "./_core/trpc";
 import { getDb } from "./db";
 import { assessments, assessmentData, emailLogs } from "../drizzle/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
 // Input validation schemas
@@ -230,7 +230,7 @@ export const assessmentRouter = router({
           createdAt: assessments.createdAt,
         })
         .from(assessments)
-        .orderBy(assessments.createdAt)
+        .orderBy(desc(assessments.createdAt))
         .limit(limit)
         .offset(offset);
       

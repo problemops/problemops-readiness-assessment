@@ -532,3 +532,30 @@
 - [x] Include academic citations and research-backed insights
 - [x] Test all three outputs with various score combinations (38 unit tests passed)
 - [x] Add BDD scenarios to database for regression testing (18 scenarios added to Epics 28, 29, 30)
+
+
+## Action Priority Matrix Enhancement
+- [x] Review current Priority Matrix implementation (circles with hover)
+- [x] Create BDD specification for always-visible driver information
+- [x] Replace circles with labeled data points showing driver names
+- [x] Show score and impact weight directly on chart
+- [x] Ensure readability without hover interaction
+- [x] Test on desktop and mobile viewports
+- [x] Verified visual display in browser
+
+
+## Bug Fix: Driver Score Calculation
+- [x] Investigate why drivers other than Trust show incorrect scores (4/7 instead of 1/7)
+- [x] Find the score calculation logic in assessment creation
+- [x] Fix the calculation to properly average question scores per driver (key mapping bug in generateTeamStory)
+- [x] Test with all-1s assessment to verify all drivers show 1/7
+- [x] Test with all-7s assessment to verify all drivers show 7/7
+- [x] Test with mixed scores (low, medium, high) to verify correct display
+- [x] Create automated test script for score combinations (11 test cases, 100% pass rate)
+- [x] Verify Priority Matrix displays correct colors (red for low scores)
+- [x] Fix PDF generator to use correct driver scores (added teamStory to pdfData)
+- [x] Fix Word generator to use correct driver scores (added teamStory to wordData)
+- [x] Update unit tests to use database driver keys
+- [x] Fix assessment API test expectations (readiness 55%, dysfunction $449k)
+- [x] Fix assessment list ordering to show newest first (desc)
+- [x] All 53 unit tests passing (100% pass rate)

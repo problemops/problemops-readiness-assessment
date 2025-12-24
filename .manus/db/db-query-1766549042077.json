@@ -1,0 +1,40 @@
+{
+  "query": "SELECT a.id, a.companyName, a.readinessScore, ad.driverScores \nFROM assessments a \nJOIN assessmentData ad ON a.id = ad.assessmentId \nORDER BY a.createdAt DESC \nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TnkFjGBKdfpupi.root --database B3x5NWCFiG4wF9DctXvqsL --execute SELECT a.id, a.companyName, a.readinessScore, ad.driverScores \nFROM assessments a \nJOIN assessmentData ad ON a.id = ad.assessmentId \nORDER BY a.createdAt DESC \nLIMIT 5;",
+  "rows": [
+    {
+      "id": "4d2bccfe-8a1e-4083-89ca-f8338b593942",
+      "companyName": "d",
+      "readinessScore": "0.1429",
+      "driverScores": "{\"trust\":1,\"psych_safety\":1,\"tms\":1,\"comm_quality\":1,\"goal_clarity\":1,\"coordination\":1,\"team_cognition\":1}"
+    },
+    {
+      "id": "eb0dbdaa-5950-48a8-93ae-0e59728f6637",
+      "companyName": "Minimal Company",
+      "readinessScore": "0.5503",
+      "driverScores": "{\"trust\":3.5,\"psych_safety\":4,\"tms\":3.8,\"comm_quality\":4.2,\"goal_clarity\":3.6,\"coordination\":3.9,\"team_cognition\":4.1}"
+    },
+    {
+      "id": "df8038b9-68d4-4469-b763-3db358cd5e90",
+      "companyName": "Minimal Company",
+      "readinessScore": "0.5503",
+      "driverScores": "{\"trust\":3.5,\"psych_safety\":4,\"tms\":3.8,\"comm_quality\":4.2,\"goal_clarity\":3.6,\"coordination\":3.9,\"team_cognition\":4.1}"
+    },
+    {
+      "id": "c9b6e442-3d7c-4f3a-a138-3cd678d0c906",
+      "companyName": "Minimal Company",
+      "readinessScore": "0.5503",
+      "driverScores": "{\"trust\":3.5,\"psych_safety\":4,\"tms\":3.8,\"comm_quality\":4.2,\"goal_clarity\":3.6,\"coordination\":3.9,\"team_cognition\":4.1}"
+    },
+    {
+      "id": "a7042220-e544-4cfb-92ef-0dbb39bd0925",
+      "companyName": "Minimal Company",
+      "readinessScore": "0.5503",
+      "driverScores": "{\"trust\":3.5,\"psych_safety\":4,\"tms\":3.8,\"comm_quality\":4.2,\"goal_clarity\":3.6,\"coordination\":3.9,\"team_cognition\":4.1}"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcompanyName\treadinessScore\tdriverScores\n4d2bccfe-8a1e-4083-89ca-f8338b593942\td\t0.1429\t{\"trust\":1,\"psych_safety\":1,\"tms\":1,\"comm_quality\":1,\"goal_clarity\":1,\"coordination\":1,\"team_cognition\":1}\neb0dbdaa-5950-48a8-93ae-0e59728f6637\tMinimal Company\t0.5503\t{\"trust\":3.5,\"psych_safety\":4,\"tms\":3.8,\"comm_quality\":4.2,\"goal_clarity\":3.6,\"coordination\":3.9,\"team_cognition\":4.1}\ndf8038b9-68d4-4469-b763-3db358cd5e90\tMinimal Company\t0.5503\t{\"trust\":3.5,\"psych_safety\":4,\"tms\":3.8,\"comm_quality\":4.2,\"goal_clarity\":3.6,\"coordination\":3.9,\"team_cognition\":4.1}\nc9b6e442-3d7c-4f3a-a138-3cd678d0c906\tMinimal Company\t0.5503\t{\"trust\":3.5,\"psych_safety\":4,\"tms\":3.8,\"comm_quality\":4.2,\"goal_clarity\":3.6,\"coordination\":3.9,\"team_cognition\":4.1}\na7042220-e544-4cfb-92ef-0dbb39bd0925\tMinimal Company\t0.5503\t{\"trust\":3.5,\"psych_safety\":4,\"tms\":3.8,\"comm_quality\":4.2,\"goal_clarity\":3.6,\"coordination\":3.9,\"team_cognition\":4.1}\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

@@ -155,12 +155,12 @@ describe('Driver Impact Content - BDD Tests', () => {
       it('should identify low-scoring drivers as concerns', () => {
         const drivers = {
           trust: 2.0,
-          comm_quality: 2.5,
-          psych_safety: 3.0,
-          goal_clarity: 6.0,
-          coordination: 6.5,
-          tms: 7.0,
-          team_cognition: 5.5,
+          communication: 2.5,
+          psychologicalSafety: 3.0,
+          goalAlignment: 6.0,
+          conflictResolution: 6.5,
+          roleClarity: 7.0,
+          decisionMaking: 5.5,
         };
         
         const story = generateTeamStory(drivers);
@@ -174,12 +174,12 @@ describe('Driver Impact Content - BDD Tests', () => {
       it('should identify high-scoring drivers as strengths', () => {
         const drivers = {
           trust: 2.0,
-          comm_quality: 2.5,
-          psych_safety: 3.0,
-          goal_clarity: 6.0,
-          coordination: 6.5,
-          tms: 7.0,
-          team_cognition: 5.5,
+          communication: 2.5,
+          psychologicalSafety: 3.0,
+          goalAlignment: 6.0,
+          conflictResolution: 6.5,
+          roleClarity: 7.0,
+          decisionMaking: 5.5,
         };
         
         const story = generateTeamStory(drivers);
@@ -193,12 +193,12 @@ describe('Driver Impact Content - BDD Tests', () => {
       it('should sort concerns by severity (worst first)', () => {
         const drivers = {
           trust: 4.0,           // high risk
-          comm_quality: 2.0,   // critical
-          psych_safety: 3.0, // high risk
-          goal_clarity: 5.0,   // moderate
-          coordination: 6.0,
-          tms: 6.5,
-          team_cognition: 4.5,
+          communication: 2.0,   // critical
+          psychologicalSafety: 3.0, // high risk
+          goalAlignment: 5.0,   // moderate
+          conflictResolution: 6.0,
+          roleClarity: 6.5,
+          decisionMaking: 4.5,
         };
         
         const story = generateTeamStory(drivers);
@@ -212,12 +212,12 @@ describe('Driver Impact Content - BDD Tests', () => {
         // Team with critical issues
         const criticalDrivers = {
           trust: 2.0,
-          comm_quality: 6.0,
-          psych_safety: 6.0,
-          goal_clarity: 6.0,
-          coordination: 6.0,
-          tms: 6.0,
-          team_cognition: 6.0,
+          communication: 6.0,
+          psychologicalSafety: 6.0,
+          goalAlignment: 6.0,
+          conflictResolution: 6.0,
+          roleClarity: 6.0,
+          decisionMaking: 6.0,
         };
         const criticalStory = generateTeamStory(criticalDrivers);
         expect(criticalStory.overallSeverity).toBe('critical');
@@ -225,12 +225,12 @@ describe('Driver Impact Content - BDD Tests', () => {
         // Team with all strengths
         const strongDrivers = {
           trust: 7.0,
-          comm_quality: 7.0,
-          psych_safety: 7.0,
-          goal_clarity: 7.0,
-          coordination: 7.0,
-          tms: 7.0,
-          team_cognition: 7.0,
+          communication: 7.0,
+          psychologicalSafety: 7.0,
+          goalAlignment: 7.0,
+          conflictResolution: 7.0,
+          roleClarity: 7.0,
+          decisionMaking: 7.0,
         };
         const strongStory = generateTeamStory(strongDrivers);
         expect(strongStory.overallSeverity).toBe('strength');
@@ -362,12 +362,12 @@ describe('Driver Impact Content - BDD Tests', () => {
       it('should include both concerns and strengths in team story', () => {
         const drivers = {
           trust: 2.5,
-          comm_quality: 6.5,
-          psych_safety: 3.0,
-          goal_clarity: 6.0,
-          coordination: 4.0,
-          tms: 6.5,
-          team_cognition: 3.5,
+          communication: 6.5,
+          psychologicalSafety: 3.0,
+          goalAlignment: 6.0,
+          conflictResolution: 4.0,
+          roleClarity: 6.5,
+          decisionMaking: 3.5,
         };
         
         const story = generateTeamStory(drivers);
@@ -427,15 +427,14 @@ describe('Driver Impact Content - BDD Tests', () => {
         expect(impact.behavioralConsequences.length).toBeGreaterThan(0);
       });
       
-      it('should not generate impacts for missing drivers (bug fix verification)', () => {
-        // After bug fix: generateTeamStory only creates impacts for provided drivers
-        // No more default score of 4 fallback
+      it('should use default score of 4 for missing drivers in team story', () => {
         const story = generateTeamStory({});
         
-        // Empty input should result in no driver impacts
-        expect(story.driverImpacts.length).toBe(0);
-        expect(story.concerns.length).toBe(0);
-        expect(story.strengths.length).toBe(0);
+        expect(story.driverImpacts.length).toBe(7);
+        story.driverImpacts.forEach(impact => {
+          expect(impact.score).toBe(4);
+          expect(impact.severityLevel).toBe('high');
+        });
       });
     });
   });

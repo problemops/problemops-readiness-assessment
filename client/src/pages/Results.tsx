@@ -264,6 +264,7 @@ export default function Results() {
         enhancedNarrative: results.enhancedNarrative,
         trainingType: results.trainingType,
         recommendedAreas: results.recommendedAreas,
+        teamStory: results.teamStory,
       };
       
       const generator = new SlidePDFGenerator(pdfData);
@@ -308,6 +309,7 @@ export default function Results() {
         priorityAreas: results.priorityAreas || [],
         trainingType: results.trainingType,
         recommendedAreas: results.recommendedAreas || [],
+        teamStory: results.teamStory,
       };
       
       console.log('Word data prepared:', wordData);
