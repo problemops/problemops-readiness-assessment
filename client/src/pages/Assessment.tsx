@@ -531,7 +531,7 @@ export default function Assessment() {
           answers,
         }),
         new Promise<never>((_, reject) => 
-          setTimeout(() => reject(new Error('Request timeout after 5 seconds')), 5000)
+          setTimeout(() => reject(new Error('Request timeout after 60 seconds')), 60000)
         )
       ]);
       
