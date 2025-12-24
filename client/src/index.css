@@ -72,13 +72,15 @@
   --secondary-foreground: oklch(0.15 0 0);
   
   --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.45 0 0);
+  --muted-foreground: oklch(0.40 0 0); /* Darker for 7:1 contrast - #525252 approx */
+  
+  --placeholder-foreground: oklch(0.40 0 0); /* Same as muted-foreground for consistency */
   
   --accent: oklch(0.94 0 0);
   --accent-foreground: oklch(0.15 0 0);
   
-  --border: oklch(0.9 0 0);
-  --input: oklch(0.9 0 0);
+  --border: oklch(0.55 0 0); /* Darker for 3.5:1 contrast - #737373 approx */
+  --input: oklch(0.55 0 0); /* Darker for 3.5:1 contrast */
   --ring: oklch(0.4595 0.0458 84.16); /* Match primary */
 
   /* Charts */
@@ -280,4 +282,11 @@ textarea:focus-visible,
 kbd {
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   font-size: 0.75em;
+}
+
+/* Placeholder text contrast for WCAG compliance */
+input::placeholder,
+textarea::placeholder {
+  color: var(--placeholder-foreground);
+  opacity: 1; /* Override browser default opacity */
 }

@@ -146,6 +146,7 @@ export default function Assessment() {
     trainingType: 'not-sure'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   
   // Refs for focus management
   const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
@@ -155,6 +156,7 @@ export default function Assessment() {
   
   // Aria live region for announcements
   const [announcement, setAnnouncement] = useState("");
+  const [errorAnnouncement, setErrorAnnouncement] = useState("");
 
   const totalQuestions = 35;
   const progress = (Object.keys(answers).length / totalQuestions) * 100;
@@ -439,9 +441,38 @@ export default function Assessment() {
     }, 100);
   };
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!companyInfo.name.trim()) {
+      newErrors.companyName = "Company Name is required. Please enter your company name.";
+    }
+    
+    if (!companyInfo.teamSize.trim() || parseInt(companyInfo.teamSize) < 1) {
+      newErrors.teamSize = "Team Size is required. Please enter the number of team members (minimum 1).";
+    }
+    
+    if (!companyInfo.avgSalary.trim() || parseInt(companyInfo.avgSalary) < 1) {
+      newErrors.avgSalary = "Average Salary is required. Please enter the average annual salary.";
+    }
+    
+    setFormErrors(newErrors);
+    
+    if (Object.keys(newErrors).length > 0) {
+      const errorCount = Object.keys(newErrors).length;
+      const errorMessages = Object.values(newErrors).join('. ');
+      setErrorAnnouncement(`Form has ${errorCount} error${errorCount > 1 ? 's' : ''}. ${errorMessages}`);
+      return false;
+    }
+    
+    return true;
+  };
+  
   const handleStartAssessment = () => {
-    if (companyInfo.name.trim() && companyInfo.teamSize.trim() && companyInfo.avgSalary.trim()) {
+    if (validateForm()) {
       setCurrentStep(1);
+      setFormErrors({});
+      setErrorAnnouncement('');
       // Announce assessment start without auto-focus
       setTimeout(() => {
         setAnnouncement("Assessment started. Use number keys 1-7 to rate each question. Press N for next, P for previous.");
@@ -533,6 +564,16 @@ export default function Assessment() {
       >
         {announcement}
       </div>
+      
+      {/* Aria Live Region for errors */}
+      <div 
+        role="alert" 
+        aria-live="assertive" 
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {errorAnnouncement}
+      </div>
 
       {/* Keyboard Shortcuts Dialog */}
       <KeyboardShortcutsDialog 
@@ -542,17 +583,22 @@ export default function Assessment() {
       />
 
       {/* Header */}
-      <header className="bg-primary text-primary-foreground sticky top-0 z-20 shadow-lg">
+      <header role="banner" className="bg-primary text-primary-foreground sticky top-0 z-20 shadow-lg">
         {/* Top Banner Row */}
         <div className="container mx-auto max-w-5xl px-5 py-4">
           <div className="flex items-center justify-between md:justify-center md:gap-8">
             {/* Logo - Left on desktop, stacked on mobile */}
-            <img 
-              src="/problemops-logo.svg" 
-              alt="ProblemOps" 
-              className="h-8 md:h-10 cursor-pointer hover:opacity-90 transition-opacity md:absolute md:left-5"
-              onClick={() => window.location.href = 'https://problemops.com'}
-            />
+            <a 
+              href="https://problemops.com" 
+              aria-label="Return to ProblemOps homepage"
+              className="focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#64563A] rounded md:absolute md:left-5"
+            >
+              <img 
+                src="/problemops-logo.svg" 
+                alt="ProblemOps" 
+                className="h-8 md:h-10 hover:opacity-90 transition-opacity"
+              />
+            </a>
             
             {/* Progress Stepper - Center */}
             <ProgressStepper 
@@ -601,6 +647,7 @@ export default function Assessment() {
 
       {/* Content */}
       <main 
+        role="main"
         id="main-content" 
         ref={mainContentRef}
         className="container mx-auto py-12 px-6 max-w-5xl"
@@ -615,7 +662,7 @@ export default function Assessment() {
           >
             {/* Common Region: Header section */}
             <div className="mb-12 space-y-4">
-              <h1 className="text-4xl md:text-5xl font-bold">Team Cross-Functional Efficiency Readiness Assessment</h1>
+              <h1 className="text-4xl md:text-5xl font-bold" id="page-title">Team Cross-Functional Efficiency Readiness Assessment</h1>
               <p className="text-muted-foreground text-lg">
                 Tell us about your company and team so we can provide personalized insights and calculate the financial impact of team effectiveness.
               </p>
@@ -631,7 +678,8 @@ export default function Assessment() {
             >
               {/* Proximity: Company details grouped together */}
               <fieldset className="space-y-6">
-                <legend className="text-3xl font-semibold border-b border-border pb-3 w-full">Company Information</legend>
+                <legend className="sr-only">Company Information</legend>
+                <h2 className="text-2xl font-semibold border-b border-border pb-3 w-full">Company Information</h2>
                 
                 <div className="space-y-2">
                   <Label htmlFor="company-name" className="text-base font-medium text-black">
@@ -643,11 +691,26 @@ export default function Assessment() {
                     id="company-name"
                     placeholder="e.g., Acme Corporation"
                     value={companyInfo.name}
-                    onChange={(e) => setCompanyInfo(prev => ({ ...prev, name: e.target.value }))}
-                    className="text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    onChange={(e) => {
+                      setCompanyInfo(prev => ({ ...prev, name: e.target.value }));
+                      if (formErrors.companyName) {
+                        setFormErrors(prev => ({ ...prev, companyName: '' }));
+                      }
+                    }}
+                    className={`text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2 ${formErrors.companyName ? 'border-red-600 border-2' : ''}`}
                     required
                     aria-required="true"
+                    aria-invalid={!!formErrors.companyName}
+                    aria-describedby={formErrors.companyName ? "company-name-error" : undefined}
                   />
+                  {formErrors.companyName && (
+                    <p className="text-sm text-red-600 flex items-center gap-1" id="company-name-error">
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {formErrors.companyName}
+                    </p>
+                  )}
                 </div>
                 
 
@@ -684,7 +747,8 @@ export default function Assessment() {
 
               {/* Proximity: Financial parameters grouped together */}
               <fieldset className="space-y-6 pt-4">
-                <legend className="text-3xl font-semibold border-b border-border pb-3 w-full">Team Parameters</legend>
+                <legend className="sr-only">Team Parameters</legend>
+                <h2 className="text-2xl font-semibold border-b border-border pb-3 w-full">Team Parameters</h2>
                 
                 <div className="space-y-6">
                   <div className="space-y-2">
@@ -697,12 +761,27 @@ export default function Assessment() {
                       type="number"
                       placeholder="10"
                       value={companyInfo.teamSize}
-                      onChange={(e) => setCompanyInfo(prev => ({ ...prev, teamSize: e.target.value }))}
-                      className="text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      onChange={(e) => {
+                        setCompanyInfo(prev => ({ ...prev, teamSize: e.target.value }));
+                        if (formErrors.teamSize) {
+                          setFormErrors(prev => ({ ...prev, teamSize: '' }));
+                        }
+                      }}
+                      className={`text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2 ${formErrors.teamSize ? 'border-red-600 border-2' : ''}`}
                       required
                       aria-required="true"
+                      aria-invalid={!!formErrors.teamSize}
+                      aria-describedby={formErrors.teamSize ? "team-size-error" : undefined}
                       min="1"
                     />
+                    {formErrors.teamSize && (
+                      <p className="text-sm text-red-600 flex items-center gap-1" id="team-size-error">
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {formErrors.teamSize}
+                      </p>
+                    )}
                   </div>
                   
                   <div className="space-y-2">
@@ -715,12 +794,27 @@ export default function Assessment() {
                       type="number"
                       placeholder="100000"
                       value={companyInfo.avgSalary}
-                      onChange={(e) => setCompanyInfo(prev => ({ ...prev, avgSalary: e.target.value }))}
-                      className="text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      onChange={(e) => {
+                        setCompanyInfo(prev => ({ ...prev, avgSalary: e.target.value }));
+                        if (formErrors.avgSalary) {
+                          setFormErrors(prev => ({ ...prev, avgSalary: '' }));
+                        }
+                      }}
+                      className={`text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2 ${formErrors.avgSalary ? 'border-red-600 border-2' : ''}`}
                       required
                       aria-required="true"
+                      aria-invalid={!!formErrors.avgSalary}
+                      aria-describedby={formErrors.avgSalary ? "avg-salary-error" : undefined}
                       min="0"
                     />
+                    {formErrors.avgSalary && (
+                      <p className="text-sm text-red-600 flex items-center gap-1" id="avg-salary-error">
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {formErrors.avgSalary}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -795,7 +889,7 @@ export default function Assessment() {
             className="space-y-6"
           >
             {/* Page title */}
-            <h1 className="text-4xl md:text-5xl font-bold mb-8">Tell Us About Your Team</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-8" id="page-title">Tell Us About Your Team</h1>
             
             {/* Keyboard navigation hint */}
             <div className="bg-muted/50 border border-border rounded-lg p-4 text-center">
@@ -840,9 +934,9 @@ export default function Assessment() {
                           <span className="text-sm font-medium text-muted-foreground">
                             {index + 1}
                           </span>
-                          <span className="text-lg font-bold">
+                          <h3 className="text-lg font-bold m-0">
                             {section.title}
-                          </span>
+                          </h3>
                         </div>
                         
                         {/* Progress indicator */}

@@ -66,6 +66,7 @@ export default function Results() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState("");
 
   const assessmentId = params.id;
   const { data: assessmentData, isLoading: isQueryLoading, error: queryError } = trpc.assessment.getById.useQuery(
@@ -219,9 +220,10 @@ export default function Results() {
   }
 
   const handleDownloadPDF = async () => {
-    if (!results) return;
+    if (isGenerating) return;
     
     setIsGenerating(true);
+    setStatusMessage('Generating PDF report. Please wait...');
     try {
       // Prepare data for PDF - use appropriate ROI data based on training type
       let pdfROIData;
@@ -255,8 +257,10 @@ export default function Results() {
       
       const generator = new SlidePDFGenerator(pdfData);
       generator.download(`${results.companyInfo.name || 'Team'}_Readiness_Assessment.pdf`.replace(/\s+/g, '_'));
+      setStatusMessage('PDF report downloaded successfully.');
     } catch (error) {
       console.error('Failed to generate PDF:', error);
+      setStatusMessage('Error: Failed to generate PDF report. Please try again.');
       alert('Failed to generate PDF report. Please try again.');
     } finally {
       setIsGenerating(false);
@@ -266,7 +270,7 @@ export default function Results() {
   if (!results) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center" role="status" aria-live="polite">
           <p className="text-muted-foreground">Loading results...</p>
         </div>
       </div>
@@ -285,18 +289,33 @@ export default function Results() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      {/* ARIA Live Region for status messages */}
+      <div 
+        role="status" 
+        aria-live="polite" 
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {statusMessage}
+      </div>
+      
       {/* Header */}
-      <header className="bg-primary text-primary-foreground sticky top-0 z-20 shadow-lg">
+      <header role="banner" className="bg-primary text-primary-foreground sticky top-0 z-20 shadow-lg">
         {/* Top Banner Row */}
         <div className="container mx-auto max-w-6xl px-5 py-4">
           <div className="flex items-center justify-between md:justify-center md:gap-8">
             {/* Logo - Left on desktop, stacked on mobile */}
-            <img 
-              src="/problemops-logo.svg" 
-              alt="ProblemOps" 
-              className="h-8 md:h-10 cursor-pointer hover:opacity-90 transition-opacity md:absolute md:left-5"
-              onClick={() => window.location.href = 'https://problemops.com'}
-            />
+            <a 
+              href="https://problemops.com" 
+              aria-label="Return to ProblemOps homepage"
+              className="focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#64563A] rounded md:absolute md:left-5"
+            >
+              <img 
+                src="/problemops-logo.svg" 
+                alt="ProblemOps" 
+                className="h-8 md:h-10 hover:opacity-90 transition-opacity"
+              />
+            </a>
             
             {/* Progress Stepper - Center */}
             <ProgressStepper 
@@ -350,9 +369,9 @@ export default function Results() {
         </div>
       </header>
 
-      <main className="container mx-auto py-12 px-6 max-w-6xl space-y-12">
+      <main role="main" className="container mx-auto py-12 px-6 max-w-6xl space-y-12">
         {/* Page Title */}
-        <h1 className="text-4xl md:text-5xl font-bold">Test Results</h1>
+        <h1 className="text-4xl md:text-5xl font-bold" id="page-title">Test Results</h1>
         
         {/* Company Info Subtitle */}
         <p className="text-xl text-muted-foreground -mt-6">
@@ -360,7 +379,8 @@ export default function Results() {
         </p>
         
         {/* Introduction */}
-        <section className="bg-card border rounded-lg p-8 shadow-sm">
+        <section aria-labelledby="intro-heading" className="bg-card border rounded-lg p-8 shadow-sm">
+          <h2 id="intro-heading" className="sr-only">Executive Summary Introduction</h2>
           <p className="text-lg leading-relaxed text-foreground">
             <span className="font-semibold text-primary">{results.companyInfo.name || 'Your organization'}</span>, 
             thank you for completing the ProblemOps Team Readiness Assessment. Your results reveal how your team performs across seven research-validated drivers of effectiveness—from trust and psychological safety to coordination and shared cognition. 
@@ -371,8 +391,8 @@ export default function Results() {
         </section>
 
         {/* Executive Summary */}
-        <section>
-          <h2 className="text-3xl font-bold mb-6">Executive Summary</h2>
+        <section aria-labelledby="executive-summary-heading">
+          <h2 id="executive-summary-heading" className="text-2xl font-bold mb-6">Key Metrics</h2>
           
           {/* Training Type Indicator */}
           <Card className="mb-6 bg-primary/5 border-primary/20">
@@ -449,6 +469,7 @@ export default function Results() {
               <CardContent>
                 <div className="overflow-x-auto">
                   <table className="w-full">
+                    <caption className="sr-only">Comparison of three training options showing investment cost, focus areas, annual savings, return on investment, and payback period</caption>
                     <thead>
                       <tr className="border-b">
                         <th className="text-left py-3 px-4 font-semibold">Option</th>
@@ -620,8 +641,8 @@ export default function Results() {
         <Separator />
 
         {/* Cost of Dysfunction Breakdown */}
-        <section>
-          <h2 className="text-3xl font-bold mb-6">Understanding Your Cost of Dysfunction</h2>
+        <section aria-labelledby="cost-breakdown-heading">
+          <h2 id="cost-breakdown-heading" className="text-2xl font-bold mb-6">Understanding Your Cost of Dysfunction</h2>
           <Card>
             <CardContent className="pt-6 space-y-6">
               <div className="prose prose-lg max-w-none">
@@ -711,7 +732,7 @@ export default function Results() {
         {results.trainingType !== 'not-sure' && (
           <>
             <section>
-              <h2 className="text-3xl font-bold mb-6">Your Training Focus Areas</h2>
+              <h2 className="text-2xl font-bold mb-6">Your Training Focus Areas</h2>
               <Card>
                 <CardContent className="pt-6 space-y-6">
                   <div className="prose prose-lg max-w-none">
@@ -772,7 +793,7 @@ export default function Results() {
 
         {/* Priority Matrix */}
         <section>
-          <h2 className="text-3xl font-bold mb-6">Where to Focus Your Efforts</h2>
+          <h2 id="priority-areas-heading" className="text-2xl font-bold mb-6">Where to Focus Your Efforts</h2>
           <PriorityMatrix drivers={results.drivers} />
         </section>
 
@@ -780,7 +801,7 @@ export default function Results() {
 
         {/* Driver Performance Summary */}
         <section>
-          <h2 className="text-3xl font-bold mb-6">Driver Performance Summary</h2>
+          <h2 id="driver-summary-heading" className="text-2xl font-bold mb-6">Driver Performance Summary</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {results.drivers.map((driver: any, index: number) => (
               <motion.div
@@ -840,7 +861,7 @@ export default function Results() {
 
         {/* Team Narrative */}
         <section>
-          <h2 className="text-3xl font-bold mb-6">Your Team's Story</h2>
+          <h2 id="team-story-heading" className="text-2xl font-bold mb-6">Your Team's Story</h2>
           <Card>
             <CardContent className="pt-6">
               <div className="prose prose-lg max-w-none">
@@ -863,7 +884,7 @@ export default function Results() {
 
         {/* Training Plan - Filtered based on training type */}
         <section>
-          <h2 className="text-3xl font-bold mb-6">Your ProblemOps Training Plan</h2>
+          <h2 id="training-plan-heading" className="text-2xl font-bold mb-6">Your ProblemOps Training Plan</h2>
           
           {/* Training Priorities */}
           {results.trainingPriorities.length > 0 && (
@@ -951,7 +972,7 @@ export default function Results() {
         {Object.keys(results.recommendedDeliverables).length > 0 && (
           <>
             <section>
-              <h2 className="text-3xl font-bold mb-6">Recommended ProblemOps Deliverables</h2>
+              <h2 id="deliverables-heading" className="text-2xl font-bold mb-6">Recommended ProblemOps Deliverables</h2>
               <Card>
                 <CardContent className="pt-6">
                   <p className="text-muted-foreground mb-6">
@@ -981,7 +1002,7 @@ export default function Results() {
 
         {/* Next Steps */}
         <section>
-          <h2 className="text-3xl font-bold mb-6">Next Steps</h2>
+          <h2 id="next-steps-heading" className="text-2xl font-bold mb-6">Next Steps</h2>
           <Card>
             <CardContent className="pt-6 space-y-6">
               <div>

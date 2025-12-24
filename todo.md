@@ -408,3 +408,42 @@
 ## Training Type Description Font Weight
 
 - [x] Ensure training type descriptions are not bold (added font-normal)
+
+## Month-Long Engagement Price Update
+
+- [x] Update Month-Long Engagement price to $50,000 on Results page (already set in TRAINING_OPTIONS)
+- [x] Verify price consistency across all pages (using shared constant)
+
+## WCAG Accessibility Audit
+
+- [x] Review WebAIM WCAG checklist (https://webaim.org/standards/wcag/checklist)
+- [x] Audit Assessment page against WCAG 2.1 AA standards
+- [x] Audit Results page against WCAG 2.1 AA standards
+- [x] Document compliant items
+- [x] Document non-compliant items with recommendations
+- [x] Create comprehensive accessibility audit report
+
+## WCAG Accessibility Implementation
+
+### High Priority (Critical)
+- [x] Fix color contrast for training type descriptions (4.5:1 minimum)
+- [x] Fix color contrast for input placeholders (4.5:1 minimum)
+- [x] Fix color contrast for progress stepper text (4.5:1 minimum)
+- [x] Fix color contrast for radio button borders (3:1 minimum)
+- [x] Add form error identification with ARIA live regions
+- [x] Add error messages for required fields
+- [x] Add proper heading structure (H1, H2, H3) to Assessment page
+- [x] Add proper heading structure to Results page
+- [x] Fix logo to use proper <a> tag with aria-label
+
+### Medium Priority (Important)
+- [x] Add ARIA live regions for status messages
+- [x] Add aria-labels to rating buttons (1-7)
+- [x] Add aria-label to progress bar
+- [x] Add confirmation dialog for form submission (already exists)
+- [x] Add error suggestions (e.g., "Please enter a valid number")mation before assessment submission### Low Priority (Polish)
+- [x] Add ARIA landmark roles (banner, navigation, main, complementary)
+- [x] Add table captions to Results page tables
+- [x] Document keyboard shortcuts in help dialog (already exists)ardShortcutsDialog
+- [ ] Add skip links for accordion sections
+- [ ] Add focus management after accordion open
