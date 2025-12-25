@@ -604,64 +604,70 @@ export class SlidePDFGenerator {
     this.addPage();
     let y = this.setPageTitle('Where Your Team May Be Wasting Resources');
     y = this.setSubtitle('Based on your scores, these drivers are contributing to lost productivity', y);
-    y += 5;
+    y += 10;
     
-    // Show driver cost breakdown summary
-    this.doc.setFillColor(245, 245, 245);
-    this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 25, 3, 3, 'F');
-    
-    this.doc.setFontSize(10);
+    // Show driver cost breakdown summary - vertical layout
+    this.doc.setFontSize(12);
     this.doc.setFont('helvetica', 'bold');
-    this.doc.text('Total Cost of Dysfunction:', MARGIN + 5, y + 10);
+    this.doc.text('Total Cost of Dysfunction:', MARGIN, y);
     this.doc.setTextColor(220, 38, 38);
-    this.doc.text(this.formatCurrency(this.data.dysfunctionCost), MARGIN + 60, y + 10);
+    this.doc.text(this.formatCurrency(this.data.dysfunctionCost), MARGIN + 55, y);
     this.doc.setTextColor(0, 0, 0);
+    y += 8;
     
     this.doc.setFontSize(9);
     this.doc.setFont('helvetica', 'normal');
-    this.doc.text('Driver Cost = Total Dysfunction Cost × Driver Weight', MARGIN + 5, y + 20);
-    y += 35;
+    this.doc.setTextColor(100, 100, 100);
+    this.doc.text('Driver Cost = Total Dysfunction Cost × Driver Weight', MARGIN, y);
+    this.doc.setTextColor(0, 0, 0);
+    y += 15;
     
-    // List driver impacts (top 4 to fit on page)
-    for (const impact of this.data.teamStory.driverImpacts.slice(0, 4)) {
-      const driver = this.data.drivers.find(d => d.id === impact.driverKey);
+    // List all driver impacts in vertical stack layout
+    for (const impact of this.data.teamStory.driverImpacts) {
+      // Check if we need a new page
+      if (y > PAGE_HEIGHT - 60) {
+        this.addFooter();
+        this.addPage();
+        y = this.setPageTitle('Where Your Team May Be Wasting Resources (continued)');
+        y += 10;
+      }
+      
       const driverCost = this.data.driverCosts?.[impact.dbKey] || this.data.driverCosts?.[impact.driverKey] || 0;
       
       // Severity color
       const severityColor = impact.severityLevel === 'critical' ? [220, 38, 38] : 
                             impact.severityLevel === 'high' ? [234, 88, 12] : 
-                            impact.severityLevel === 'low' ? [202, 138, 4] : [22, 163, 74];
+                            impact.severityLevel === 'moderate' ? [202, 138, 4] : [22, 163, 74];
       
-      this.doc.setFontSize(12);
+      // Driver name with severity badge on same line
+      this.doc.setFontSize(11);
       this.doc.setFont('helvetica', 'bold');
+      this.doc.setTextColor(0, 0, 0);
       this.doc.text(impact.driverName, MARGIN, y);
       
-      // Severity badge
-      this.doc.setFontSize(8);
+      // Severity badge inline
+      this.doc.setFontSize(9);
       this.doc.setTextColor(severityColor[0], severityColor[1], severityColor[2]);
-      this.doc.text(`${impact.severityLabel} | Score: ${impact.score.toFixed(1)}/7.0`, MARGIN + 60, y);
+      this.doc.text(`${impact.severityLabel} | Score: ${impact.score.toFixed(1)}/7.0`, MARGIN + 50, y);
       this.doc.setTextColor(0, 0, 0);
-      y += 6;
+      y += 7;
       
-      // Cost
-      this.doc.setFontSize(14);
+      // Cost on its own line
+      this.doc.setFontSize(10);
       this.doc.setFont('helvetica', 'bold');
       this.doc.setTextColor(234, 88, 12);
       this.doc.text(this.formatCurrency(driverCost), MARGIN, y);
       this.doc.setTextColor(0, 0, 0);
-      
-      this.doc.setFontSize(8);
       this.doc.setFont('helvetica', 'normal');
-      this.doc.text(' annual cost from this driver', MARGIN + 35, y);
-      y += 8;
+      this.doc.text(' annual cost from this driver', MARGIN + 25, y);
+      y += 7;
       
-      // Summary
+      // Summary statement wrapped to full width
       this.doc.setFontSize(9);
+      this.doc.setFont('helvetica', 'normal');
       const summaryLines = this.doc.splitTextToSize(impact.summaryStatement, CONTENT_WIDTH);
-      this.doc.text(summaryLines.slice(0, 2), MARGIN, y);
-      y += Math.min(summaryLines.length, 2) * 4 + 10;
-      
-      if (y > PAGE_HEIGHT - 50) break;
+      this.doc.text(summaryLines, MARGIN, y);
+      y += summaryLines.length * 4 + 12;
     }
     
     this.addFooter();
