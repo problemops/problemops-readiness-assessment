@@ -359,7 +359,7 @@ export class SlidePDFGenerator {
       
       // Table header
       const colWidths = [45, 25, 40, 30, 20, 20];
-      const headers = ['Option', 'Investment', 'Focus Areas', 'ROI If Fixed', 'Return', 'Payback'];
+      const headers = ['Option', 'Investment', 'Focus Areas', 'ROI If Fixed', 'Return Rate', 'Payback'];
       
       this.doc.setFillColor(245, 245, 245);
       this.doc.rect(MARGIN, y, CONTENT_WIDTH, 10, 'F');

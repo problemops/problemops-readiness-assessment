@@ -103,31 +103,31 @@ describe('Driver Impact Content - BDD Tests', () => {
         expect(impact.behavioralConsequences.length).toBeGreaterThan(0);
       });
       
-      it('should generate impact for goal alignment driver', () => {
+      it('should generate impact for goal clarity driver', () => {
         const impact = generateDriverImpact('goalAlignment', 4.5);
         
-        expect(impact.driverName).toBe('Goal Alignment');
+        expect(impact.driverName).toBe('Goal Clarity');
         expect(impact.severityLevel).toBe('moderate');
       });
       
-      it('should generate impact for conflict resolution driver', () => {
+      it('should generate impact for coordination driver', () => {
         const impact = generateDriverImpact('conflictResolution', 6.0);
         
-        expect(impact.driverName).toBe('Conflict Resolution');
+        expect(impact.driverName).toBe('Coordination');
         expect(impact.severityLevel).toBe('strength');
       });
       
-      it('should generate impact for role clarity driver', () => {
+      it('should generate impact for transactive memory driver', () => {
         const impact = generateDriverImpact('roleClarity', 6.0);
         
-        expect(impact.driverName).toBe('Role Clarity');
+        expect(impact.driverName).toBe('Transactive Memory');
         expect(impact.severityLevel).toBe('strength');
       });
       
-      it('should generate impact for decision making driver', () => {
+      it('should generate impact for team cognition driver', () => {
         const impact = generateDriverImpact('decisionMaking', 3.5);
         
-        expect(impact.driverName).toBe('Decision Making');
+        expect(impact.driverName).toBe('Team Cognition');
         expect(impact.severityLevel).toBe('high');
       });
     });
