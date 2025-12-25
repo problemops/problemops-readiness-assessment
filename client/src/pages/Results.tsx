@@ -597,8 +597,8 @@ export default function Results() {
                         <th className="text-left py-3 px-4 font-semibold">Option</th>
                         <th className="text-left py-3 px-4 font-semibold">Investment</th>
                         <th className="text-left py-3 px-4 font-semibold">Focus Areas</th>
-                        <th className="text-left py-3 px-4 font-semibold">Value If Fixed</th>
-                        <th className="text-left py-3 px-4 font-semibold">ROI</th>
+                        <th className="text-left py-3 px-4 font-semibold">ROI If Fixed</th>
+                        <th className="text-left py-3 px-4 font-semibold">Return</th>
                         <th className="text-left py-3 px-4 font-semibold">Payback</th>
                       </tr>
                     </thead>
