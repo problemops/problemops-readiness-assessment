@@ -318,7 +318,7 @@ export default function Results() {
       };
       
       const generator = new SlidePDFGenerator(pdfData);
-      generator.download(`${results.companyInfo.name || 'Team'}_Readiness_Assessment.pdf`.replace(/\s+/g, '_'));
+      generator.download(`${results.companyInfo.name || 'Team'}_Cross_Functional_Team_Readiness_Assessment_Results.pdf`.replace(/\s+/g, '_'));
       setStatusMessage('PDF report downloaded successfully.');
     } catch (error) {
       console.error('Failed to generate PDF:', error);
@@ -370,7 +370,7 @@ export default function Results() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      const filename = `${results.companyInfo.name || 'Team'}_Readiness_Assessment.docx`.replace(/\s+/g, '_');
+      const filename = `${results.companyInfo.name || 'Team'}_Cross_Functional_Team_Readiness_Assessment_Results.docx`.replace(/\s+/g, '_');
       link.download = filename;
       link.click();
       URL.revokeObjectURL(url);
