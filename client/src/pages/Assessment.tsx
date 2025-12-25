@@ -678,12 +678,12 @@ export default function Assessment() {
       <header role="banner" className="bg-primary text-primary-foreground sticky top-0 z-20 shadow-lg">
         {/* Top Banner Row */}
         <div className="container mx-auto max-w-5xl px-5 py-4">
-          <div className="flex items-center justify-between md:justify-center md:gap-8">
-            {/* Logo - Left on desktop, stacked on mobile */}
+          <div className="flex items-center justify-between">
+            {/* Logo - Left */}
             <a 
               href="https://problemops.com" 
               aria-label="Return to ProblemOps homepage"
-              className="focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#64563A] rounded md:absolute md:left-5"
+              className="focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#64563A] rounded"
             >
               <img 
                 src="/problemops-logo.svg" 
@@ -692,15 +692,15 @@ export default function Assessment() {
               />
             </a>
             
-            {/* Progress Stepper - Center */}
+            {/* Progress Stepper - Center (hidden on mobile) */}
             <ProgressStepper 
               currentStep={currentStep === 0 ? 'begin' : 'assess'}
               completedSteps={currentStep > 0 ? ['begin'] : []}
               className="hidden md:flex"
             />
             
-            {/* Action Buttons - Right on desktop */}
-            <div className="flex items-center gap-2 md:absolute md:right-5">
+            {/* Action Buttons - Right (always visible) */}
+            <div className="flex items-center gap-1 md:gap-2">
               <a
                 href="https://github.com/problemops/problemops-readiness-assessment"
                 target="_blank"
