@@ -50,7 +50,30 @@ type TrainingPlan = {
 type TrainingPriority = {
   area: string;
   reason: string;
-  urgency: 'high' | 'medium' | 'low';
+  urgency: 'high' | 'medium' | 'low' | 'critical';
+};
+
+type ROIData = {
+  cost: number;
+  savings: number;
+  roi: number;
+  paybackMonths: number;
+};
+
+type TrainingOption = {
+  id: string;
+  name: string;
+  cost: number;
+  description: string;
+};
+
+type TCDCostComponents = {
+  productivity: number;
+  rework: number;
+  turnover: number;
+  opportunity: number;
+  overhead: number;
+  disengagement: number;
 };
 
 type AssessmentData = {
@@ -69,6 +92,7 @@ type AssessmentData = {
   trainingPlan?: TrainingPlan;
   trainingPriorities?: TrainingPriority[];
   recommendedDeliverables?: Record<string, string[]>;
+  otherDeliverables?: Record<string, string[]>;
   enhancedNarrative?: string;
   teamStory?: {
     narrative: string;
@@ -77,7 +101,17 @@ type AssessmentData = {
     overallSeverity: string;
   };
   trainingType?: string;
+  trainingOption?: TrainingOption;
   recommendedAreas?: Array<{id: string; name: string; score: number; weight: number; description: string}>;
+  priorityAreas?: Array<{id: string; name: string; score: number; weight: number}>;
+  roiData?: {
+    halfDay: ROIData;
+    fullDay: ROIData;
+    monthLong: ROIData;
+  };
+  tcdCostComponents?: TCDCostComponents;
+  driverCosts?: Record<string, number>;
+  detectedIndustry?: string;
 };
 
 const PAGE_WIDTH = 210; // A4 width in mm
@@ -85,9 +119,13 @@ const PAGE_HEIGHT = 297; // A4 height in mm
 const MARGIN = 20;
 const CONTENT_WIDTH = PAGE_WIDTH - (MARGIN * 2);
 
+// ProblemOps brand color
+const PRIMARY_COLOR = [100, 86, 58]; // #64563A
+
 export class SlidePDFGenerator {
   private doc: jsPDF;
   private data: AssessmentData;
+  private pageNumber: number = 0;
 
   constructor(data: AssessmentData) {
     this.doc = new jsPDF({
@@ -99,13 +137,19 @@ export class SlidePDFGenerator {
   }
 
   private addPage() {
-    this.doc.addPage();
+    if (this.pageNumber > 0) {
+      this.doc.addPage();
+    }
+    this.pageNumber++;
   }
 
-  private setTitle(text: string, y: number = 30) {
-    this.doc.setFontSize(24);
+  private setPageTitle(text: string, y: number = 30) {
+    this.doc.setFontSize(28);
     this.doc.setFont('helvetica', 'bold');
+    this.doc.setTextColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
     this.doc.text(text, MARGIN, y);
+    this.doc.setTextColor(0, 0, 0);
+    return y + 15;
   }
 
   private setSubtitle(text: string, y: number) {
@@ -114,13 +158,16 @@ export class SlidePDFGenerator {
     this.doc.setTextColor(100, 100, 100);
     this.doc.text(text, MARGIN, y);
     this.doc.setTextColor(0, 0, 0);
+    return y + 10;
   }
 
   private setBody(text: string, y: number, maxWidth: number = CONTENT_WIDTH) {
     this.doc.setFontSize(11);
     this.doc.setFont('helvetica', 'normal');
+    this.doc.setTextColor(50, 50, 50);
     const lines = this.doc.splitTextToSize(text, maxWidth);
     this.doc.text(lines, MARGIN, y);
+    this.doc.setTextColor(0, 0, 0);
     return y + (lines.length * 6);
   }
 
@@ -135,17 +182,17 @@ export class SlidePDFGenerator {
     return y + (lines.length * 6);
   }
 
-  private addFooter(pageNumber: number) {
+  private addFooter() {
     this.doc.setFontSize(9);
     this.doc.setFont('helvetica', 'normal');
     this.doc.setTextColor(150, 150, 150);
     this.doc.text(
-      `ProblemOps ROI Assessment | ${new Date().toLocaleDateString()}`,
+      `ProblemOps Institute | problemops.com`,
       MARGIN,
       PAGE_HEIGHT - 10
     );
     this.doc.text(
-      `Page ${pageNumber}`,
+      `Page ${this.pageNumber}`,
       PAGE_WIDTH - MARGIN - 15,
       PAGE_HEIGHT - 10
     );
@@ -167,236 +214,590 @@ export class SlidePDFGenerator {
     }).format(value);
   }
 
-  // Page 1: Cover Page
-  private generateCoverPage() {
-    this.doc.setFillColor(37, 99, 235); // Primary blue
-    this.doc.rect(0, 0, PAGE_WIDTH, 80, 'F');
+  // Page 1: Title Page
+  private generateTitlePage() {
+    this.addPage();
     
-    this.doc.setTextColor(255, 255, 255);
-    this.doc.setFontSize(32);
+    // Company Name - Large and prominent
+    this.doc.setFontSize(36);
     this.doc.setFont('helvetica', 'bold');
-    this.doc.text('Team Readiness', MARGIN, 35);
-    this.doc.text('Assessment Report', MARGIN, 50);
-    
-    this.doc.setTextColor(0, 0, 0);
-    this.doc.setFontSize(18);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.text(this.data.companyInfo.name || 'Your Organization', MARGIN, 110);
+    this.doc.setTextColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
+    const companyName = this.data.companyInfo.name || 'Team Readiness Assessment';
+    this.doc.text(companyName, PAGE_WIDTH / 2, 80, { align: 'center' });
     
     if (this.data.companyInfo.team) {
-      this.doc.setFontSize(14);
+      this.doc.setFontSize(18);
       this.doc.setFont('helvetica', 'normal');
       this.doc.setTextColor(100, 100, 100);
-      this.doc.text(this.data.companyInfo.team, MARGIN, 120);
+      this.doc.text(this.data.companyInfo.team, PAGE_WIDTH / 2, 95, { align: 'center' });
     }
     
-    // Readiness Score
-    this.doc.setFontSize(48);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.setTextColor(37, 99, 235);
-    this.doc.text(this.formatPercent(this.data.readinessScore), MARGIN, 160);
-    
+    // Report generated by ProblemOps Institute
     this.doc.setFontSize(14);
     this.doc.setFont('helvetica', 'normal');
-    this.doc.setTextColor(100, 100, 100);
-    this.doc.text('Team Readiness Score', MARGIN, 172);
+    this.doc.setTextColor(80, 80, 80);
+    this.doc.text('Report generated by ProblemOps Institute', PAGE_WIDTH / 2, 130, { align: 'center' });
     
     // Date
-    this.doc.setFontSize(11);
-    this.doc.text(`Assessment Date: ${new Date().toLocaleDateString()}`, MARGIN, PAGE_HEIGHT - 30);
+    const today = new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+    this.doc.text(today, PAGE_WIDTH / 2, 145, { align: 'center' });
+    
+    // Website
+    this.doc.setTextColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
+    this.doc.text('https://problemops.com', PAGE_WIDTH / 2, 160, { align: 'center' });
+    
+    // Founder info
+    this.doc.setTextColor(60, 60, 60);
+    this.doc.setFontSize(12);
+    this.doc.text('Morgan Denner, Founder and Head Trainer', PAGE_WIDTH / 2, 200, { align: 'center' });
+    this.doc.text('mdenner@problemops.com', PAGE_WIDTH / 2, 212, { align: 'center' });
     
     this.doc.setTextColor(0, 0, 0);
   }
 
-  // Page 2: Company Overview
-  private generateCompanyOverview() {
+  // Page 2: Introduction
+  private generateIntroductionPage() {
     this.addPage();
-    this.setTitle('Company Overview');
+    let y = this.setPageTitle('Executive Summary');
     
-    let y = 50;
-    
-    if (this.data.companyInfo.name) {
-      this.doc.setFontSize(14);
-      this.doc.setFont('helvetica', 'bold');
-      this.doc.text('Organization:', MARGIN, y);
-      this.doc.setFont('helvetica', 'normal');
-      this.doc.text(this.data.companyInfo.name, MARGIN + 35, y);
-      y += 10;
-    }
-    
-    if (this.data.companyInfo.website) {
-      this.doc.setFontSize(14);
-      this.doc.setFont('helvetica', 'bold');
-      this.doc.text('Website:', MARGIN, y);
-      this.doc.setFont('helvetica', 'normal');
-      this.doc.setTextColor(37, 99, 235);
-      this.doc.text(this.data.companyInfo.website, MARGIN + 25, y);
-      this.doc.setTextColor(0, 0, 0);
-      y += 10;
-    }
-    
-    if (this.data.companyInfo.team) {
-      this.doc.setFontSize(14);
-      this.doc.setFont('helvetica', 'bold');
-      this.doc.text('Team/Department:', MARGIN, y);
-      this.doc.setFont('helvetica', 'normal');
-      this.doc.text(this.data.companyInfo.team, MARGIN + 45, y);
-      y += 10;
-    }
-    
+    y = this.setSubtitle(`${this.data.companyInfo.name || 'Your organization'}${this.data.companyInfo.team ? ` - ${this.data.companyInfo.team}` : ''}`, y);
     y += 10;
-    this.doc.setFontSize(14);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.text('Team Composition:', MARGIN, y);
-    y += 8;
     
-    this.doc.setFontSize(11);
-    this.doc.setFont('helvetica', 'normal');
-    y = this.setBullet(`Team Size: ${this.data.teamSize} members`, y);
-    y = this.setBullet(`Average Salary: ${this.formatCurrency(this.data.avgSalary)}`, y);
-    y = this.setBullet(`Total Annual Payroll: ${this.formatCurrency(this.data.teamSize * this.data.avgSalary)}`, y);
+    const introText = `${this.data.companyInfo.name || 'Your organization'}, thank you for completing the ProblemOps Team Readiness Assessment. Your results reveal how your team performs across seven research-validated drivers of effectiveness—from trust and psychological safety to coordination and shared cognition. These insights translate directly into financial impact, showing you both the current cost of team dysfunction and the potential savings from targeted improvement. Most importantly, this report provides a concrete action plan based on the ProblemOps framework, with specific exercises, deliverables, and training priorities tailored to your team's unique needs. Use these results to build the business case for investment in team development and to guide your improvement journey.`;
     
-    // Add training scope if available
-    if (this.data.trainingType) {
-      y += 10;
-      this.doc.setFontSize(14);
+    y = this.setBody(introText, y);
+    
+    this.addFooter();
+  }
+
+  // Page 3: Key Metrics
+  private generateKeyMetricsPage() {
+    this.addPage();
+    let y = this.setPageTitle("Your Team's Current Story");
+    
+    // Training Type Indicator
+    if (this.data.trainingType && this.data.trainingType !== 'not-sure' && this.data.trainingOption) {
+      y += 5;
+      this.doc.setFillColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
+      this.doc.setDrawColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
+      this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 25, 3, 3, 'S');
+      
+      this.doc.setFontSize(12);
       this.doc.setFont('helvetica', 'bold');
-      this.doc.text('Selected Training Scope:', MARGIN, y);
-      y += 8;
-      
-      this.doc.setFontSize(11);
+      this.doc.text('Selected Training Scope', MARGIN + 5, y + 10);
       this.doc.setFont('helvetica', 'normal');
-      const trainingLabels: Record<string, string> = {
-        'half-day': 'Half Day Workshop ($2,000)',
-        'full-day': 'Full Day Workshop ($3,500)',
-        'month-long': 'Month-Long Engagement ($30,000)',
-        'not-sure': 'Exploring Options (PDF shows Month-Long option)'
-      };
-      const trainingLabel = trainingLabels[this.data.trainingType] || 'Not specified';
-      y = this.setBullet(trainingLabel, y);
+      this.doc.setFontSize(11);
+      this.doc.text(this.data.trainingOption.name, MARGIN + 5, y + 18);
+      y += 35;
+    }
+    
+    // Two-column metrics
+    const boxWidth = (CONTENT_WIDTH - 10) / 2;
+    const boxHeight = 50;
+    
+    // Annual Cost of Dysfunction
+    this.doc.setFillColor(254, 242, 242);
+    this.doc.setDrawColor(239, 68, 68);
+    this.doc.roundedRect(MARGIN, y, boxWidth, boxHeight, 3, 3, 'FD');
+    
+    this.doc.setFontSize(10);
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.setTextColor(100, 100, 100);
+    this.doc.text('Annual Cost of Dysfunction', MARGIN + 5, y + 12);
+    
+    this.doc.setFontSize(24);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.setTextColor(220, 38, 38);
+    this.doc.text(this.formatCurrency(this.data.dysfunctionCost), MARGIN + 5, y + 30);
+    
+    this.doc.setFontSize(9);
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.setTextColor(100, 100, 100);
+    this.doc.text('Wasted payroll due to team inefficiency', MARGIN + 5, y + 42);
+    
+    // Team Readiness Score
+    this.doc.setFillColor(239, 246, 255);
+    this.doc.setDrawColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
+    this.doc.roundedRect(MARGIN + boxWidth + 10, y, boxWidth, boxHeight, 3, 3, 'FD');
+    
+    this.doc.setFontSize(10);
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.setTextColor(100, 100, 100);
+    this.doc.text('Team Readiness Score', MARGIN + boxWidth + 15, y + 12);
+    
+    this.doc.setFontSize(24);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.setTextColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
+    this.doc.text(this.formatPercent(this.data.readinessScore), MARGIN + boxWidth + 15, y + 30);
+    
+    this.doc.setFontSize(9);
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.setTextColor(100, 100, 100);
+    this.doc.text('Overall effectiveness across all 7 drivers', MARGIN + boxWidth + 15, y + 42);
+    
+    this.doc.setTextColor(0, 0, 0);
+    
+    this.addFooter();
+  }
+
+  // Page 4: ROI / Training Options
+  private generateROIPage() {
+    this.addPage();
+    
+    if (this.data.trainingType === 'not-sure' && this.data.roiData) {
+      // Comparison table for "I'm Not Sure Yet"
+      let y = this.setPageTitle('Training Options Comparison');
+      y = this.setSubtitle('Compare the ROI and scope of each training option', y);
+      y += 10;
       
-      if (this.data.recommendedAreas && this.data.recommendedAreas.length > 0 && this.data.trainingType !== 'not-sure') {
-        const focusText = this.data.trainingType === 'month-long' 
-          ? 'Focus: All 7 drivers in prioritized sequence'
-          : `Focus: ${this.data.recommendedAreas.map(a => a.name).join(', ')}`;
-        y = this.setBullet(focusText, y);
+      const { halfDay, fullDay, monthLong } = this.data.roiData;
+      const priorityAreas = this.data.priorityAreas || [];
+      
+      // Table header
+      const colWidths = [45, 25, 40, 30, 20, 20];
+      const headers = ['Option', 'Investment', 'Focus Areas', 'ROI If Fixed', 'Return', 'Payback'];
+      
+      this.doc.setFillColor(245, 245, 245);
+      this.doc.rect(MARGIN, y, CONTENT_WIDTH, 10, 'F');
+      
+      this.doc.setFontSize(9);
+      this.doc.setFont('helvetica', 'bold');
+      let x = MARGIN + 2;
+      headers.forEach((header, i) => {
+        this.doc.text(header, x, y + 7);
+        x += colWidths[i];
+      });
+      y += 12;
+      
+      // Table rows
+      const options = [
+        {
+          name: 'Half Day Workshop',
+          desc: 'Quick-start intervention',
+          investment: this.formatCurrency(halfDay.cost),
+          focus: `Top priority: ${priorityAreas[0]?.name || 'N/A'}`,
+          savings: this.formatCurrency(halfDay.savings),
+          roi: this.formatPercent(halfDay.roi),
+          payback: `${halfDay.paybackMonths.toFixed(1)} mo`,
+          highlight: false
+        },
+        {
+          name: 'Full Day Workshop',
+          desc: 'Focused deep-dive',
+          investment: this.formatCurrency(fullDay.cost),
+          focus: `Top 2: ${priorityAreas.slice(0, 2).map(a => a.name).join(', ')}`,
+          savings: this.formatCurrency(fullDay.savings),
+          roi: this.formatPercent(fullDay.roi),
+          payback: `${fullDay.paybackMonths.toFixed(1)} mo`,
+          highlight: false
+        },
+        {
+          name: 'Month-Long Engagement',
+          desc: 'Comprehensive transformation',
+          investment: this.formatCurrency(monthLong.cost),
+          focus: 'All 7 drivers',
+          savings: this.formatCurrency(monthLong.savings),
+          roi: this.formatPercent(monthLong.roi),
+          payback: `${monthLong.paybackMonths.toFixed(1)} mo`,
+          highlight: true
+        }
+      ];
+      
+      this.doc.setFont('helvetica', 'normal');
+      options.forEach((opt) => {
+        if (opt.highlight) {
+          this.doc.setFillColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
+          this.doc.setDrawColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
+          this.doc.rect(MARGIN, y - 2, CONTENT_WIDTH, 22, 'S');
+        }
+        
+        x = MARGIN + 2;
+        this.doc.setFontSize(9);
+        this.doc.setFont('helvetica', 'bold');
+        this.doc.text(opt.name, x, y + 5);
+        this.doc.setFont('helvetica', 'normal');
+        this.doc.setFontSize(7);
+        this.doc.text(opt.desc, x, y + 11);
+        x += colWidths[0];
+        
+        this.doc.setFontSize(9);
+        this.doc.text(opt.investment, x, y + 8);
+        x += colWidths[1];
+        
+        const focusLines = this.doc.splitTextToSize(opt.focus, colWidths[2] - 2);
+        this.doc.setFontSize(8);
+        this.doc.text(focusLines, x, y + 5);
+        x += colWidths[2];
+        
+        this.doc.setFontSize(9);
+        this.doc.setTextColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
+        this.doc.text(opt.savings, x, y + 8);
+        x += colWidths[3];
+        
+        this.doc.setTextColor(22, 163, 74);
+        this.doc.text(opt.roi, x, y + 8);
+        x += colWidths[4];
+        
+        this.doc.setTextColor(0, 0, 0);
+        this.doc.text(opt.payback, x, y + 8);
+        
+        y += 24;
+      });
+      
+      // Recommendation note
+      y += 10;
+      this.doc.setFillColor(255, 251, 235);
+      this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 30, 3, 3, 'F');
+      
+      this.doc.setFontSize(10);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text('Recommendation:', MARGIN + 5, y + 10);
+      this.doc.setFont('helvetica', 'normal');
+      this.doc.setFontSize(9);
+      const recText = 'The Month-Long Engagement offers the best long-term value by addressing all drivers systematically. However, if budget is a constraint, starting with a Full Day Workshop on your top 2 priorities can deliver meaningful improvements.';
+      const recLines = this.doc.splitTextToSize(recText, CONTENT_WIDTH - 10);
+      this.doc.text(recLines, MARGIN + 5, y + 18);
+      
+    } else {
+      // Single ROI display for specific training type
+      let y = this.setPageTitle('Return on Investment');
+      
+      const displayROI = this.data.trainingType === 'half-day' ? this.data.roiData?.halfDay :
+                         this.data.trainingType === 'full-day' ? this.data.roiData?.fullDay :
+                         this.data.roiData?.monthLong;
+      
+      if (displayROI) {
+        y += 10;
+        
+        // Three metric boxes
+        const boxWidth = (CONTENT_WIDTH - 20) / 3;
+        const boxHeight = 60;
+        
+        // Projected Annual Savings
+        this.doc.setFillColor(239, 246, 255);
+        this.doc.setDrawColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
+        this.doc.roundedRect(MARGIN, y, boxWidth, boxHeight, 3, 3, 'FD');
+        
+        this.doc.setFontSize(10);
+        this.doc.setTextColor(100, 100, 100);
+        this.doc.text('Projected Annual Savings', MARGIN + 5, y + 15);
+        
+        this.doc.setFontSize(20);
+        this.doc.setFont('helvetica', 'bold');
+        this.doc.setTextColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
+        this.doc.text(this.formatCurrency(displayROI.savings), MARGIN + 5, y + 35);
+        
+        this.doc.setFontSize(8);
+        this.doc.setFont('helvetica', 'normal');
+        this.doc.setTextColor(100, 100, 100);
+        this.doc.text(`From ${this.data.trainingOption?.name?.toLowerCase() || 'training'}`, MARGIN + 5, y + 48);
+        
+        // Return on Investment
+        this.doc.setFillColor(240, 253, 244);
+        this.doc.setDrawColor(22, 163, 74);
+        this.doc.roundedRect(MARGIN + boxWidth + 10, y, boxWidth, boxHeight, 3, 3, 'FD');
+        
+        this.doc.setFontSize(10);
+        this.doc.setTextColor(100, 100, 100);
+        this.doc.text('Return on Investment', MARGIN + boxWidth + 15, y + 15);
+        
+        this.doc.setFontSize(20);
+        this.doc.setFont('helvetica', 'bold');
+        this.doc.setTextColor(22, 163, 74);
+        this.doc.text(this.formatPercent(displayROI.roi), MARGIN + boxWidth + 15, y + 35);
+        
+        this.doc.setFontSize(8);
+        this.doc.setFont('helvetica', 'normal');
+        this.doc.setTextColor(100, 100, 100);
+        this.doc.text(`Investment: ${this.formatCurrency(displayROI.cost)}`, MARGIN + boxWidth + 15, y + 48);
+        
+        // Payback Period
+        this.doc.setFillColor(255, 251, 235);
+        this.doc.setDrawColor(217, 119, 6);
+        this.doc.roundedRect(MARGIN + (boxWidth + 10) * 2, y, boxWidth, boxHeight, 3, 3, 'FD');
+        
+        this.doc.setFontSize(10);
+        this.doc.setTextColor(100, 100, 100);
+        this.doc.text('Payback Period', MARGIN + (boxWidth + 10) * 2 + 5, y + 15);
+        
+        this.doc.setFontSize(20);
+        this.doc.setFont('helvetica', 'bold');
+        this.doc.setTextColor(217, 119, 6);
+        this.doc.text(displayROI.paybackMonths.toFixed(1), MARGIN + (boxWidth + 10) * 2 + 5, y + 35);
+        
+        this.doc.setFontSize(8);
+        this.doc.setFont('helvetica', 'normal');
+        this.doc.setTextColor(100, 100, 100);
+        this.doc.text('months to recover investment', MARGIN + (boxWidth + 10) * 2 + 5, y + 48);
       }
     }
     
+    this.doc.setTextColor(0, 0, 0);
+    this.addFooter();
+  }
+
+  // Page 5: Team Narrative
+  private generateTeamNarrativePage() {
+    this.addPage();
+    let y = this.setPageTitle("Your Team's Story");
+    y += 5;
+    
+    const narrative = this.data.teamStory?.narrative || this.data.enhancedNarrative || '';
+    if (narrative) {
+      // Clean up markdown bold syntax
+      const cleanNarrative = narrative.replace(/\*\*(.*?)\*\*/g, '$1');
+      y = this.setBody(cleanNarrative, y);
+    }
+    
+    this.addFooter();
+  }
+
+  // Page 6: Where Your Team May Be Wasting Resources
+  private generateWasteAreasPage() {
+    if (!this.data.teamStory?.driverImpacts || this.data.teamStory.driverImpacts.length === 0) return;
+    
+    this.addPage();
+    let y = this.setPageTitle('Where Your Team May Be Wasting Resources');
+    y = this.setSubtitle('Based on your scores, these drivers are contributing to lost productivity', y);
+    y += 5;
+    
+    // Show driver cost breakdown summary
+    this.doc.setFillColor(245, 245, 245);
+    this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 25, 3, 3, 'F');
+    
+    this.doc.setFontSize(10);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.text('Total Cost of Dysfunction:', MARGIN + 5, y + 10);
+    this.doc.setTextColor(220, 38, 38);
+    this.doc.text(this.formatCurrency(this.data.dysfunctionCost), MARGIN + 60, y + 10);
+    this.doc.setTextColor(0, 0, 0);
+    
+    this.doc.setFontSize(9);
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.text('Driver Cost = Total Dysfunction Cost × Driver Weight', MARGIN + 5, y + 20);
+    y += 35;
+    
+    // List driver impacts (top 4 to fit on page)
+    for (const impact of this.data.teamStory.driverImpacts.slice(0, 4)) {
+      const driver = this.data.drivers.find(d => d.id === impact.driverKey);
+      const driverCost = this.data.driverCosts?.[impact.driverKey] || 0;
+      
+      // Severity color
+      const severityColor = impact.severityLevel === 'critical' ? [220, 38, 38] : 
+                            impact.severityLevel === 'high' ? [234, 88, 12] : 
+                            impact.severityLevel === 'low' ? [202, 138, 4] : [22, 163, 74];
+      
+      this.doc.setFontSize(12);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text(impact.driverName, MARGIN, y);
+      
+      // Severity badge
+      this.doc.setFontSize(8);
+      this.doc.setTextColor(severityColor[0], severityColor[1], severityColor[2]);
+      this.doc.text(`${impact.severityLabel} | Score: ${impact.score.toFixed(1)}/7.0`, MARGIN + 60, y);
+      this.doc.setTextColor(0, 0, 0);
+      y += 6;
+      
+      // Cost
+      this.doc.setFontSize(14);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.setTextColor(234, 88, 12);
+      this.doc.text(this.formatCurrency(driverCost), MARGIN, y);
+      this.doc.setTextColor(0, 0, 0);
+      
+      this.doc.setFontSize(8);
+      this.doc.setFont('helvetica', 'normal');
+      this.doc.text(' annual cost from this driver', MARGIN + 35, y);
+      y += 8;
+      
+      // Summary
+      this.doc.setFontSize(9);
+      const summaryLines = this.doc.splitTextToSize(impact.summaryStatement, CONTENT_WIDTH);
+      this.doc.text(summaryLines.slice(0, 2), MARGIN, y);
+      y += Math.min(summaryLines.length, 2) * 4 + 10;
+      
+      if (y > PAGE_HEIGHT - 50) break;
+    }
+    
+    this.addFooter();
+  }
+
+  // Page 7: Where Your Team Excels
+  private generateStrengthsPage() {
+    if (!this.data.teamStory?.strengths || this.data.teamStory.strengths.length === 0) return;
+    
+    this.addPage();
+    let y = this.setPageTitle('Where Your Team Excels');
+    y = this.setSubtitle('These high-scoring drivers contribute to your team\'s efficiency', y);
     y += 10;
+    
+    for (const strength of this.data.teamStory.strengths.slice(0, 4)) {
+      this.doc.setFillColor(240, 253, 244);
+      this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 35, 3, 3, 'F');
+      
+      this.doc.setFontSize(12);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.setTextColor(22, 163, 74);
+      this.doc.text(`${strength.driverName} (${strength.score.toFixed(1)}/7.0)`, MARGIN + 5, y + 10);
+      
+      this.doc.setFontSize(8);
+      this.doc.text(strength.severityLabel, MARGIN + 5, y + 18);
+      this.doc.setTextColor(0, 0, 0);
+      
+      this.doc.setFontSize(9);
+      this.doc.setFont('helvetica', 'normal');
+      const summaryLines = this.doc.splitTextToSize(strength.summaryStatement, CONTENT_WIDTH - 10);
+      this.doc.text(summaryLines.slice(0, 2), MARGIN + 5, y + 26);
+      
+      y += 42;
+      
+      if (y > PAGE_HEIGHT - 60) break;
+    }
+    
+    this.addFooter();
+  }
+
+  // Page 8: Understanding Your Cost of Dysfunction
+  private generateCostBreakdownPage() {
+    this.addPage();
+    let y = this.setPageTitle('Understanding Your Cost of Dysfunction');
+    y += 5;
+    
+    // Step 1: Starting Point
+    this.doc.setFillColor(245, 245, 245);
+    this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 35, 3, 3, 'F');
+    
     this.doc.setFontSize(12);
     this.doc.setFont('helvetica', 'bold');
-    this.doc.text('Assessment Context', MARGIN, y);
-    y += 8;
+    this.doc.text('1. Your Starting Point', MARGIN + 5, y + 10);
     
-    this.doc.setFontSize(11);
+    this.doc.setFontSize(10);
     this.doc.setFont('helvetica', 'normal');
-    const contextText = `This assessment evaluates your team across 7 research-validated drivers of team effectiveness. The results provide actionable insights into areas of strength and opportunities for improvement, along with a financial analysis of the cost of team dysfunction and the potential ROI of targeted interventions.`;
-    y = this.setBody(contextText, y);
+    this.doc.text(`Team Size: ${this.data.teamSize} people`, MARGIN + 5, y + 20);
+    this.doc.text(`Average Salary: ${this.formatCurrency(this.data.avgSalary)}`, MARGIN + 80, y + 20);
+    this.doc.text(`Total Annual Payroll: ${this.formatCurrency(this.data.teamSize * this.data.avgSalary)}`, MARGIN + 5, y + 30);
+    y += 45;
     
-    this.addFooter(2);
-  }
-
-  // Page 3: Executive Summary
-  private generateExecutiveSummary() {
-    this.addPage();
-    this.setTitle('Executive Summary');
-    this.setSubtitle('Financial Impact Analysis', 45);
+    // Step 2: 6 Types of Waste
+    this.doc.setFillColor(245, 245, 245);
+    this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 70, 3, 3, 'F');
     
-    let y = 70;
+    this.doc.setFontSize(12);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.text('2. We Measure 6 Types of Waste', MARGIN + 5, y + 10);
     
-    // Metrics boxes
-    const boxHeight = 35;
-    const boxSpacing = 10;
+    const components = this.data.tcdCostComponents || {
+      productivity: 0, rework: 0, turnover: 0, opportunity: 0, overhead: 0, disengagement: 0
+    };
     
-    // Cost of Dysfunction
-    this.doc.setFillColor(239, 68, 68); // Red
+    const costItems = [
+      { label: 'C1 Lost Productivity', value: components.productivity },
+      { label: 'C2 Rework Costs', value: components.rework },
+      { label: 'C3 Turnover Costs', value: components.turnover },
+      { label: 'C4 Missed Opportunities', value: components.opportunity },
+      { label: 'C5 Extra Overhead', value: components.overhead },
+      { label: 'C6 Disengagement', value: components.disengagement }
+    ];
+    
+    this.doc.setFontSize(9);
+    this.doc.setFont('helvetica', 'normal');
+    let itemY = y + 20;
+    const colWidth = (CONTENT_WIDTH - 10) / 2;
+    
+    costItems.forEach((item, i) => {
+      const col = i % 2;
+      const row = Math.floor(i / 2);
+      const itemX = MARGIN + 5 + (col * colWidth);
+      const itemYPos = itemY + (row * 15);
+      
+      this.doc.text(item.label, itemX, itemYPos);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text(this.formatCurrency(item.value), itemX + 55, itemYPos);
+      this.doc.setFont('helvetica', 'normal');
+    });
+    y += 80;
+    
+    // Step 3: Final Result
+    this.doc.setFillColor(254, 242, 242);
     this.doc.setDrawColor(220, 38, 38);
-    this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, boxHeight, 3, 3, 'FD');
+    this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 30, 3, 3, 'FD');
     
-    this.doc.setTextColor(255, 255, 255);
-    this.doc.setFontSize(10);
-    this.doc.setFont('helvetica', 'normal');
-    this.doc.text('ANNUAL COST OF DYSFUNCTION', MARGIN + 5, y + 8);
+    this.doc.setFontSize(12);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.text('Your Total Annual Cost of Dysfunction', MARGIN + 5, y + 12);
     
     this.doc.setFontSize(20);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.text(this.formatCurrency(this.data.dysfunctionCost), MARGIN + 5, y + 20);
-    
-    this.doc.setFontSize(9);
-    this.doc.setFont('helvetica', 'normal');
-    this.doc.text('Wasted payroll due to inefficiency', MARGIN + 5, y + 28);
-    
-    y += boxHeight + boxSpacing;
-    
-    // Projected Savings
-    this.doc.setFillColor(37, 99, 235); // Blue
-    this.doc.setDrawColor(29, 78, 216);
-    this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, boxHeight, 3, 3, 'FD');
-    
-    this.doc.setTextColor(255, 255, 255);
-    this.doc.setFontSize(10);
-    this.doc.setFont('helvetica', 'normal');
-    this.doc.text('PROJECTED ANNUAL SAVINGS', MARGIN + 5, y + 8);
-    
-    this.doc.setFontSize(20);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.text(this.formatCurrency(this.data.projectedSavings), MARGIN + 5, y + 20);
-    
-    this.doc.setFontSize(9);
-    this.doc.setFont('helvetica', 'normal');
-    this.doc.text('If improved to 85% readiness baseline', MARGIN + 5, y + 28);
-    
-    y += boxHeight + boxSpacing;
-    
-    // ROI
-    this.doc.setFillColor(100, 100, 100); // Gray
-    this.doc.setDrawColor(75, 75, 75);
-    this.doc.roundedRect(MARGIN, y, (CONTENT_WIDTH / 2) - 5, boxHeight, 3, 3, 'FD');
-    
-    this.doc.setTextColor(255, 255, 255);
-    this.doc.setFontSize(10);
-    this.doc.setFont('helvetica', 'normal');
-    this.doc.text('RETURN ON INVESTMENT', MARGIN + 5, y + 8);
-    
-    this.doc.setFontSize(20);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.text(this.formatPercent(this.data.roi), MARGIN + 5, y + 20);
-    
-    this.doc.setFontSize(9);
-    this.doc.setFont('helvetica', 'normal');
-    this.doc.text(`Payback in ${this.data.paybackMonths.toFixed(1)} months`, MARGIN + 5, y + 28);
-    
-    // Investment
-    this.doc.roundedRect(MARGIN + (CONTENT_WIDTH / 2) + 5, y, (CONTENT_WIDTH / 2) - 5, boxHeight, 3, 3, 'FD');
-    
-    this.doc.setFontSize(10);
-    this.doc.text('INTERVENTION INVESTMENT', MARGIN + (CONTENT_WIDTH / 2) + 10, y + 8);
-    
-    this.doc.setFontSize(20);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.text(this.formatCurrency(this.data.interventionCost), MARGIN + (CONTENT_WIDTH / 2) + 10, y + 20);
-    
-    this.doc.setFontSize(9);
-    this.doc.setFont('helvetica', 'normal');
-    this.doc.text('Estimated cost of workshops/tools', MARGIN + (CONTENT_WIDTH / 2) + 10, y + 28);
-    
+    this.doc.setTextColor(220, 38, 38);
+    this.doc.text(this.formatCurrency(this.data.dysfunctionCost), MARGIN + 5, y + 25);
     this.doc.setTextColor(0, 0, 0);
-    this.addFooter(3);
+    
+    this.addFooter();
   }
 
-  // Page 4: Driver Performance Overview
-  private generateDriverOverview() {
+  // Page 9: Training Focus Areas (conditional)
+  private generateTrainingFocusPage() {
+    if (this.data.trainingType === 'not-sure' || !this.data.recommendedAreas || this.data.recommendedAreas.length === 0) return;
+    
     this.addPage();
-    this.setTitle('Driver Performance Overview');
-    this.setSubtitle('7 Research-Validated Effectiveness Drivers', 45);
+    let y = this.setPageTitle('Your Training Focus Areas');
+    y = this.setSubtitle(`Based on your selection of ${this.data.trainingOption?.name || 'training'}`, y);
+    y += 10;
     
-    let y = 70;
-    const barWidth = CONTENT_WIDTH - 60;
-    const barHeight = 20;
-    const barSpacing = 8;
+    for (let index = 0; index < this.data.recommendedAreas.length; index++) {
+      const area = this.data.recommendedAreas[index];
+      this.doc.setFillColor(245, 245, 245);
+      this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 40, 3, 3, 'F');
+      
+      // Priority number
+      this.doc.setFillColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
+      this.doc.circle(MARGIN + 12, y + 15, 8, 'F');
+      this.doc.setTextColor(255, 255, 255);
+      this.doc.setFontSize(12);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text(`${index + 1}`, MARGIN + 10, y + 18);
+      this.doc.setTextColor(0, 0, 0);
+      
+      // Area name and score
+      this.doc.setFontSize(14);
+      this.doc.text(area.name, MARGIN + 25, y + 12);
+      
+      this.doc.setFontSize(10);
+      this.doc.setFont('helvetica', 'normal');
+      this.doc.text(`Score: ${area.score.toFixed(1)}/7.0 (${Math.round((area.score / 7) * 100)}%)`, MARGIN + 25, y + 22);
+      
+      // Impact weight
+      this.doc.setTextColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
+      this.doc.text(`Impact Weight: ${Math.round(area.weight * 100)}%`, MARGIN + 120, y + 12);
+      this.doc.setTextColor(0, 0, 0);
+      
+      // Description
+      this.doc.setFontSize(9);
+      const descLines = this.doc.splitTextToSize(area.description, CONTENT_WIDTH - 30);
+      this.doc.text(descLines.slice(0, 2), MARGIN + 25, y + 32);
+      
+      y += 48;
+      
+      if (y > PAGE_HEIGHT - 60) break;
+    }
     
-    this.data.drivers.forEach((driver) => {
+    this.addFooter();
+  }
+
+  // Page 10: Driver Performance Summary
+  private generateDriverSummaryPage() {
+    this.addPage();
+    let y = this.setPageTitle('Driver Performance Summary');
+    y = this.setSubtitle('7 Research-Validated Effectiveness Drivers', y);
+    y += 10;
+    
+    const barWidth = CONTENT_WIDTH - 50;
+    const barHeight = 12;
+    
+    for (const driver of this.data.drivers) {
       // Driver name
       this.doc.setFontSize(11);
       this.doc.setFont('helvetica', 'bold');
@@ -414,534 +815,28 @@ export class SlidePDFGenerator {
       
       // Progress bar fill
       const fillWidth = (driver.value / 7) * barWidth;
-      const color = driver.value >= 5.5 ? [37, 99, 235] : driver.value >= 4 ? [234, 179, 8] : [239, 68, 68];
+      const color = driver.value >= 5.5 ? [22, 163, 74] : driver.value >= 4 ? [234, 179, 8] : [239, 68, 68];
       this.doc.setFillColor(color[0], color[1], color[2]);
       this.doc.roundedRect(MARGIN, y, fillWidth, barHeight, 2, 2, 'F');
       
-      y += barHeight + barSpacing;
-    });
+      y += barHeight + 12;
+    }
     
-    this.addFooter(4);
+    this.addFooter();
   }
 
-  // Pages 5-11: Individual Driver Pages
-  private generateDriverPage(driver: Driver, pageNumber: number) {
-    this.addPage();
-    this.setTitle(driver.name);
-    
-    // Score badge
-    const badgeSize = 40;
-    const badgeX = PAGE_WIDTH - MARGIN - badgeSize;
-    const badgeY = 20;
-    
-    const color = driver.value >= 5.5 ? [37, 99, 235] : driver.value >= 4 ? [234, 179, 8] : [239, 68, 68];
-    this.doc.setFillColor(color[0], color[1], color[2]);
-    this.doc.circle(badgeX + (badgeSize / 2), badgeY + (badgeSize / 2), badgeSize / 2, 'F');
-    
-    this.doc.setTextColor(255, 255, 255);
-    this.doc.setFontSize(18);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.text(driver.value.toFixed(1), badgeX + (badgeSize / 2), badgeY + (badgeSize / 2) + 2, { align: 'center' });
-    
-    this.doc.setTextColor(0, 0, 0);
-    
-    let y = 50;
-    
-    // Description
-    this.doc.setFontSize(12);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.text('Definition:', MARGIN, y);
-    y += 8;
-    
-    this.doc.setFontSize(11);
-    this.doc.setFont('helvetica', 'normal');
-    y = this.setBody(driver.description, y);
-    
-    y += 10;
-    
-    // Assessment Insights
-    this.doc.setFontSize(12);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.text('Assessment Insights:', MARGIN, y);
-    y += 8;
-    
-    const insights = this.generateDriverInsights(driver);
-    insights.forEach(insight => {
-      y = this.setBullet(insight, y);
-      y += 2;
-    });
-    
-    y += 10;
-    
-    // Impact
-    this.doc.setFontSize(12);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.text('Financial Impact:', MARGIN, y);
-    y += 8;
-    
-    const totalMaxWeightedScore = this.data.drivers.reduce((sum, d) => sum + (7 * d.weight), 0);
-    const weightedGap = (7 * driver.weight) - (driver.value * driver.weight);
-    const dysfunctionShare = weightedGap / totalMaxWeightedScore;
-    const costAmount = dysfunctionShare * (this.data.teamSize * this.data.avgSalary);
-    
-    this.doc.setFontSize(11);
-    this.doc.setFont('helvetica', 'normal');
-    y = this.setBullet(`This driver contributes approximately ${this.formatCurrency(costAmount)} to your annual cost of dysfunction.`, y);
-    y = this.setBullet(`Improving this score by 1 point could save roughly ${this.formatCurrency(costAmount / (7 - driver.value))} annually.`, y);
-    
-    this.addFooter(pageNumber);
-  }
-
-  private generateDriverInsights(driver: Driver): string[] {
-    const score = driver.value;
-    const insights: string[] = [];
-    
-    if (score >= 6) {
-      insights.push(`Your team demonstrates strong ${driver.name.toLowerCase()} with a score of ${score.toFixed(1)}/7.`);
-      insights.push('This is a significant strength that supports overall team effectiveness.');
-      insights.push('Focus on maintaining this high performance while addressing lower-scoring areas.');
-    } else if (score >= 5) {
-      insights.push(`Your team shows good ${driver.name.toLowerCase()} with a score of ${score.toFixed(1)}/7.`);
-      insights.push('There is room for improvement to reach optimal performance.');
-      insights.push('Consider targeted interventions to strengthen this driver further.');
-    } else if (score >= 4) {
-      insights.push(`Your team has moderate ${driver.name.toLowerCase()} with a score of ${score.toFixed(1)}/7.`);
-      insights.push('This represents a significant opportunity for improvement.');
-      insights.push('Addressing this gap should be a priority in your action plan.');
-    } else {
-      insights.push(`Your team faces challenges with ${driver.name.toLowerCase()}, scoring ${score.toFixed(1)}/7.`);
-      insights.push('This is a critical area requiring immediate attention.');
-      insights.push('Improvement here will have substantial impact on team effectiveness and financial outcomes.');
-    }
-    
-    return insights;
-  }
-
-  // Page 12: Team Narrative
-  private generateTeamNarrative() {
-    this.addPage();
-    this.setTitle('Your Team\'s Current Story');
-    this.setSubtitle('Understanding How Team Dynamics Impact Your Bottom Line', 45);
-    
-    let y = 70;
-    
-    // Overview narrative
-    const narrative = this.data.teamStory?.narrative || this.generateNarrativeText();
-    this.doc.setFontSize(11);
-    this.doc.setFont('helvetica', 'normal');
-    const lines = this.doc.splitTextToSize(narrative, CONTENT_WIDTH);
-    this.doc.text(lines, MARGIN, y);
-    y += lines.length * 5 + 15;
-    
-    // Areas Causing Waste
-    if (this.data.teamStory?.driverImpacts && this.data.teamStory.driverImpacts.length > 0) {
-      this.doc.setFontSize(14);
-      this.doc.setFont('helvetica', 'bold');
-      this.doc.setTextColor(220, 38, 38); // Red
-      this.doc.text('Where Your Team May Be Wasting Resources', MARGIN, y);
-      this.doc.setTextColor(0, 0, 0);
-      y += 10;
-      
-      for (const impact of this.data.teamStory.driverImpacts) {
-        // Check if we need a new page
-        if (y > PAGE_HEIGHT - 100) {
-          this.addFooter(12);
-          this.addPage();
-          y = 30;
-        }
-        
-        // Calculate driver cost
-        const driver = this.data.drivers.find(d => d.id === impact.driverKey);
-        const driverGap = driver ? (1 - (driver.value / 7)) : 0;
-        const driverCost = driver ? (this.data.teamSize * this.data.avgSalary) * driver.weight * driverGap : 0;
-        const gapPercent = Math.round(driverGap * 100);
-        const impactWeight = driver ? Math.round(driver.weight * 100) : 0;
-        
-        // Driver name
-        this.doc.setFontSize(14);
-        this.doc.setFont('helvetica', 'bold');
-        this.doc.text(impact.driverName, MARGIN, y);
-        y += 7;
-        
-        // Severity badge and score
-        this.doc.setFontSize(10);
-        this.doc.setFont('helvetica', 'normal');
-        const severityColor = impact.severityLevel === 'critical' ? [220, 38, 38] : 
-                              impact.severityLevel === 'high' ? [234, 88, 12] : [202, 138, 4];
-        this.doc.setTextColor(severityColor[0], severityColor[1], severityColor[2]);
-        this.doc.text(`${impact.severityLabel} | Score: ${impact.score.toFixed(1)}/7.0`, MARGIN, y);
-        this.doc.setTextColor(0, 0, 0);
-        y += 7;
-        
-        // Cost callout
-        this.doc.setFontSize(16);
-        this.doc.setFont('helvetica', 'bold');
-        this.doc.setTextColor(234, 88, 12); // Orange
-        const costText = `$${driverCost.toLocaleString('en-US', {maximumFractionDigits: 0})}`;
-        this.doc.text(costText, MARGIN, y);
-        this.doc.setTextColor(0, 0, 0);
-        y += 6;
-        
-        this.doc.setFontSize(9);
-        this.doc.setFont('helvetica', 'normal');
-        this.doc.setTextColor(100, 100, 100);
-        this.doc.text('Annual cost from this driver', MARGIN, y);
-        y += 4;
-        this.doc.text(`Gap: ${gapPercent}% • Impact weight: ${impactWeight}%`, MARGIN, y);
-        this.doc.setTextColor(0, 0, 0);
-        y += 7;
-        
-        // Summary statement
-        this.doc.setFontSize(10);
-        const summaryLines = this.doc.splitTextToSize(impact.summaryStatement, CONTENT_WIDTH);
-        this.doc.text(summaryLines, MARGIN, y);
-        y += summaryLines.length * 4 + 4;
-        
-        // Behavioral consequences
-        this.doc.setFontSize(9);
-        this.doc.setFont('helvetica', 'bold');
-        this.doc.text('Team Behaviors:', MARGIN, y);
-        y += 5;
-        this.doc.setFont('helvetica', 'normal');
-        for (const behavior of impact.behavioralConsequences.slice(0, 2)) {
-          const behaviorLines = this.doc.splitTextToSize(`• ${behavior}`, CONTENT_WIDTH - 5);
-          this.doc.text(behaviorLines, MARGIN + 3, y);
-          y += behaviorLines.length * 4;
-        }
-        y += 4;
-        
-        // Waste outcomes
-        this.doc.setFontSize(9);
-        this.doc.setFont('helvetica', 'bold');
-        this.doc.text('Leads to Waste In:', MARGIN, y);
-        y += 5;
-        this.doc.setFont('helvetica', 'normal');
-        const wasteText = impact.wasteOutcomes.map((w: any) => w.category).join(', ');
-        const wasteLines = this.doc.splitTextToSize(wasteText, CONTENT_WIDTH);
-        this.doc.text(wasteLines, MARGIN, y);
-        y += wasteLines.length * 4 + 4;
-        
-        // Citation
-        this.doc.setFontSize(8);
-        this.doc.setTextColor(100, 100, 100);
-        const citationText = `Research: ${impact.citation.finding} (${impact.citation.authors}, ${impact.citation.year})`;
-        const citationLines = this.doc.splitTextToSize(citationText, CONTENT_WIDTH);
-        this.doc.text(citationLines, MARGIN, y);
-        this.doc.setTextColor(0, 0, 0);
-        y += citationLines.length * 4 + 10;
-      }
-    }
-    
-    this.addFooter(12);
-    
-    // Add strengths on a new page if they exist
-    if (this.data.teamStory?.strengths && this.data.teamStory.strengths.length > 0) {
-      this.generateTeamStrengths();
-    }
-  }
-  
-  private generateTeamStrengths() {
-    this.addPage();
-    this.setTitle('Where Your Team Excels');
-    this.setSubtitle('Drivers Contributing to Efficiency and Productivity', 45);
-    
-    let y = 70;
-    
-    for (const strength of this.data.teamStory!.strengths.slice(0, 4)) {
-      // Check if we need a new page
-      if (y > PAGE_HEIGHT - 70) {
-        this.addFooter(13);
-        this.addPage();
-        y = 30;
-      }
-      
-      // Driver name and score
-      this.doc.setFontSize(12);
-      this.doc.setFont('helvetica', 'bold');
-      this.doc.setTextColor(22, 163, 74); // Green
-      this.doc.text(`${strength.driverName} (Score: ${strength.score.toFixed(1)}/7.0)`, MARGIN, y);
-      this.doc.setTextColor(0, 0, 0);
-      y += 6;
-      
-      // Strength label
-      this.doc.setFontSize(9);
-      this.doc.setFont('helvetica', 'normal');
-      this.doc.setTextColor(22, 163, 74);
-      this.doc.text(`${strength.severityLabel}`, MARGIN, y);
-      this.doc.setTextColor(0, 0, 0);
-      y += 6;
-      
-      // Summary statement
-      this.doc.setFontSize(10);
-      const summaryLines = this.doc.splitTextToSize(strength.summaryStatement, CONTENT_WIDTH);
-      this.doc.text(summaryLines, MARGIN, y);
-      y += summaryLines.length * 4 + 4;
-      
-      // Positive behaviors
-      this.doc.setFontSize(9);
-      this.doc.setFont('helvetica', 'bold');
-      this.doc.text('Positive Team Behaviors:', MARGIN, y);
-      y += 5;
-      this.doc.setFont('helvetica', 'normal');
-      for (const behavior of strength.behavioralConsequences.slice(0, 2)) {
-        const behaviorLines = this.doc.splitTextToSize(`✓ ${behavior}`, CONTENT_WIDTH - 5);
-        this.doc.text(behaviorLines, MARGIN + 3, y);
-        y += behaviorLines.length * 4;
-      }
-      y += 4;
-      
-      // Efficiency gains
-      this.doc.setFontSize(9);
-      this.doc.setFont('helvetica', 'bold');
-      this.doc.text('Drives Efficiency In:', MARGIN, y);
-      y += 5;
-      this.doc.setFont('helvetica', 'normal');
-      const efficiencyText = strength.wasteOutcomes.map((w: any) => w.category).join(', ');
-      const efficiencyLines = this.doc.splitTextToSize(efficiencyText, CONTENT_WIDTH);
-      this.doc.text(efficiencyLines, MARGIN, y);
-      y += efficiencyLines.length * 4 + 4;
-      
-      // Citation
-      this.doc.setFontSize(8);
-      this.doc.setTextColor(100, 100, 100);
-      const citationText = `Research: ${strength.citation.finding} (${strength.citation.authors}, ${strength.citation.year})`;
-      const citationLines = this.doc.splitTextToSize(citationText, CONTENT_WIDTH);
-      this.doc.text(citationLines, MARGIN, y);
-      this.doc.setTextColor(0, 0, 0);
-      y += citationLines.length * 4 + 10;
-    }
-    
-    this.addFooter(13);
-  }
-
-  private generateNarrativeText(): string {
-    // Use enhanced narrative if available
-    if (this.data.enhancedNarrative) {
-      return this.data.enhancedNarrative;
-    }
-    
-    // Fallback to basic narrative
-    const { drivers, readinessScore, companyInfo } = this.data;
-    
-    const strengths = drivers.filter(d => d.value >= 5.5).map(d => d.name);
-    const opportunities = drivers.filter(d => d.value < 4.5).map(d => d.name);
-    
-    const companyContext = companyInfo.name ? `${companyInfo.name}${companyInfo.team ? `'s ${companyInfo.team}` : ''}` : 'Your team';
-    
-    let narrative = `${companyContext} demonstrates a readiness score of ${this.formatPercent(readinessScore)}, `;
-    
-    if (readinessScore >= 0.85) {
-      narrative += 'indicating a highly effective team operating at peak performance. ';
-    } else if (readinessScore >= 0.70) {
-      narrative += 'suggesting a functional team with notable areas for optimization. ';
-    } else if (readinessScore >= 0.50) {
-      narrative += 'revealing significant dysfunction that is impacting team effectiveness and organizational outcomes. ';
-    } else {
-      narrative += 'indicating a critical state requiring immediate intervention to restore team functionality. ';
-    }
-    
-    if (strengths.length > 0) {
-      narrative += `The team shows particular strength in ${strengths.join(', ')}, which provides a solid foundation for improvement efforts. `;
-    }
-    
-    if (opportunities.length > 0) {
-      narrative += `However, challenges in ${opportunities.join(', ')} represent significant opportunities for growth. `;
-    }
-    
-    narrative += `By addressing these gaps through targeted interventions based on the ProblemOps methodology, the team can unlock ${this.formatCurrency(this.data.projectedSavings)} in annual value while building a more cohesive, effective, and resilient working environment.`;
-    
-    return narrative;
-  }
-
-  // Pages 13-16: Training Plan
-  private generateTrainingPlan() {
-    const clusters = [
-      {
-        title: 'Foundation Cluster',
-        subtitle: 'Building Trust & Psychological Safety',
-        drivers: ['Trust', 'Psychological Safety'],
-        description: 'These foundational drivers create the bedrock for all other team dynamics. Without trust and psychological safety, teams cannot engage in productive conflict, share knowledge openly, or coordinate effectively.',
-        interventions: [
-          'Conduct structured vulnerability exercises to build interpersonal trust',
-          'Implement regular retrospectives with emphasis on learning over blame',
-          'Create explicit norms around feedback and constructive disagreement',
-          'Use ProblemOps Conversation frameworks to surface and resolve tensions',
-          'Establish team working agreements that prioritize psychological safety'
-        ]
-      },
-      {
-        title: 'Knowledge Cluster',
-        subtitle: 'Developing Transactive Memory & Team Cognition',
-        drivers: ['Transactive Memory', 'Team Cognition'],
-        description: 'These drivers enable teams to leverage distributed expertise and make better collective decisions. Knowing who knows what and how to think together as a unit are critical for complex problem-solving.',
-        interventions: [
-          'Map team expertise using skills matrices and knowledge directories',
-          'Practice ProblemOps Shared Language exercises to align mental models',
-          'Conduct collaborative problem-solving sessions with explicit thinking protocols',
-          'Create documentation systems that capture decision rationale and context',
-          'Run scenario planning exercises to build shared understanding of challenges'
-        ]
-      },
-      {
-        title: 'Execution Cluster',
-        subtitle: 'Strengthening Coordination & Goal Clarity',
-        drivers: ['Coordination', 'Goal Clarity'],
-        description: 'These drivers ensure teams can translate strategy into action. Clear goals and smooth coordination are essential for efficient execution and avoiding wasted effort.',
-        interventions: [
-          'Establish clear OKRs with explicit success metrics and milestones',
-          'Implement dependency mapping and workflow visualization practices',
-          'Use ProblemOps Problem Framing to ensure shared understanding of objectives',
-          'Create regular synchronization rituals to maintain alignment',
-          'Develop escalation protocols for handling blockers and dependencies'
-        ]
-      },
-      {
-        title: 'Communication Cluster',
-        subtitle: 'Enhancing Communication Quality',
-        drivers: ['Communication Quality'],
-        description: 'High-quality communication underpins all other drivers. It\'s not about frequency but about clarity, timeliness, and shared understanding.',
-        interventions: [
-          'Adopt structured communication protocols (e.g., SBAR, situation-complication-resolution)',
-          'Practice active listening and paraphrasing techniques in meetings',
-          'Use ProblemOps Conversation frameworks to improve dialogue quality',
-          'Implement asynchronous communication best practices for distributed work',
-          'Create communication charters that define expectations and norms'
-        ]
-      }
-    ];
-    
-    clusters.forEach((cluster, index) => {
-      this.addPage();
-      this.setTitle(cluster.title);
-      this.setSubtitle(cluster.subtitle, 45);
-      
-      let y = 65;
-      
-      // Relevant drivers
-      this.doc.setFontSize(11);
-      this.doc.setFont('helvetica', 'bold');
-      this.doc.text('Focus Areas:', MARGIN, y);
-      y += 6;
-      
-      this.doc.setFont('helvetica', 'normal');
-      cluster.drivers.forEach(driverName => {
-        const driver = this.data.drivers.find(d => d.name === driverName);
-        if (driver) {
-          this.doc.text(`• ${driver.name}: ${driver.value.toFixed(1)}/7`, MARGIN + 5, y);
-          y += 6;
-        }
-      });
-      
-      y += 8;
-      
-      // Description
-      this.doc.setFontSize(11);
-      this.doc.setFont('helvetica', 'normal');
-      y = this.setBody(cluster.description, y);
-      
-      y += 10;
-      
-      // Recommended Interventions
-      this.doc.setFontSize(12);
-      this.doc.setFont('helvetica', 'bold');
-      this.doc.text('Recommended Interventions:', MARGIN, y);
-      y += 8;
-      
-      this.doc.setFontSize(11);
-      this.doc.setFont('helvetica', 'normal');
-      cluster.interventions.forEach(intervention => {
-        y = this.setBullet(intervention, y);
-        y += 3;
-      });
-      
-      this.addFooter(13 + index);
-    });
-  }
-
-  // Page 17: Next Steps
-  private generateNextSteps() {
-    this.addPage();
-    this.setTitle('Next Steps');
-    this.setSubtitle('Your Path Forward', 45);
-    
-    let y = 70;
-    
-    this.doc.setFontSize(12);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.text('Immediate Actions:', MARGIN, y);
-    y += 10;
-    
-    const actions = [
-      'Share this report with team leadership and key stakeholders',
-      'Prioritize interventions based on the lowest-scoring drivers with highest financial impact',
-      'Schedule a team workshop to discuss findings and co-create an action plan',
-      'Establish baseline metrics to track improvement over time',
-      'Consider engaging a ProblemOps facilitator for guided implementation'
-    ];
-    
-    this.doc.setFontSize(11);
-    this.doc.setFont('helvetica', 'normal');
-    actions.forEach((action, index) => {
-      y = this.setBullet(`${index + 1}. ${action}`, y);
-      y += 4;
-    });
-    
-    y += 15;
-    
-    this.doc.setFontSize(12);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.text('Learn More:', MARGIN, y);
-    y += 10;
-    
-    this.doc.setFontSize(11);
-    this.doc.setFont('helvetica', 'normal');
-    y = this.setBullet('Visit problemops.com for articles, case studies, and resources', y);
-    y = this.setBullet('Explore the ProblemOps Lessons series for practical frameworks', y);
-    y = this.setBullet('Contact us to discuss customized training and facilitation', y);
-    
-    y += 20;
-    
-    // Contact box
-    this.doc.setFillColor(245, 245, 245);
-    this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 40, 3, 3, 'F');
-    
-    y += 10;
-    this.doc.setFontSize(12);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.text('Contact Information', MARGIN + 5, y);
-    
-    y += 8;
-    this.doc.setFontSize(11);
-    this.doc.setFont('helvetica', 'normal');
-    this.doc.text('Website: problemops.com', MARGIN + 5, y);
-    
-    y += 6;
-    this.doc.text('For questions about this assessment or to schedule a consultation,', MARGIN + 5, y);
-    
-    y += 6;
-    this.doc.text('visit our website or reach out through the contact form.', MARGIN + 5, y);
-    
-    this.addFooter(17);
-  }
-
-  // Page: 4 C's Framework Analysis
+  // Page 11: 4 C's Framework
   private generateFourCsPage() {
     if (!this.data.fourCsAnalysis) return;
     
     this.addPage();
-    this.setTitle('The 4 C\'s of ProblemOps');
-    this.setSubtitle('Criteria, Commitment, Collaboration, Change', 45);
-    
-    let y = 70;
+    let y = this.setPageTitle("The 4 C's Framework");
+    y = this.setSubtitle('Criteria, Commitment, Collaboration, Change', y);
+    y += 10;
     
     const { scores, gaps, target } = this.data.fourCsAnalysis;
     const targetPercent = target * 100;
     
-    // Intro text
-    const intro = 'The ProblemOps framework organizes team effectiveness into four interconnected capabilities. Your scores in each area reveal where your team excels and where focused improvement will yield the greatest impact.';
-    y = this.setBody(intro, y) + 10;
-    
-    // 4 C's scores
     const fourCs = [
       { name: 'Criteria', score: scores.criteria, gap: gaps.criteria, desc: 'Clear problem definition and shared language' },
       { name: 'Commitment', score: scores.commitment, gap: gaps.commitment, desc: 'Aligned goals and strategic clarity' },
@@ -949,17 +844,18 @@ export class SlidePDFGenerator {
       { name: 'Change', score: scores.change, gap: gaps.change, desc: 'Adaptive coordination and execution' }
     ];
     
-    fourCs.forEach((c) => {
+    const barWidth = CONTENT_WIDTH - 60;
+    
+    for (const c of fourCs) {
       const scorePercent = c.score * 100;
       const gapPercent = c.gap * 100;
       
       // C name and score
-      this.doc.setFontSize(14);
+      this.doc.setFontSize(16);
       this.doc.setFont('helvetica', 'bold');
       this.doc.text(c.name, MARGIN, y);
       
-      this.doc.setFontSize(16);
-      this.doc.setTextColor(37, 99, 235);
+      this.doc.setTextColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
       this.doc.text(`${scorePercent.toFixed(0)}%`, MARGIN + 50, y);
       this.doc.setTextColor(0, 0, 0);
       
@@ -972,103 +868,311 @@ export class SlidePDFGenerator {
       this.doc.text(c.desc, MARGIN, y);
       this.doc.setTextColor(0, 0, 0);
       
-      y += 6;
+      y += 8;
       
       // Progress bar
-      const barWidth = CONTENT_WIDTH - 60;
-      const barHeight = 8;
-      
-      // Background
       this.doc.setFillColor(240, 240, 240);
-      this.doc.roundedRect(MARGIN, y, barWidth, barHeight, 2, 2, 'F');
+      this.doc.roundedRect(MARGIN, y, barWidth, 10, 2, 2, 'F');
       
-      // Fill
       const fillWidth = (scorePercent / 100) * barWidth;
-      const color = scorePercent >= targetPercent ? [34, 197, 94] : scorePercent >= 70 ? [251, 191, 36] : [239, 68, 68];
+      const color = scorePercent >= targetPercent ? [22, 163, 74] : scorePercent >= 70 ? [251, 191, 36] : [239, 68, 68];
       this.doc.setFillColor(color[0], color[1], color[2]);
-      this.doc.roundedRect(MARGIN, y, fillWidth, barHeight, 2, 2, 'F');
+      this.doc.roundedRect(MARGIN, y, fillWidth, 10, 2, 2, 'F');
       
       // Target line
       const targetX = MARGIN + (targetPercent / 100) * barWidth;
       this.doc.setDrawColor(100, 100, 100);
       this.doc.setLineWidth(0.5);
-      this.doc.line(targetX, y - 2, targetX, y + barHeight + 2);
+      this.doc.line(targetX, y - 2, targetX, y + 12);
       
       // Gap text
       this.doc.setFontSize(9);
       this.doc.setTextColor(100, 100, 100);
-      this.doc.text(`Gap to target: ${gapPercent.toFixed(0)}%`, MARGIN + barWidth + 5, y + 5);
+      this.doc.text(`Gap: ${gapPercent.toFixed(0)}%`, MARGIN + barWidth + 5, y + 7);
       this.doc.setTextColor(0, 0, 0);
       
-      y += barHeight + 15;
-    });
+      y += 25;
+    }
     
-    this.addFooter(4);
+    this.addFooter();
   }
-  
-  // Page: ProblemOps Principles
-  private generateProblemOpsPrinciples() {
+
+  // Page 12: ProblemOps Principles
+  private generatePrinciplesPage() {
     this.addPage();
-    this.setTitle('ProblemOps Principles');
-    this.setSubtitle('A framework for continuous team improvement', 45);
-    
-    let y = 70;
+    let y = this.setPageTitle('ProblemOps Principles');
+    y = this.setSubtitle('A framework for continuous team improvement', y);
+    y += 10;
     
     const principles = [
-      {
-        title: '1. Shared Language Creates Shared Understanding',
-        text: 'Teams that develop common vocabulary and mental models can communicate more efficiently and make better collective decisions.'
-      },
-      {
-        title: '2. Problems Are Opportunities for Alignment',
-        text: 'Every challenge is a chance to clarify goals, surface assumptions, and build stronger team agreements.'
-      },
-      {
-        title: '3. Process Follows People',
-        text: 'Effective systems emerge from understanding how people actually work, not from imposing rigid frameworks.'
-      },
-      {
-        title: '4. Continuous Learning Over Perfect Planning',
-        text: 'Teams improve through rapid experimentation and reflection, not exhaustive upfront analysis.'
-      },
-      {
-        title: '5. Transparency Builds Trust',
-        text: 'Making work visible and sharing context openly creates psychological safety and enables better coordination.'
-      }
+      { title: '1. Shared Language Creates Shared Understanding', text: 'Teams that develop common vocabulary and mental models can communicate more efficiently and make better collective decisions.' },
+      { title: '2. Problems Are Opportunities for Alignment', text: 'Every challenge is a chance to clarify goals, surface assumptions, and build stronger team agreements.' },
+      { title: '3. Process Follows People', text: 'Effective systems emerge from understanding how people actually work, not from imposing rigid frameworks.' },
+      { title: '4. Continuous Learning Over Perfect Planning', text: 'Teams improve through rapid experimentation and reflection, not exhaustive upfront analysis.' },
+      { title: '5. Transparency Builds Trust', text: 'Making work visible and sharing context openly creates psychological safety and enables better coordination.' }
     ];
     
-    principles.forEach((p) => {
+    for (const p of principles) {
       this.doc.setFontSize(12);
       this.doc.setFont('helvetica', 'bold');
       this.doc.text(p.title, MARGIN, y);
       y += 8;
       
-      this.doc.setFontSize(11);
+      this.doc.setFontSize(10);
       this.doc.setFont('helvetica', 'normal');
       const lines = this.doc.splitTextToSize(p.text, CONTENT_WIDTH);
       this.doc.text(lines, MARGIN, y);
-      y += (lines.length * 6) + 10;
-    });
+      y += (lines.length * 5) + 12;
+    }
     
-    this.addFooter(13);
+    this.addFooter();
+  }
+
+  // Page 13: Training Plan
+  private generateTrainingPlanPage() {
+    this.addPage();
+    let y = this.setPageTitle('Your ProblemOps Training Plan');
+    
+    // Priority Focus Areas
+    if (this.data.trainingPriorities && this.data.trainingPriorities.length > 0) {
+      y += 5;
+      this.doc.setFillColor(255, 251, 235);
+      this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 60, 3, 3, 'F');
+      
+      this.doc.setFontSize(12);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text('Priority Focus Areas', MARGIN + 5, y + 12);
+      
+      let priorityY = y + 22;
+      this.doc.setFontSize(9);
+      
+      for (const priority of this.data.trainingPriorities.slice(0, 4)) {
+        const urgencyColor = priority.urgency === 'critical' ? [220, 38, 38] :
+                             priority.urgency === 'high' ? [234, 88, 12] :
+                             priority.urgency === 'medium' ? [202, 138, 4] : [22, 163, 74];
+        
+        this.doc.setTextColor(urgencyColor[0], urgencyColor[1], urgencyColor[2]);
+        this.doc.setFont('helvetica', 'bold');
+        const urgencyLabel = priority.urgency === 'critical' ? 'CRITICAL' : priority.urgency.toUpperCase();
+        this.doc.text(urgencyLabel, MARGIN + 5, priorityY);
+        
+        this.doc.setTextColor(0, 0, 0);
+        this.doc.setFont('helvetica', 'normal');
+        this.doc.text(`${priority.area}: ${priority.reason}`, MARGIN + 30, priorityY);
+        
+        priorityY += 10;
+      }
+      
+      y += 70;
+    }
+    
+    // Training modules summary
+    if (this.data.trainingPlan) {
+      this.doc.setFontSize(12);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text('Training Modules', MARGIN, y);
+      y += 10;
+      
+      const modules = ['criteria', 'commitment', 'collaboration', 'change'] as const;
+      
+      for (const key of modules) {
+        const module = this.data.trainingPlan[key];
+        if (!module) continue;
+        
+        this.doc.setFontSize(11);
+        this.doc.setFont('helvetica', 'bold');
+        this.doc.text(module.title, MARGIN, y);
+        
+        this.doc.setFontSize(9);
+        this.doc.setFont('helvetica', 'normal');
+        this.doc.text(`Duration: ${module.duration}`, MARGIN + 100, y);
+        y += 6;
+        
+        const descLines = this.doc.splitTextToSize(module.description, CONTENT_WIDTH);
+        this.doc.text(descLines.slice(0, 1), MARGIN, y);
+        y += 12;
+        
+        if (y > PAGE_HEIGHT - 40) break;
+      }
+    }
+    
+    this.addFooter();
+  }
+
+  // Page 14: Recommended Deliverables
+  private generateDeliverablesPage() {
+    if (!this.data.recommendedDeliverables || Object.keys(this.data.recommendedDeliverables).length === 0) return;
+    
+    this.addPage();
+    let y = this.setPageTitle('Recommended ProblemOps Deliverables');
+    y = this.setSubtitle('Specific artifacts your team should focus on creating', y);
+    y += 10;
+    
+    for (const [category, deliverables] of Object.entries(this.data.recommendedDeliverables)) {
+      this.doc.setFontSize(12);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text(category, MARGIN, y);
+      y += 8;
+      
+      this.doc.setFontSize(10);
+      this.doc.setFont('helvetica', 'normal');
+      
+      for (const deliverable of (deliverables as string[]).slice(0, 4)) {
+        this.doc.text(`• ${deliverable}`, MARGIN + 5, y);
+        y += 6;
+      }
+      
+      y += 8;
+      
+      if (y > PAGE_HEIGHT - 50) break;
+    }
+    
+    this.addFooter();
+  }
+
+  // Page 15: Other Deliverables (if applicable)
+  private generateOtherDeliverablesPage() {
+    if (!this.data.otherDeliverables || Object.keys(this.data.otherDeliverables).length === 0) return;
+    
+    this.addPage();
+    let y = this.setPageTitle('Additional ProblemOps Deliverables');
+    y = this.setSubtitle('Other deliverables for continuous improvement', y);
+    y += 10;
+    
+    for (const [category, deliverables] of Object.entries(this.data.otherDeliverables)) {
+      this.doc.setFontSize(12);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text(category, MARGIN, y);
+      y += 8;
+      
+      this.doc.setFontSize(10);
+      this.doc.setFont('helvetica', 'normal');
+      
+      for (const deliverable of (deliverables as string[]).slice(0, 3)) {
+        this.doc.text(`• ${deliverable}`, MARGIN + 5, y);
+        y += 6;
+      }
+      
+      y += 8;
+      
+      if (y > PAGE_HEIGHT - 50) break;
+    }
+    
+    this.addFooter();
+  }
+
+  // Page 16: Next Steps
+  private generateNextStepsPage() {
+    this.addPage();
+    let y = this.setPageTitle('Next Steps');
+    y = this.setSubtitle('Your Path Forward', y);
+    y += 10;
+    
+    this.doc.setFontSize(12);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.text('Immediate Actions', MARGIN, y);
+    y += 10;
+    
+    const actions = [
+      'Download and share this report with team leadership and key stakeholders',
+      'Prioritize interventions based on the lowest-scoring drivers with highest financial impact',
+      'Schedule a team workshop to discuss findings and co-create an action plan',
+      'Establish baseline metrics to track improvement over time'
+    ];
+    
+    this.doc.setFontSize(11);
+    this.doc.setFont('helvetica', 'normal');
+    
+    for (let index = 0; index < actions.length; index++) {
+      const action = actions[index];
+      y = this.setBullet(`${index + 1}. ${action}`, y);
+      y += 4;
+    }
+    
+    y += 15;
+    
+    // Learn More section
+    this.doc.setFillColor(245, 245, 245);
+    this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 50, 3, 3, 'F');
+    
+    this.doc.setFontSize(12);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.text('Learn More About ProblemOps', MARGIN + 5, y + 12);
+    
+    this.doc.setFontSize(10);
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.text('Visit problemops.com for articles, case studies, and practical frameworks', MARGIN + 5, y + 24);
+    this.doc.text('to build shared language and understanding within your team.', MARGIN + 5, y + 34);
+    
+    y += 60;
+    
+    // Contact box
+    this.doc.setFillColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
+    this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 40, 3, 3, 'F');
+    
+    this.doc.setTextColor(255, 255, 255);
+    this.doc.setFontSize(12);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.text('Ready to Get Started?', MARGIN + 5, y + 12);
+    
+    this.doc.setFontSize(10);
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.text('Contact Morgan Denner, Founder and Head Trainer', MARGIN + 5, y + 24);
+    this.doc.text('mdenner@problemops.com | problemops.com', MARGIN + 5, y + 34);
+    
+    this.doc.setTextColor(0, 0, 0);
+    
+    this.addFooter();
   }
 
   public generate(): jsPDF {
-    this.generateCoverPage();
-    this.generateCompanyOverview();
-    this.generateExecutiveSummary();
+    // Page 1: Title Page
+    this.generateTitlePage();
+    
+    // Page 2: Introduction
+    this.generateIntroductionPage();
+    
+    // Page 3: Key Metrics
+    this.generateKeyMetricsPage();
+    
+    // Page 4: ROI / Training Options
+    this.generateROIPage();
+    
+    // Page 5: Team Narrative
+    this.generateTeamNarrativePage();
+    
+    // Page 6: Where Your Team May Be Wasting Resources
+    this.generateWasteAreasPage();
+    
+    // Page 7: Where Your Team Excels
+    this.generateStrengthsPage();
+    
+    // Page 8: Understanding Your Cost of Dysfunction
+    this.generateCostBreakdownPage();
+    
+    // Page 9: Training Focus Areas (conditional)
+    this.generateTrainingFocusPage();
+    
+    // Page 10: Driver Performance Summary
+    this.generateDriverSummaryPage();
+    
+    // Page 11: 4 C's Framework
     this.generateFourCsPage();
-    this.generateDriverOverview();
     
-    // Individual driver pages
-    this.data.drivers.forEach((driver, index) => {
-      this.generateDriverPage(driver, 6 + index);
-    });
+    // Page 12: ProblemOps Principles
+    this.generatePrinciplesPage();
     
-    this.generateTeamNarrative();
-    this.generateProblemOpsPrinciples();
-    this.generateTrainingPlan();
-    this.generateNextSteps();
+    // Page 13: Training Plan
+    this.generateTrainingPlanPage();
+    
+    // Page 14: Recommended Deliverables
+    this.generateDeliverablesPage();
+    
+    // Page 15: Other Deliverables
+    this.generateOtherDeliverablesPage();
+    
+    // Page 16: Next Steps
+    this.generateNextStepsPage();
     
     return this.doc;
   }
