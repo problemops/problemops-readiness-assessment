@@ -768,7 +768,7 @@ export default function Assessment() {
           >
             {/* Common Region: Header section */}
             <div className="mb-12 space-y-4">
-              <h1 className="text-4xl md:text-5xl font-bold" id="page-title">Team Cross-Functional Efficiency Readiness Assessment</h1>
+              <h1 className="text-4xl md:text-5xl font-bold" id="page-title">ProblemOps Cross-Functional Team Readiness Assessment</h1>
               <p className="text-muted-foreground text-lg" id="tell-us-about-team" tabIndex={-1}>
                 Tell us about your company and team so we can provide personalized insights and calculate the financial impact of team effectiveness.
               </p>
