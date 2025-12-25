@@ -4,7 +4,7 @@ import AccessibleModal from './AccessibleModal';
 import { methodologySections } from './CalculationMethodology';
 
 interface HowItWorksButtonProps {
-  section: 'readiness' | 'dysfunction' | 'drivers' | 'priorityMatrix' | 'fourCs' | 'roi';
+  section: 'readiness' | 'dysfunction' | 'drivers' | 'priorityMatrix' | 'fourCs' | 'roi' | 'dysfunctionBreakdown' | 'driverCosts';
   className?: string;
 }
 

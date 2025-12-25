@@ -674,6 +674,195 @@ export const methodologySections: Record<string, MethodologySection> = {
         </p>
       </div>
     )
+  },
+
+  dysfunctionBreakdown: {
+    id: 'dysfunctionBreakdown',
+    title: 'Understanding Your Cost of Dysfunction',
+    content: (
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold">How We Calculate Your Team's Dysfunction Cost</h3>
+        
+        <p>
+          Think of it like a recipe with 6 ingredients, each measuring a different way teams lose money when they don't work well together.
+        </p>
+
+        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+          <h4 className="font-semibold mb-3">The 6 Cost Ingredients:</h4>
+          <div className="space-y-3">
+            <div className="flex items-start gap-3">
+              <span className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-1 rounded text-sm font-bold">C1</span>
+              <div>
+                <strong>Lost Productivity</strong>
+                <p className="text-sm text-muted-foreground">When people wait for answers, redo work, or can't find information—that's time lost.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-2 py-1 rounded text-sm font-bold">C2</span>
+              <div>
+                <strong>Rework Costs</strong>
+                <p className="text-sm text-muted-foreground">Fixing mistakes from miscommunication costs time and money.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded text-sm font-bold">C3</span>
+              <div>
+                <strong>Turnover Costs</strong>
+                <p className="text-sm text-muted-foreground">When good people leave because of team problems, replacing them is expensive.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded text-sm font-bold">C4</span>
+              <div>
+                <strong>Missed Opportunities</strong>
+                <p className="text-sm text-muted-foreground">Business opportunities lost because the team couldn't move fast enough.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-sm font-bold">C5</span>
+              <div>
+                <strong>Extra Overhead</strong>
+                <p className="text-sm text-muted-foreground">Too many meetings, excessive documentation, and coordination overhead.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-1 rounded text-sm font-bold">C6</span>
+              <div>
+                <strong>Disengagement</strong>
+                <p className="text-sm text-muted-foreground">When people check out mentally, they do less work even while present.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+          <h4 className="font-semibold mb-2">The Math (Simplified):</h4>
+          <ol className="list-decimal list-inside space-y-2 text-sm">
+            <li><strong>Add up all 6 costs</strong> (C1 + C2 + C3 + C4 + C5 + C6)</li>
+            <li><strong>Apply overlap discount (×0.88)</strong> — Some costs overlap, so we reduce by 12%</li>
+            <li><strong>Adjust for your industry</strong> — Some industries have higher dysfunction costs</li>
+            <li><strong>Adjust for team size</strong> — Larger teams have more coordination challenges</li>
+            <li><strong>Check for gaming</strong> — If answers seem inconsistent, we adjust</li>
+            <li><strong>Cap at 3.5× payroll</strong> — The maximum possible dysfunction cost</li>
+          </ol>
+        </div>
+
+        <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+          <h4 className="font-semibold mb-2">Why This Matters:</h4>
+          <p className="text-sm">
+            This isn't just a guess—it's based on research from organizational psychology, economics, and management science. 
+            Each component is backed by peer-reviewed studies that measured how much team problems actually cost companies.
+          </p>
+        </div>
+
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          The final number represents real money your team is losing each year due to friction, miscommunication, and coordination problems.
+        </p>
+      </div>
+    )
+  },
+
+  driverCosts: {
+    id: 'driverCosts',
+    title: 'How Driver Costs Are Calculated',
+    content: (
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold">How Each Driver's Cost is Calculated</h3>
+        
+        <p>
+          Once we know your Total Cost of Dysfunction (TCD), we split it across the 7 drivers based on how much each one contributes to team problems.
+        </p>
+
+        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+          <h4 className="font-semibold mb-2">The Simple Formula:</h4>
+          <p className="font-mono text-lg text-center py-3 bg-white dark:bg-gray-900 rounded">
+            Driver Cost = Total Dysfunction Cost × Driver Weight
+          </p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Each driver gets a percentage of the total cost based on research showing how much that factor affects team performance.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="font-semibold mb-2">Driver Weights (Based on Research):</h4>
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left py-2">Driver</th>
+                <th className="text-right py-2">Weight</th>
+                <th className="text-left pl-4 py-2">Why This Weight?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b">
+                <td className="py-2">Trust</td>
+                <td className="text-right py-2 font-bold">18%</td>
+                <td className="pl-4 py-2 text-muted-foreground">Strongest predictor of team success</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2">Psychological Safety</td>
+                <td className="text-right py-2 font-bold">17%</td>
+                <td className="pl-4 py-2 text-muted-foreground">Enables risk-taking and innovation</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2">Communication Quality</td>
+                <td className="text-right py-2 font-bold">15%</td>
+                <td className="pl-4 py-2 text-muted-foreground">Prevents misunderstandings and rework</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2">Goal Clarity</td>
+                <td className="text-right py-2 font-bold">14%</td>
+                <td className="pl-4 py-2 text-muted-foreground">Keeps everyone rowing in same direction</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2">Coordination</td>
+                <td className="text-right py-2 font-bold">13%</td>
+                <td className="pl-4 py-2 text-muted-foreground">Smooth handoffs and dependencies</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2">Role Clarity (TMS)</td>
+                <td className="text-right py-2 font-bold">12%</td>
+                <td className="pl-4 py-2 text-muted-foreground">Knowing who knows what</td>
+              </tr>
+              <tr>
+                <td className="py-2">Decision Making</td>
+                <td className="text-right py-2 font-bold">11%</td>
+                <td className="pl-4 py-2 text-muted-foreground">Team's ability to decide together</td>
+              </tr>
+            </tbody>
+          </table>
+          <p className="text-xs text-muted-foreground mt-2">Total: 18% + 17% + 15% + 14% + 13% + 12% + 11% = 100%</p>
+        </div>
+
+        <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+          <h4 className="font-semibold mb-2">Example:</h4>
+          <p className="text-sm">
+            If your Total Cost of Dysfunction is <strong>$500,000</strong>:
+          </p>
+          <ul className="text-sm mt-2 space-y-1">
+            <li>• Trust (18%): $500,000 × 0.18 = <strong>$90,000</strong></li>
+            <li>• Psychological Safety (17%): $500,000 × 0.17 = <strong>$85,000</strong></li>
+            <li>• Communication (15%): $500,000 × 0.15 = <strong>$75,000</strong></li>
+            <li>• ...and so on for all 7 drivers</li>
+          </ul>
+          <p className="text-sm mt-2 text-muted-foreground">
+            All 7 driver costs add up to exactly $500,000 (the total).
+          </p>
+        </div>
+
+        <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+          <h4 className="font-semibold mb-2">Why This Helps:</h4>
+          <p className="text-sm">
+            By knowing how much each driver costs you, you can prioritize which areas to fix first. 
+            Improving a driver with a higher cost will save you more money.
+          </p>
+        </div>
+
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          The weights are based on meta-analyses of hundreds of research studies on team effectiveness.
+        </p>
+      </div>
+    )
   }
 };
 

@@ -1142,3 +1142,18 @@
 - [x] Fix Results.tsx line 756 to use TCD × weight instead of Payroll × weight × gap
 - [x] Ensure all driver costs sum exactly to Total Cost of Dysfunction
 - [x] Test in browser to verify driver costs match v4.0 specification
+
+
+## Understanding Your Cost of Dysfunction - v4.0 Formula Breakdown
+
+- [x] Add line-by-line v4.0 formula breakdown in 5th-grade language
+- [x] Show visual step-by-step math with actual numbers from assessment
+- [x] Add "How It Works" button using same modal content as TCD section
+- [x] Translate technical terms (overlap discount, multipliers) to everyday language
+- [x] Show journey from Payroll to TCD with clear progression
+
+## Where Your Team May Be Wasting Resources - Driver Cost Breakdown
+
+- [x] Add breakdown showing how each driver cost is calculated from TCD
+- [x] Add "How It Works" button explaining Driver Cost = TCD × driver_weight
+- [x] Simple explanation of why each driver gets its percentage weight

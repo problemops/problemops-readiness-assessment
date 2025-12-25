@@ -742,13 +742,66 @@ export default function Results() {
               {/* Areas Causing Waste */}
               {results.teamStory?.driverImpacts && results.teamStory.driverImpacts.length > 0 && (
                 <div className="space-y-6">
-                  <h2 className="text-3xl font-bold flex items-center gap-2 text-foreground">
-                    <AlertTriangle className="h-7 w-6" />
-                    Where Your Team May Be Wasting Resources
-                  </h2>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-3xl font-bold flex items-center gap-2 text-foreground">
+                      <AlertTriangle className="h-7 w-6" />
+                      Where Your Team May Be Wasting Resources
+                    </h2>
+                    <HowItWorksButton section="driverCosts" />
+                  </div>
                   <p className="text-base text-muted-foreground">
                     Based on your scores, these drivers are likely contributing to lost productivity, rework, and delays:
                   </p>
+                  
+                  {/* Driver Cost Breakdown Summary */}
+                  <div className="bg-muted/50 p-6 rounded-lg space-y-4">
+                    <h3 className="text-lg font-semibold">How We Calculate Each Driver's Cost</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Your Total Cost of Dysfunction (<strong className="text-destructive">{formatCurrency(results.dysfunctionCost)}</strong>) is split across the 7 drivers based on research-backed weights:
+                    </p>
+                    <div className="bg-background p-4 rounded-lg">
+                      <p className="font-mono text-center text-sm mb-3">
+                        Driver Cost = Total Dysfunction Cost × Driver Weight
+                      </p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                        <div className="text-center p-2 bg-muted/50 rounded">
+                          <div className="font-bold">Trust</div>
+                          <div className="text-muted-foreground">18%</div>
+                        </div>
+                        <div className="text-center p-2 bg-muted/50 rounded">
+                          <div className="font-bold">Psych Safety</div>
+                          <div className="text-muted-foreground">17%</div>
+                        </div>
+                        <div className="text-center p-2 bg-muted/50 rounded">
+                          <div className="font-bold">Communication</div>
+                          <div className="text-muted-foreground">15%</div>
+                        </div>
+                        <div className="text-center p-2 bg-muted/50 rounded">
+                          <div className="font-bold">Goal Clarity</div>
+                          <div className="text-muted-foreground">14%</div>
+                        </div>
+                        <div className="text-center p-2 bg-muted/50 rounded">
+                          <div className="font-bold">Coordination</div>
+                          <div className="text-muted-foreground">13%</div>
+                        </div>
+                        <div className="text-center p-2 bg-muted/50 rounded">
+                          <div className="font-bold">Role Clarity</div>
+                          <div className="text-muted-foreground">12%</div>
+                        </div>
+                        <div className="text-center p-2 bg-muted/50 rounded">
+                          <div className="font-bold">Decision Making</div>
+                          <div className="text-muted-foreground">11%</div>
+                        </div>
+                        <div className="text-center p-2 bg-primary/10 rounded border border-primary/20">
+                          <div className="font-bold text-primary">Total</div>
+                          <div className="text-primary">100%</div>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      All driver costs add up to exactly {formatCurrency(results.dysfunctionCost)} (your total dysfunction cost).
+                    </p>
+                  </div>
                   <div className="space-y-6">
                     {results.teamStory.driverImpacts.map((impact: any, index: number) => {
                       // Get driver-specific cost using v4.0 formula: TCD × weight
@@ -901,7 +954,10 @@ export default function Results() {
 
         {/* Cost of Dysfunction Breakdown */}
         <section aria-labelledby="cost-breakdown-heading">
-          <h2 id="cost-breakdown-heading" className="text-3xl font-bold mb-6">Understanding Your Cost of Dysfunction</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 id="cost-breakdown-heading" className="text-3xl font-bold">Understanding Your Cost of Dysfunction</h2>
+            <HowItWorksButton section="dysfunctionBreakdown" />
+          </div>
           <Card>
             <CardContent className="pt-6 space-y-6">
               <div className="prose prose-lg max-w-none">
@@ -910,8 +966,13 @@ export default function Results() {
                 </p>
               </div>
 
+              {/* Step 1: Starting Point */}
               <div className="bg-muted/50 p-6 rounded-lg space-y-4">
-                <h3 className="text-xl font-semibold">Here's How We Calculate It:</h3>
+                <h3 className="text-xl font-semibold flex items-center gap-2">
+                  <span className="bg-primary text-primary-foreground w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                  Your Starting Point
+                </h3>
+                <p className="text-sm text-muted-foreground">First, we look at how much you invest in your team each year:</p>
                 
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
@@ -930,16 +991,113 @@ export default function Results() {
                 </div>
               </div>
 
-              <div className="prose prose-lg max-w-none">
-                <p className="text-foreground/90 leading-relaxed">
-                  Your team's readiness score is <strong>{formatPercent(results.readinessScore)}</strong>. This means your team is working at about {Math.round(results.readinessScore * 100)}% of its potential effectiveness. The remaining {Math.round((1 - results.readinessScore) * 100)}% represents lost productivity—time spent on miscommunication, redoing work, waiting for information, or dealing with conflicts.
+              {/* Step 2: The 6 Cost Components */}
+              <div className="bg-muted/50 p-6 rounded-lg space-y-4">
+                <h3 className="text-xl font-semibold flex items-center gap-2">
+                  <span className="bg-primary text-primary-foreground w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                  We Measure 6 Types of Waste
+                </h3>
+                <p className="text-sm text-muted-foreground">Our v4.0 formula looks at 6 different ways teams lose money:</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="flex items-start gap-2 p-3 bg-background rounded-lg">
+                    <span className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-0.5 rounded text-xs font-bold">C1</span>
+                    <div>
+                      <strong className="text-sm">Lost Productivity</strong>
+                      <p className="text-xs text-muted-foreground">Waiting, searching, redoing work</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2 p-3 bg-background rounded-lg">
+                    <span className="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-2 py-0.5 rounded text-xs font-bold">C2</span>
+                    <div>
+                      <strong className="text-sm">Rework Costs</strong>
+                      <p className="text-xs text-muted-foreground">Fixing mistakes from miscommunication</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2 p-3 bg-background rounded-lg">
+                    <span className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-2 py-0.5 rounded text-xs font-bold">C3</span>
+                    <div>
+                      <strong className="text-sm">Turnover Costs</strong>
+                      <p className="text-xs text-muted-foreground">Replacing people who leave</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2 p-3 bg-background rounded-lg">
+                    <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-0.5 rounded text-xs font-bold">C4</span>
+                    <div>
+                      <strong className="text-sm">Missed Opportunities</strong>
+                      <p className="text-xs text-muted-foreground">Business lost due to slow teams</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2 p-3 bg-background rounded-lg">
+                    <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded text-xs font-bold">C5</span>
+                    <div>
+                      <strong className="text-sm">Extra Overhead</strong>
+                      <p className="text-xs text-muted-foreground">Too many meetings & documentation</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2 p-3 bg-background rounded-lg">
+                    <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded text-xs font-bold">C6</span>
+                    <div>
+                      <strong className="text-sm">Disengagement</strong>
+                      <p className="text-xs text-muted-foreground">When people mentally check out</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 3: Adjustments */}
+              <div className="bg-muted/50 p-6 rounded-lg space-y-4">
+                <h3 className="text-xl font-semibold flex items-center gap-2">
+                  <span className="bg-primary text-primary-foreground w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                  We Apply Smart Adjustments
+                </h3>
+                <p className="text-sm text-muted-foreground">To make the number accurate for YOUR team, we adjust for:</p>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 p-2 bg-background rounded">
+                    <span className="text-lg">× 0.88</span>
+                    <span className="text-sm"><strong>Overlap Discount</strong> — Some costs overlap, so we reduce by 12%</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-2 bg-background rounded">
+                    <span className="text-lg">× φ</span>
+                    <span className="text-sm"><strong>Industry Factor</strong> — {results.detectedIndustry ? `Adjusted for ${results.detectedIndustry}` : 'Adjusted for your industry'}</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-2 bg-background rounded">
+                    <span className="text-lg">× η</span>
+                    <span className="text-sm"><strong>Team Size Factor</strong> — Larger teams have more coordination challenges</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-2 bg-background rounded">
+                    <span className="text-lg">× M</span>
+                    <span className="text-sm"><strong>4 C's Multiplier</strong> — Based on your team's collaboration patterns</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 4: Your Team's Readiness */}
+              <div className="bg-muted/50 p-6 rounded-lg space-y-4">
+                <h3 className="text-xl font-semibold flex items-center gap-2">
+                  <span className="bg-primary text-primary-foreground w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">4</span>
+                  Your Team's Effectiveness
+                </h3>
+                <p className="text-foreground/90">
+                  Your team's readiness score is <strong className="text-primary text-xl">{formatPercent(results.readinessScore)}</strong>.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  This means your team is working at about {Math.round(results.readinessScore * 100)}% of its potential. 
+                  The remaining <strong>{Math.round((1 - results.readinessScore) * 100)}%</strong> represents lost productivity—time spent on 
+                  miscommunication, redoing work, waiting for information, or dealing with conflicts.
                 </p>
               </div>
 
+              {/* Final Result */}
               <div className="bg-destructive/5 border border-destructive/20 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold flex items-center gap-2 mb-4">
+                  <span className="bg-destructive text-destructive-foreground w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">=</span>
+                  Your Total Annual Cost of Dysfunction
+                </h3>
                 <div className="flex justify-between items-center">
-                  <span className="text-xl font-bold">Total Annual Cost of Dysfunction:</span>
-                  <span className="font-bold text-destructive text-3xl">{formatCurrency(results.dysfunctionCost)}</span>
+                  <span className="text-lg">Based on the v4.0 formula:</span>
+                  <span className="font-bold text-destructive text-4xl">{formatCurrency(results.dysfunctionCost)}</span>
                 </div>
               </div>
 
