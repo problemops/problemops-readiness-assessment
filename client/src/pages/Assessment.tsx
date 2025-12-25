@@ -1085,7 +1085,7 @@ export default function Assessment() {
                             
                             {/* Grouping: Scale buttons unified as single control */}
                             <RadioGroup
-                              value={answers[q.id]?.toString()}
+                              value={answers[q.id]?.toString() ?? ""}
                               onValueChange={(val) => handleAnswer(q.id, parseInt(val), true)}
                               className="flex flex-wrap gap-2 sm:gap-3 justify-center pt-2"
                               aria-labelledby={`question-${q.id}-label`}

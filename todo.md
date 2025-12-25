@@ -1120,3 +1120,25 @@
 - [ ] Run full test suite (all 147 tests should pass)
 - [ ] Verify documentation matches code
 - [ ] Cross-check all numerical examples
+
+
+## Feature: Driver Cost of Dysfunction Weights
+- [ ] Create BDD scenarios for driver cost calculations
+- [ ] Analyze current driver weight implementation
+- [ ] Ensure each driver's cost = Total TCD × driver weight ratio
+- [ ] Ensure "Value If Fixed" = driver cost × improvement percentage
+- [ ] Update unit tests
+- [ ] Browser testing
+
+## Bug Fix: RadioGroup Controlled/Uncontrolled Warning
+- [ ] Create BDD scenario for RadioGroup behavior
+- [ ] Identify root cause of controlled/uncontrolled switch
+- [ ] Fix Assessment.tsx RadioGroup initialization
+- [ ] Verify no console warnings
+
+
+## Driver Cost Calculation Fix (v4.0 Formula Accuracy)
+
+- [x] Fix Results.tsx line 756 to use TCD × weight instead of Payroll × weight × gap
+- [x] Ensure all driver costs sum exactly to Total Cost of Dysfunction
+- [x] Test in browser to verify driver costs match v4.0 specification

@@ -141,16 +141,24 @@ export const CONFIDENCE_INTERVAL = {
 } as const;
 
 /**
- * Driver weights for readiness score (backward compatibility)
+ * Driver weights for cost allocation (must sum to 1.00)
+ * Based on meta-analysis research:
+ * - Trust (18%): Costa & Anderson (2011), r=0.33
+ * - Psychological Safety (17%): Frazier et al. (2017) + Kahn (1990)
+ * - Communication Quality (15%): Marlow et al. (2018), r=0.31
+ * - Goal Clarity (14%): Mathieu et al. (2008), r=0.28
+ * - Coordination (13%): LePine et al. (2008), r=0.29
+ * - Transactive Memory (12%): DeChurch & Mesmer-Magnus (2010), r=0.26
+ * - Team Cognition (11%): DeChurch & Mesmer-Magnus (2010), r=0.35
  */
 export const DRIVER_WEIGHTS = {
-  trust: 0.20,
-  psych_safety: 0.18,
-  tms: 0.15,
+  trust: 0.18,
+  psych_safety: 0.17,
   comm_quality: 0.15,
-  goal_clarity: 0.12,
-  coordination: 0.10,
-  team_cognition: 0.10,
+  goal_clarity: 0.14,
+  coordination: 0.13,
+  tms: 0.12,
+  team_cognition: 0.11,
 } as const;
 
 /**

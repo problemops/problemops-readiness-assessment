@@ -26,9 +26,12 @@ import {
   getMonthLongTimeline,
   getRecommendedDeliverables as getTrainingDeliverables,
   calculateTrainingROI,
-  calculateDriverCosts,
   type TrainingType 
 } from "@/lib/trainingRecommendations";
+import { 
+  DRIVER_WEIGHTS, 
+  calculateAllDriverCostsFromTCD 
+} from "@/lib/driverWeights";
 
 const DRIVER_NAMES: Record<string, string> = {
   trust: "Trust",
@@ -40,15 +43,7 @@ const DRIVER_NAMES: Record<string, string> = {
   team_cognition: "Team Cognition",
 };
 
-const DRIVER_WEIGHTS: Record<string, number> = {
-  trust: 0.18,
-  psych_safety: 0.16,
-  tms: 0.14,
-  comm_quality: 0.15,
-  goal_clarity: 0.13,
-  coordination: 0.12,
-  team_cognition: 0.12,
-};
+// Driver weights imported from @/lib/driverWeights
 
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('en-US', {
@@ -111,7 +106,9 @@ export default function Results() {
       const trainingType = (parsed.companyInfo.trainingType || 'not-sure') as TrainingType;
       
       const totalPayroll = teamSize * avgSalary;
-      const dysfunctionCost = totalPayroll * (1 - readinessScore);
+      
+      // Use server-calculated TCD (v4.0 formula) if available, otherwise fallback
+      const dysfunctionCost = parsed.dysfunctionCost || totalPayroll * (1 - readinessScore);
       
       // Get priority areas for recommendations
       const driverScoresForPriority: Record<string, number> = {};
@@ -121,8 +118,9 @@ export default function Results() {
       const priorityAreas = getPriorityAreas(driverScoresForPriority, DRIVER_WEIGHTS);
       const recommendedAreas = getRecommendedAreas(trainingType, priorityAreas);
       
-      // Calculate per-driver dysfunction costs
-      const driverCosts = calculateDriverCosts(driverScoresForPriority, DRIVER_WEIGHTS, teamSize, avgSalary);
+      // Calculate per-driver dysfunction costs based on TCD × weight
+      // This ensures all driver costs sum to the total TCD
+      const driverCosts = calculateAllDriverCostsFromTCD(dysfunctionCost);
       
       // Calculate ROI based on training type (using scoped driver costs)
       const trainingOption = TRAINING_OPTIONS[trainingType];
@@ -180,6 +178,7 @@ export default function Results() {
         drivers,
         readinessScore,
         dysfunctionCost,
+        driverCosts,
         teamSize,
         avgSalary,
         trainingType,
@@ -752,10 +751,11 @@ export default function Results() {
                   </p>
                   <div className="space-y-6">
                     {results.teamStory.driverImpacts.map((impact: any, index: number) => {
-                      // Calculate driver-specific cost using dbKey from impact
+                      // Get driver-specific cost using v4.0 formula: TCD × weight
+                      // This ensures all driver costs sum exactly to the Total Cost of Dysfunction
                       const driver = results.drivers.find((d: any) => d.id === impact.dbKey);
                       const driverGap = driver ? (1 - (driver.value / 7)) : 0;
-                      const driverCost = driver ? (results.teamSize * results.avgSalary) * driver.weight * driverGap : 0;
+                      const driverCost = driver ? results.driverCosts[driver.id] || 0 : 0;
                       const gapPercent = Math.round(driverGap * 100);
                       const impactWeight = driver ? Math.round(driver.weight * 100) : 0;
                       
