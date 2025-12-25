@@ -438,11 +438,7 @@ export class SlidePDFGenerator {
       
       this.doc.setFont('helvetica', 'normal');
       options.forEach((opt) => {
-        if (opt.highlight) {
-          this.doc.setFillColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
-          this.doc.setDrawColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
-          this.doc.rect(MARGIN, y - 2, CONTENT_WIDTH, 22, 'S');
-        }
+        // No border highlight - removed per user request
         
         x = MARGIN + 2;
         this.doc.setFontSize(9);
@@ -962,47 +958,50 @@ export class SlidePDFGenerator {
     this.addPage();
     let y = this.setPageTitle('Your ProblemOps Training Plan');
     
-    // Priority Focus Areas
+    // Priority Focus Areas - Vertical stack layout with more spacing
     if (this.data.trainingPriorities && this.data.trainingPriorities.length > 0) {
-      y += 5;
-      this.doc.setFillColor(255, 251, 235);
-      this.doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 60, 3, 3, 'F');
+      y += 10;
       
-      this.doc.setFontSize(12);
+      this.doc.setFontSize(14);
       this.doc.setFont('helvetica', 'bold');
-      this.doc.text('Priority Focus Areas', MARGIN + 5, y + 12);
+      this.doc.text('Priority Focus Areas', MARGIN, y);
+      y += 15;
       
-      let priorityY = y + 22;
-      this.doc.setFontSize(9);
+      this.doc.setFontSize(10);
       
       for (const priority of this.data.trainingPriorities.slice(0, 4)) {
         const urgencyColor = priority.urgency === 'critical' ? [220, 38, 38] :
                              priority.urgency === 'high' ? [234, 88, 12] :
                              priority.urgency === 'medium' ? [202, 138, 4] : [22, 163, 74];
         
+        // Urgency label on its own line
         this.doc.setTextColor(urgencyColor[0], urgencyColor[1], urgencyColor[2]);
         this.doc.setFont('helvetica', 'bold');
         const urgencyLabel = priority.urgency === 'critical' ? 'CRITICAL' : priority.urgency.toUpperCase();
-        this.doc.text(urgencyLabel, MARGIN + 5, priorityY);
+        this.doc.text(urgencyLabel, MARGIN, y);
+        y += 6;
         
+        // Area and reason on next line(s)
         this.doc.setTextColor(0, 0, 0);
-        this.doc.setFont('helvetica', 'normal');
-        const priorityText = `${priority.area}: ${priority.reason}`;
-        const priorityLines = this.doc.splitTextToSize(priorityText, CONTENT_WIDTH - 35);
-        this.doc.text(priorityLines, MARGIN + 30, priorityY);
+        this.doc.setFont('helvetica', 'bold');
+        this.doc.text(priority.area, MARGIN, y);
+        y += 5;
         
-        priorityY += (priorityLines.length * 5) + 5;
+        this.doc.setFont('helvetica', 'normal');
+        const reasonLines = this.doc.splitTextToSize(priority.reason, CONTENT_WIDTH);
+        this.doc.text(reasonLines, MARGIN, y);
+        y += (reasonLines.length * 5) + 10; // Extra spacing between items
       }
       
-      y += 70;
+      y += 15; // Extra spacing before next section
     }
     
-    // Training modules summary
+    // Training modules summary - Vertical stack layout
     if (this.data.trainingPlan) {
-      this.doc.setFontSize(12);
+      this.doc.setFontSize(14);
       this.doc.setFont('helvetica', 'bold');
       this.doc.text('Training Modules', MARGIN, y);
-      y += 10;
+      y += 15;
       
       const modules = ['criteria', 'commitment', 'collaboration', 'change'] as const;
       
@@ -1010,18 +1009,25 @@ export class SlidePDFGenerator {
         const module = this.data.trainingPlan[key];
         if (!module) continue;
         
+        // Module title on its own line
         this.doc.setFontSize(11);
         this.doc.setFont('helvetica', 'bold');
+        this.doc.setTextColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
         this.doc.text(module.title, MARGIN, y);
-        
-        this.doc.setFontSize(9);
-        this.doc.setFont('helvetica', 'normal');
-        this.doc.text(`Duration: ${module.duration}`, MARGIN + 100, y);
         y += 6;
         
+        // Duration on next line
+        this.doc.setFontSize(9);
+        this.doc.setFont('helvetica', 'normal');
+        this.doc.setTextColor(100, 100, 100);
+        this.doc.text(`Duration: ${module.duration}`, MARGIN, y);
+        y += 6;
+        
+        // Description on next line(s)
+        this.doc.setTextColor(0, 0, 0);
         const descLines = this.doc.splitTextToSize(module.description, CONTENT_WIDTH);
-        this.doc.text(descLines.slice(0, 1), MARGIN, y);
-        y += 12;
+        this.doc.text(descLines.slice(0, 2), MARGIN, y);
+        y += (Math.min(descLines.length, 2) * 5) + 12; // Extra spacing between modules
         
         if (y > PAGE_HEIGHT - 40) break;
       }
