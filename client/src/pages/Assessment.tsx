@@ -832,6 +832,9 @@ export default function Assessment() {
                   <Label htmlFor="company-website" className="text-base font-medium text-foreground">
                     Company Website
                   </Label>
+                  <p className="text-sm text-muted-foreground -mt-1">
+                    We'll analyze your website to provide more relevant insights
+                  </p>
                   <Input
                     id="company-website"
                     type="text"
@@ -840,9 +843,12 @@ export default function Assessment() {
                     onChange={(e) => setCompanyInfo(prev => ({ ...prev, website: e.target.value }))}
                     className="text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   />
-                  <p className="text-sm text-muted-foreground">
-                    We'll analyze your website to provide more relevant insights
-                  </p>
+                  {companyInfo.website && !companyInfo.website.match(/^https?:\/\//i) && (
+                    <p className="text-sm text-primary flex items-center gap-1">
+                      <span className="text-muted-foreground">Will be saved as:</span>
+                      <span className="font-medium">https://{companyInfo.website.replace(/^(www\.)?/, '')}</span>
+                    </p>
+                  )}
                 </div>
                 
                 <div className="space-y-2">
