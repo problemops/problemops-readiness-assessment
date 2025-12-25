@@ -120,71 +120,139 @@ export const methodologySections: Record<string, MethodologySection> = {
 
   dysfunction: {
     id: 'dysfunction',
-    title: 'Dysfunction Cost Calculation',
+    title: 'Enhanced Dysfunction Cost Formula v4.0',
     content: (
       <div className="space-y-4">
-        <h3 className="text-xl font-semibold">How Dysfunction Cost is Calculated</h3>
+        <h3 className="text-xl font-semibold">How Dysfunction Cost is Calculated (v4.0)</h3>
         
         <p>
-          The Dysfunction Cost represents the estimated annual dollar amount your team is losing due to ineffectiveness.
-          This is not money you are spending—it is money you are losing through inefficiency, rework, delays, and missed opportunities.
+          The Total Cost of Dysfunction (TCD) represents the estimated annual dollar amount your team is losing due to ineffectiveness.
+          This research-backed formula calculates costs across <strong>six categories</strong> with multiple adjustment factors.
         </p>
 
         <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-          <h4 className="font-semibold mb-2">Formula:</h4>
+          <h4 className="font-semibold mb-2">Master Formula:</h4>
           <p className="font-mono text-sm">
-            Total Dysfunction Cost = (1 - R) × P
+            TCD = min([Σ(C₁...C₆) × 0.88] × M<sub>4C</sub> × φ × η(N) × G, 3.5P)
           </p>
           <div className="mt-3 text-sm space-y-1">
-            <p><strong>Where:</strong></p>
+            <p><strong>Components:</strong></p>
             <ul className="list-disc list-inside ml-4 space-y-1">
-              <li><em>Total Dysfunction Cost</em> = annual cost of team ineffectiveness ($)</li>
-              <li><em>R</em> = Readiness Score (as a decimal, not percentage)</li>
-              <li><em>P</em> = total annual team payroll ($)</li>
+              <li><em>C₁-C₆</em> = Six cost components (see below)</li>
+              <li><em>0.88</em> = Overlap discount (12% reduction)</li>
+              <li><em>M<sub>4C</sub></em> = 4 C's multiplier (1.0-1.3)</li>
+              <li><em>φ</em> = Industry factor (0.85-1.30)</li>
+              <li><em>η(N)</em> = Team size factor</li>
+              <li><em>G</em> = Gaming penalty (1.0-1.5)</li>
+              <li><em>3.5P</em> = Upper bound cap (350% of payroll)</li>
             </ul>
           </div>
         </div>
 
+        <div>
+          <h4 className="font-semibold mb-2">Six Cost Components:</h4>
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left py-2">Component</th>
+                <th className="text-left py-2">What It Measures</th>
+                <th className="text-right py-2">Max Impact</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b">
+                <td className="py-2">C₁: Productivity</td>
+                <td className="py-2">Lost output from poor coordination</td>
+                <td className="text-right py-2">25%</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2">C₂: Rework</td>
+                <td className="py-2">Fixing mistakes from miscommunication</td>
+                <td className="text-right py-2">10%</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2">C₃: Turnover</td>
+                <td className="py-2">Replacing employees who leave</td>
+                <td className="text-right py-2">21%</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2">C₄: Opportunity</td>
+                <td className="py-2">Missed business opportunities</td>
+                <td className="text-right py-2">Varies</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2">C₅: Overhead</td>
+                <td className="py-2">Extra meetings, documentation</td>
+                <td className="text-right py-2">12%</td>
+              </tr>
+              <tr>
+                <td className="py-2">C₆: Disengagement</td>
+                <td className="py-2">Reduced effort from low engagement</td>
+                <td className="text-right py-2">18%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
         <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+          <h4 className="font-semibold mb-2">Engagement-Based Disengagement (C₆):</h4>
+          <p className="text-sm mb-2">
+            Based on Kahn (1990) research: <strong>Trust + Psychological Safety → Engagement</strong>
+          </p>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left py-1">Engagement Score</th>
+                <th className="text-left py-1">Category</th>
+                <th className="text-right py-1">Productivity Loss</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b">
+                <td className="py-1">5.5 - 7.0</td>
+                <td className="py-1 text-green-600">Engaged</td>
+                <td className="text-right py-1">0%</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-1">3.5 - 5.4</td>
+                <td className="py-1 text-yellow-600">Not Engaged</td>
+                <td className="text-right py-1">9%</td>
+              </tr>
+              <tr>
+                <td className="py-1">1.0 - 3.4</td>
+                <td className="py-1 text-red-600">Actively Disengaged</td>
+                <td className="text-right py-1">18%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
           <h4 className="font-semibold mb-2">Example Calculation:</h4>
           <p className="text-sm">
-            <strong>Team size:</strong> 10 people<br />
-            <strong>Average salary:</strong> $100,000<br />
-            <strong>Total payroll (P):</strong> $1,000,000<br />
-            <strong>Readiness (R):</strong> 0.597 (59.7%)
+            <strong>Team:</strong> 15 people, $1.8M payroll, Technology industry<br />
+            <strong>Scores:</strong> Trust (5.1), Psych Safety (4.8), Communication (4.5), Goals (5.2), Coordination (4.9), TMS (5.0), Team Cognition (4.7)
           </p>
           <p className="text-sm mt-2">
-            <strong>Calculation:</strong> (1 - 0.597) × $1,000,000 = 0.403 × $1,000,000 = <strong>$403,000</strong>
-          </p>
-          <p className="text-sm mt-2">
-            This means your team is wasting <strong>$403,000 per year</strong> (40.3% of payroll) due to teamwork problems.
+            <strong>Cost Components:</strong> C₁=$270K + C₂=$108K + C₃=$226K + C₄=$135K + C₅=$130K + C₆=$162K = $1,031K<br />
+            <strong>With Discount:</strong> $1,031K × 0.88 = $907K<br />
+            <strong>With Multipliers:</strong> $907K × 1.15 × 1.10 × 1.06 × 1.0 = <strong>$1,216,000</strong>
           </p>
         </div>
 
-        <div>
-          <h4 className="font-semibold mb-2">Individual Driver Costs:</h4>
-          <p className="text-sm mb-2">
-            Each driver contributes to the total dysfunction cost based on its score and weight:
-          </p>
-          <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-            <p className="font-mono text-sm">
-              Driver Cost = Dysfunction × w × P
-            </p>
-            <div className="mt-2 text-sm">
-              <p><strong>Where:</strong></p>
-              <ul className="list-disc list-inside ml-4 space-y-1">
-                <li><em>Dysfunction</em> = 1 - (D ÷ 7) = how far driver is from perfect</li>
-                <li><em>D</em> = driver score (1-7 scale)</li>
-                <li><em>w</em> = driver weight (0-1 scale)</li>
-                <li><em>P</em> = total annual team payroll ($)</li>
-              </ul>
-            </div>
-          </div>
+        <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+          <h4 className="font-semibold mb-2">Research Foundation:</h4>
+          <ul className="text-sm space-y-1">
+            <li>• <strong>Turnover costs:</strong> Boushey & Glynn (2012) - 21% median</li>
+            <li>• <strong>Rework costs:</strong> Love et al. (2010) - 10% of project value</li>
+            <li>• <strong>Engagement:</strong> Gallup Q12 (2023) - 14-18% productivity impact</li>
+            <li>• <strong>Psychological Safety:</strong> Frazier et al. (2017) meta-analysis</li>
+          </ul>
         </div>
 
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          <strong>Note:</strong> Individual driver costs add up to more than the total dysfunction cost because drivers overlap 
-          and interact. The total dysfunction cost accounts for these interactions.
+          <strong>Note:</strong> The 12% overlap discount prevents double-counting costs that appear in multiple categories.
+          The upper bound cap (3.5× payroll) ensures realistic estimates.
         </p>
       </div>
     )

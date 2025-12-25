@@ -1095,3 +1095,28 @@
 - [x] Formula stress testing analysis (15 vulnerabilities)
 - [x] Symbolic proofs with validation results (10/10 tests passed)
 - [x] All files in `/docs` folder ready for GitHub
+
+
+## Formula v4.0 Alignment (Based on Test Failures)
+
+### Test Failure Analysis
+- [ ] Analyze 4 remaining test failures to identify root causes
+- [ ] Document discrepancies between tests, code, and documentation
+
+### Formula Code Fixes
+- [ ] Fix overlap discount calculation verification
+- [ ] Verify industry factor mappings match documentation
+- [ ] Verify team size factor calculations
+- [ ] Ensure continuity test thresholds are appropriate
+
+### Documentation Updates (Post-Fix)
+- [ ] Update Enhanced_Dysfunction_Cost_Formula_v4_Academic.md with actual values
+- [ ] Update User Guide formula section with actual implementation
+- [ ] Update industry factor table with correct values
+- [ ] Update team size thresholds with actual implementation
+- [ ] Ensure all worked examples use correct values
+
+### Verification
+- [ ] Run full test suite (all 147 tests should pass)
+- [ ] Verify documentation matches code
+- [ ] Cross-check all numerical examples

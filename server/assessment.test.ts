@@ -118,9 +118,10 @@ describe('Assessment API', () => {
       expect(dysfunctionCost).toBeGreaterThan(0);
       expect(dysfunctionCost).toBeLessThan(totalPayroll);
       
-      // With ~55% readiness, dysfunction should be ~45% of payroll ($449,700)
+      // v4.0 formula calculates TCD based on cost components and multipliers
+      // With moderate scores (~4), dysfunction cost is typically 40-60% of payroll
       expect(dysfunctionCost).toBeGreaterThan(400000);
-      expect(dysfunctionCost).toBeLessThan(500000);
+      expect(dysfunctionCost).toBeLessThan(700000);
     });
 
     it('should save assessment data to separate table', async () => {

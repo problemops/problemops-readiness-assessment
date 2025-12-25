@@ -18,6 +18,8 @@ import { IndustryService } from './industry/IndustryService';
 import { DomainFactory } from '../domain/factories/DomainFactory';
 import { AssessmentRepository } from '../infrastructure/database/repositories/AssessmentRepository';
 import { EmailLogRepository } from '../infrastructure/database/repositories/EmailLogRepository';
+import { PriorityMatrixService } from '../application/services/priorityMatrix/PriorityMatrixService';
+import { TrainingRecommendationService } from '../application/services/training/TrainingRecommendationService';
 
 /**
  * Service Container
@@ -76,8 +78,8 @@ export class ServiceContainer {
       const emailLogRepository = new EmailLogRepository();
       const calculationService = this.getCalculationService();
       const industryService = this.getIndustryClassificationService();
-      const priorityMatrixService = new (require('../application/services/priorityMatrix/PriorityMatrixService').PriorityMatrixService)();
-      const trainingService = new (require('../application/services/training/TrainingRecommendationService').TrainingRecommendationService)();
+      const priorityMatrixService = new PriorityMatrixService();
+      const trainingService = new TrainingRecommendationService();
 
       // Inject dependencies
       this.assessmentService = new AssessmentService(
