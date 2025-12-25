@@ -437,40 +437,56 @@ export class SlidePDFGenerator {
       ];
       
       this.doc.setFont('helvetica', 'normal');
+      const rowHeight = 28; // Increased row height for better vertical centering
+      const verticalCenter = rowHeight / 2; // Center point of row
+      
       options.forEach((opt) => {
-        // No border highlight - removed per user request
+        // Draw subtle row separator line
+        this.doc.setDrawColor(230, 230, 230);
+        this.doc.line(MARGIN, y + rowHeight - 2, MARGIN + CONTENT_WIDTH, y + rowHeight - 2);
         
         x = MARGIN + 2;
+        
+        // Option name and description - vertically centered
         this.doc.setFontSize(9);
         this.doc.setFont('helvetica', 'bold');
-        this.doc.text(opt.name, x, y + 5);
+        this.doc.setTextColor(0, 0, 0);
+        this.doc.text(opt.name, x, y + verticalCenter - 3);
         this.doc.setFont('helvetica', 'normal');
         this.doc.setFontSize(7);
-        this.doc.text(opt.desc, x, y + 11);
+        this.doc.setTextColor(100, 100, 100);
+        this.doc.text(opt.desc, x, y + verticalCenter + 5);
         x += colWidths[0];
         
+        // Investment - vertically centered
         this.doc.setFontSize(9);
-        this.doc.text(opt.investment, x, y + 8);
+        this.doc.setTextColor(0, 0, 0);
+        this.doc.text(opt.investment, x, y + verticalCenter + 1);
         x += colWidths[1];
         
+        // Focus areas - vertically centered
         const focusLines = this.doc.splitTextToSize(opt.focus, colWidths[2] - 2);
         this.doc.setFontSize(8);
-        this.doc.text(focusLines, x, y + 5);
+        const focusStartY = y + verticalCenter - ((focusLines.length - 1) * 2.5);
+        this.doc.text(focusLines, x, focusStartY);
         x += colWidths[2];
         
+        // ROI If Fixed - vertically centered
         this.doc.setFontSize(9);
         this.doc.setTextColor(PRIMARY_COLOR[0], PRIMARY_COLOR[1], PRIMARY_COLOR[2]);
-        this.doc.text(opt.savings, x, y + 8);
+        this.doc.text(opt.savings, x, y + verticalCenter + 1);
         x += colWidths[3];
         
+        // Return Rate - vertically centered
         this.doc.setTextColor(22, 163, 74);
-        this.doc.text(opt.roi, x, y + 8);
+        this.doc.text(opt.roi, x, y + verticalCenter + 1);
         x += colWidths[4];
         
+        // Payback - vertically centered
         this.doc.setTextColor(0, 0, 0);
-        this.doc.text(opt.payback, x, y + 8);
+        this.doc.text(opt.payback, x, y + verticalCenter + 1);
         
-        y += 24;
+        y += rowHeight;
       });
       
       // Recommendation note
