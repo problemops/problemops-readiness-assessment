@@ -1157,3 +1157,10 @@
 - [x] Add breakdown showing how each driver cost is calculated from TCD
 - [x] Add "How It Works" button explaining Driver Cost = TCD × driver_weight
 - [x] Simple explanation of why each driver gets its percentage weight
+
+
+## C1-C6 Fallback Calculation (URGENT FIX)
+- [x] Implement frontend fallback to calculate C1-C6 values when serverRoiData is null/missing
+- [x] Use CalculationService logic to compute cost components from TCD and readiness score
+- [x] Display calculated C1-C6 dollar amounts in Understanding Your Cost of Dysfunction section
+- [x] Test with old assessments (missing roiData) and new assessments (with roiData)

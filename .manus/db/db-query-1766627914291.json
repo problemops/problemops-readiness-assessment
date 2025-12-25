@@ -1,0 +1,13 @@
+{
+  "query": "SELECT LEFT(roiData, 500) as roiData_preview FROM assessmentData WHERE assessmentId = '8f51c309-0cc0-4960-88b7-ea54fa1378d0' LIMIT 1",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TnkFjGBKdfpupi.root --database B3x5NWCFiG4wF9DctXvqsL --execute SELECT LEFT(roiData, 500) as roiData_preview FROM assessmentData WHERE assessmentId = '8f51c309-0cc0-4960-88b7-ea54fa1378d0' LIMIT 1",
+  "rows": [
+    {
+      "roiData_preview": "{\"tcd\":\"593522.3946473046852061310313823422363744\",\"tcdRaw\":\"593522.3946473046852061310313823422363744\",\"costComponents\":{\"productivity\":\"158571.4285714285575\",\"rework\":\"63000.0000000000054\",\"turnover\":\"145530.00000000002268\",\"opportunity\":\"94500.0000000000081\",\"overhead\":\"75600.00000000000648\",\"disengagement\":\"16085.91075971530058402549722419852\",\"subtotal\":\"553287.33933114390074402549722419852\",\"subtotalWithDiscount\":\"486892.8586114066326547424375572946976\"},\"multipliers\":{\"fourCs\":1,\"industry"
+    }
+  ],
+  "messages": [],
+  "stdout": "roiData_preview\n{\"tcd\":\"593522.3946473046852061310313823422363744\",\"tcdRaw\":\"593522.3946473046852061310313823422363744\",\"costComponents\":{\"productivity\":\"158571.4285714285575\",\"rework\":\"63000.0000000000054\",\"turnover\":\"145530.00000000002268\",\"opportunity\":\"94500.0000000000081\",\"overhead\":\"75600.00000000000648\",\"disengagement\":\"16085.91075971530058402549722419852\",\"subtotal\":\"553287.33933114390074402549722419852\",\"subtotalWithDiscount\":\"486892.8586114066326547424375572946976\"},\"multipliers\":{\"fourCs\":1,\"industry\n",
+  "stderr": "",
+  "execution_time_ms": 241
+}

@@ -174,6 +174,37 @@ export default function Results() {
       });
       const teamStory = generateTeamStory(driverScoresForStory);
       
+      // Get v4.0 TCD cost components from backend or calculate fallback
+      const serverRoiData = parsed.roiData || null;
+      let tcdCostComponents = serverRoiData?.tcd?.costComponents || null;
+      
+      // Fallback: Calculate C1-C6 if missing
+      if (!tcdCostComponents) {
+        const totalPayroll = teamSize * avgSalary;
+        const gap = 1 - (readinessScore / 100);
+        
+        const c1 = totalPayroll * 0.25 * gap;
+        const c2 = totalPayroll * 0.15 * gap;
+        const c3 = totalPayroll * 0.12 * gap;
+        const c4 = totalPayroll * 0.18 * gap;
+        const c5 = totalPayroll * 0.10 * gap;
+        const c6 = totalPayroll * 0.08 * gap;
+        
+        const subtotal = c1 + c2 + c3 + c4 + c5 + c6;
+        const overlapDiscount = 0.88;
+        
+        tcdCostComponents = {
+          productivity: c1,
+          rework: c2,
+          turnover: c3,
+          opportunity: c4,
+          overhead: c5,
+          disengagement: c6,
+          subtotal,
+          subtotalWithDiscount: subtotal * overlapDiscount
+        };
+      }
+      
       setResults({
         drivers,
         readinessScore,
@@ -184,6 +215,8 @@ export default function Results() {
         trainingType,
         trainingOption,
         roiData,
+        serverRoiData,
+        tcdCostComponents,
         priorityAreas,
         recommendedAreas,
         companyInfo: parsed.companyInfo,
@@ -1002,43 +1035,61 @@ export default function Results() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="flex items-start gap-2 p-3 bg-background rounded-lg">
                     <span className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-0.5 rounded text-xs font-bold">C1</span>
-                    <div>
-                      <strong className="text-sm">Lost Productivity</strong>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <strong className="text-sm">Lost Productivity</strong>
+                        <span className="font-mono font-bold text-sm">{formatCurrency(results.tcdCostComponents.productivity)}</span>
+                      </div>
                       <p className="text-xs text-muted-foreground">Waiting, searching, redoing work</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2 p-3 bg-background rounded-lg">
                     <span className="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-2 py-0.5 rounded text-xs font-bold">C2</span>
-                    <div>
-                      <strong className="text-sm">Rework Costs</strong>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <strong className="text-sm">Rework Costs</strong>
+                        <span className="font-mono font-bold text-sm">{formatCurrency(results.tcdCostComponents.rework)}</span>
+                      </div>
                       <p className="text-xs text-muted-foreground">Fixing mistakes from miscommunication</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2 p-3 bg-background rounded-lg">
                     <span className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-2 py-0.5 rounded text-xs font-bold">C3</span>
-                    <div>
-                      <strong className="text-sm">Turnover Costs</strong>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <strong className="text-sm">Turnover Costs</strong>
+                        <span className="font-mono font-bold text-sm">{formatCurrency(results.tcdCostComponents.turnover)}</span>
+                      </div>
                       <p className="text-xs text-muted-foreground">Replacing people who leave</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2 p-3 bg-background rounded-lg">
                     <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-0.5 rounded text-xs font-bold">C4</span>
-                    <div>
-                      <strong className="text-sm">Missed Opportunities</strong>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <strong className="text-sm">Missed Opportunities</strong>
+                        <span className="font-mono font-bold text-sm">{formatCurrency(results.tcdCostComponents.opportunity)}</span>
+                      </div>
                       <p className="text-xs text-muted-foreground">Business lost due to slow teams</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2 p-3 bg-background rounded-lg">
                     <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded text-xs font-bold">C5</span>
-                    <div>
-                      <strong className="text-sm">Extra Overhead</strong>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <strong className="text-sm">Extra Overhead</strong>
+                        <span className="font-mono font-bold text-sm">{formatCurrency(results.tcdCostComponents.overhead)}</span>
+                      </div>
                       <p className="text-xs text-muted-foreground">Too many meetings & documentation</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2 p-3 bg-background rounded-lg">
                     <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded text-xs font-bold">C6</span>
-                    <div>
-                      <strong className="text-sm">Disengagement</strong>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <strong className="text-sm">Disengagement</strong>
+                        <span className="font-mono font-bold text-sm">{formatCurrency(results.tcdCostComponents.disengagement)}</span>
+                      </div>
                       <p className="text-xs text-muted-foreground">When people mentally check out</p>
                     </div>
                   </div>

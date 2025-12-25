@@ -245,6 +245,7 @@ export const assessmentRouter = router({
       const scores = JSON.parse(data.driverScores);
       const answers = JSON.parse(data.answers);
       const priorityMatrixData = data.priorityMatrixData ? JSON.parse(data.priorityMatrixData) : null;
+      const roiData = data.roiData ? JSON.parse(data.roiData) : null;
       
       console.log('[Assessment] Successfully retrieved assessment:', input.id);
       
@@ -265,6 +266,7 @@ export const assessmentRouter = router({
         detectedIndustry: assessment.detectedIndustry || 'Professional Services',
         industryConfidence: assessment.industryConfidence ? parseFloat(assessment.industryConfidence) : 0.5,
         priorityMatrixData,
+        roiData,
         createdAt: assessment.createdAt,
       };
     }),

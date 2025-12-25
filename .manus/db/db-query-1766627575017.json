@@ -1,0 +1,13 @@
+{
+  "query": "SELECT roiData FROM assessmentData WHERE assessmentId = '8f51c309-0cc0-4960-88b7-ea54fa1378d0' LIMIT 1",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TnkFjGBKdfpupi.root --database B3x5NWCFiG4wF9DctXvqsL --execute SELECT roiData FROM assessmentData WHERE assessmentId = '8f51c309-0cc0-4960-88b7-ea54fa1378d0' LIMIT 1",
+  "rows": [
+    {
+      "roiData": "{\"tcd\":\"593522.3946473046852061310313823422363744\",\"tcdRaw\":\"593522.3946473046852061310313823422363744\",\"costComponents\":{\"productivity\":\"158571.4285714285575\",\"rework\":\"63000.0000000000054\",\"turnover\":\"145530.00000000002268\",\"opportunity\":\"94500.0000000000081\",\"overhead\":\"75600.00000000000648\",\"disengagement\":\"16085.91075971530058402549722419852\",\"subtotal\":\"553287.33933114390074402549722419852\",\"subtotalWithDiscount\":\"486892.8586114066326547424375572946976\"},\"multipliers\":{\"fourCs\":1,\"industry\":1.15,\"teamSize\":1.06,\"gaming\":1},\"engagement\":{\"score\":4.9,\"category\":\"Not Engaged\",\"coefficient\":0.025533191682087786},\"anomaly\":{\"score\":0,\"hasAnomaly\":false,\"penaltyMultiplier\":1},\"confidenceInterval\":{\"lower\":\"445141.7959854785139045982735367566772808\",\"upper\":\"771579.11304149609076797034079704490728672\",\"level\":0.95},\"metadata\":{\"version\":\"4.0.0\",\"timestamp\":\"2025-12-25T00:33:18.784Z\",\"industry\":\"Professional Services\"}}"
+    }
+  ],
+  "messages": [],
+  "stdout": "roiData\n{\"tcd\":\"593522.3946473046852061310313823422363744\",\"tcdRaw\":\"593522.3946473046852061310313823422363744\",\"costComponents\":{\"productivity\":\"158571.4285714285575\",\"rework\":\"63000.0000000000054\",\"turnover\":\"145530.00000000002268\",\"opportunity\":\"94500.0000000000081\",\"overhead\":\"75600.00000000000648\",\"disengagement\":\"16085.91075971530058402549722419852\",\"subtotal\":\"553287.33933114390074402549722419852\",\"subtotalWithDiscount\":\"486892.8586114066326547424375572946976\"},\"multipliers\":{\"fourCs\":1,\"industry\":1.15,\"teamSize\":1.06,\"gaming\":1},\"engagement\":{\"score\":4.9,\"category\":\"Not Engaged\",\"coefficient\":0.025533191682087786},\"anomaly\":{\"score\":0,\"hasAnomaly\":false,\"penaltyMultiplier\":1},\"confidenceInterval\":{\"lower\":\"445141.7959854785139045982735367566772808\",\"upper\":\"771579.11304149609076797034079704490728672\",\"level\":0.95},\"metadata\":{\"version\":\"4.0.0\",\"timestamp\":\"2025-12-25T00:33:18.784Z\",\"industry\":\"Professional Services\"}}\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}
