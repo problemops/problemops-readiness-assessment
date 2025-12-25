@@ -604,14 +604,14 @@ export const methodologySections: Record<string, MethodologySection> = {
           </div>
 
           <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-            <h4 className="font-semibold mb-2">Step 4: Payback Period</h4>
+            <h4 className="font-semibold mb-2">Step 4: ROI Timeframe</h4>
             <p className="font-mono text-sm">
-              Payback Period = (C ÷ S × 12) + 3
+              ROI Timeframe = (C ÷ S × 12) + 3
             </p>
             <div className="mt-2 text-sm">
               <p><strong>Where:</strong></p>
               <ul className="list-disc list-inside ml-4 space-y-1">
-                <li><em>Payback Period</em> = time to recover investment (months)</li>
+                <li><em>ROI Timeframe</em> = time to recover investment (months)</li>
                 <li><em>12</em> = months in a year</li>
                 <li><em>3</em> = implementation buffer (months for behavior change adoption)</li>
               </ul>
@@ -630,7 +630,7 @@ export const methodologySections: Record<string, MethodologySection> = {
             <strong>ROI:</strong> ($1,022,071 - $3,500) ÷ $3,500 × 100% = <strong>29,102%</strong>
           </p>
           <p className="text-sm mt-1">
-            <strong>Payback:</strong> ($3,500 ÷ $1,022,071 × 12) + 3 = <strong>3.04 months</strong>
+            <strong>ROI Timeframe:</strong> ($3,500 ÷ $1,022,071 × 12) + 3 = <strong>3.04 months</strong>
           </p>
         </div>
 
@@ -670,7 +670,7 @@ export const methodologySections: Record<string, MethodologySection> = {
 
         <p className="text-sm text-gray-600 dark:text-gray-400">
           All three options typically have very high ROI because team dysfunction is so expensive. 
-          The payback period is usually 3-4 months for all options.
+          The ROI timeframe is usually 3-4 months for all options.
         </p>
       </div>
     )

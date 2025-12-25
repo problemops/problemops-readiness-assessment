@@ -4,7 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Download, Home, TrendingUp, AlertTriangle, BarChart3, CheckCircle2, Target, FileText, Github } from "lucide-react";
+import { Download, Home, TrendingUp, AlertTriangle, BarChart3, CheckCircle2, Target, FileText, Github, DollarSign, Clock, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import { SlidePDFGenerator } from "@/lib/pdfGenerator";
 import { generateWordDocument } from "@/lib/docxGenerator";
@@ -553,7 +553,7 @@ export default function Results() {
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <CardTitle id="dysfunction-cost-title" className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4" />
+                      <DollarSign className="h-4 w-4" />
                       Annual Cost of Dysfunction
                     </CardTitle>
                     <HowItWorksButton section="dysfunction" />
@@ -578,7 +578,8 @@ export default function Results() {
               <Card className="border-l-4 border-l-primary" role="region" aria-labelledby="readiness-score-title">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle id="readiness-score-title" className="text-sm font-medium text-muted-foreground">
+                    <CardTitle id="readiness-score-title" className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                      <Shield className="h-4 w-4" />
                       Team Readiness Score
                     </CardTitle>
                     <HowItWorksButton section="readiness" />
@@ -609,7 +610,7 @@ export default function Results() {
               <CardContent>
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <caption className="sr-only">Comparison of three training options showing investment cost, focus areas, annual savings, return on investment, and payback period</caption>
+                    <caption className="sr-only">Comparison of three training options showing investment cost, focus areas, annual savings, return on investment, and ROI timeframe</caption>
                     <thead>
                       <tr className="border-b">
                         <th className="text-left py-3 px-4 font-semibold">Option</th>
@@ -617,7 +618,7 @@ export default function Results() {
                         <th className="text-left py-3 px-4 font-semibold">Focus Areas</th>
                         <th className="text-left py-3 px-4 font-semibold">ROI If Fixed</th>
                         <th className="text-left py-3 px-4 font-semibold">Return Rate</th>
-                        <th className="text-left py-3 px-4 font-semibold">Payback</th>
+                        <th className="text-left py-3 px-4 font-semibold">ROI Timeframe</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -740,10 +741,13 @@ export default function Results() {
               >
                 <Card className="border-l-4 border-l-green-600">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                      <BarChart3 className="h-4 w-4" />
-                      Return on Investment
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                        <BarChart3 className="h-4 w-4" />
+                        Return on Investment
+                      </CardTitle>
+                      <HowItWorksButton section="roi" />
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <div className="text-4xl font-bold text-green-600 mb-2">
@@ -763,9 +767,13 @@ export default function Results() {
               >
                 <Card className="border-l-4 border-l-amber-600">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">
-                      Payback Period
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        ROI Timeframe
+                      </CardTitle>
+                      <HowItWorksButton section="roi" />
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <div className="text-4xl font-bold text-amber-600 mb-2">

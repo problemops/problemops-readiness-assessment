@@ -1200,3 +1200,8 @@
 - [ ] Page: Next Steps
 - [ ] Exclude all "How it works" buttons from PDF
 - [ ] Test PDF generation matches Results page exactly
+- [x] Add "How It Works" button to ROI/ROI Timeframe cards section (for non-"Not Sure Yet" options)
+- [x] Create comprehensive BDD scenarios for ROI and ROI Timeframe features covering all training options
+- [x] Add icon to "ROI Timeframe" card (for non-"Not Sure Yet" options)
+- [x] Add icon to "Team Readiness Score" card
+- [x] Change "Total Cost of Dysfunction" icon from AlertTriangle (!) to DollarSign ($)
