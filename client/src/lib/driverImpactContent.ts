@@ -370,11 +370,11 @@ const MODERATE_CONTENT: Record<string, {
 const DRIVER_NAMES: Record<string, string> = {
   trust: 'Trust',
   communication: 'Communication Quality',
-  goalAlignment: 'Goal Alignment',
+  goalAlignment: 'Goal Clarity',
   psychologicalSafety: 'Psychological Safety',
-  conflictResolution: 'Conflict Resolution',
-  roleClarity: 'Role Clarity',
-  decisionMaking: 'Decision Making'
+  conflictResolution: 'Coordination',
+  roleClarity: 'Transactive Memory',
+  decisionMaking: 'Team Cognition'
 };
 
 /**

@@ -820,14 +820,14 @@ export const methodologySections: Record<string, MethodologySection> = {
                 <td className="pl-4 py-2 text-muted-foreground">Smooth handoffs and dependencies</td>
               </tr>
               <tr className="border-b">
-                <td className="py-2">Role Clarity (TMS)</td>
+                <td className="py-2">Transactive Memory</td>
                 <td className="text-right py-2 font-bold">12%</td>
                 <td className="pl-4 py-2 text-muted-foreground">Knowing who knows what</td>
               </tr>
               <tr>
-                <td className="py-2">Decision Making</td>
+                <td className="py-2">Team Cognition</td>
                 <td className="text-right py-2 font-bold">11%</td>
-                <td className="pl-4 py-2 text-muted-foreground">Team's ability to decide together</td>
+                <td className="pl-4 py-2 text-muted-foreground">Shared mental models</td>
               </tr>
             </tbody>
           </table>

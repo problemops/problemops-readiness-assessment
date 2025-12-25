@@ -1164,3 +1164,10 @@
 - [x] Use CalculationService logic to compute cost components from TCD and readiness score
 - [x] Display calculated C1-C6 dollar amounts in Understanding Your Cost of Dysfunction section
 - [x] Test with old assessments (missing roiData) and new assessments (with roiData)
+
+
+## Fix Incorrect Driver Names (URGENT)
+- [x] Remove "Conflict Resolution" and "Decision Making" from Results page
+- [x] Restore correct drivers: "Coordination" and "Team Cognition"
+- [x] Verify all 7 drivers match: Trust, Psychological Safety, Communication Quality, Goal Clarity, Coordination, Transactive Memory, Team Cognition
+- [x] Test in browser to confirm correct driver names display
