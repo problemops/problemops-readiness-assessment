@@ -490,13 +490,25 @@ export default function Results() {
       </header>
 
       <main role="main" className="container mx-auto py-12 px-6 max-w-6xl space-y-12">
-        {/* Page Title */}
-        <h1 className="text-4xl md:text-5xl font-bold" id="page-title">Test Results</h1>
-        
-        {/* Company Info Subtitle */}
-        <p className="text-xl text-muted-foreground -mt-6">
-          {results.companyInfo.name}{results.companyInfo.team ? ` - ${results.companyInfo.team}` : ''}
-        </p>
+        {/* Page Title Section */}
+        <div className="text-left">
+          <h1 className="text-4xl md:text-5xl font-bold" id="page-title">Results: Cross-Functional Team Readiness Assessment</h1>
+          
+          {/* Company Info Subtitle */}
+          <p className="text-xl text-muted-foreground mt-2">
+            {results.companyInfo.name}{results.companyInfo.team ? ` - ${results.companyInfo.team}` : ''}
+          </p>
+          
+          {/* Download PDF Button */}
+          <Button
+            onClick={handleDownloadPDF}
+            className="mt-4 bg-[#6B5B3D] hover:bg-[#5a4d33] text-white"
+            aria-label="Download PDF Report"
+          >
+            <Download className="w-4 h-4 mr-2 text-white" />
+            Download PDF Report
+          </Button>
+        </div>
         
         {/* Introduction */}
         <section aria-labelledby="intro-heading" className="bg-card border rounded-lg p-8 shadow-sm">
