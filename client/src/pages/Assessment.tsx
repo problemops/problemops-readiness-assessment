@@ -826,8 +826,8 @@ export default function Assessment() {
                   </Label>
                   <Input
                     id="company-website"
-                    type="url"
-                    placeholder="e.g., https://acme.com"
+                    type="text"
+                    placeholder="e.g., acme.com"
                     value={companyInfo.website}
                     onChange={(e) => setCompanyInfo(prev => ({ ...prev, website: e.target.value }))}
                     className="text-base h-12 focus:ring-2 focus:ring-ring focus:ring-offset-2"
