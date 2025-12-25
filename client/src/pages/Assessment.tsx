@@ -923,6 +923,12 @@ export default function Assessment() {
                     )}
                   </div>
                 </div>
+              </fieldset>
+
+              {/* Training Parameters section */}
+              <fieldset className="space-y-6 pt-4">
+                <legend className="sr-only">Training Parameters</legend>
+                <h2 className="text-2xl font-semibold border-b border-border pb-3 w-full">Training Parameters</h2>
 
                 <div className="space-y-3">
                   <Label id="training-type-label" className="text-base font-medium text-foreground">
