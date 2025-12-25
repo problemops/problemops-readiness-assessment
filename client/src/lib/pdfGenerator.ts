@@ -584,7 +584,7 @@ export class SlidePDFGenerator {
     // List driver impacts (top 4 to fit on page)
     for (const impact of this.data.teamStory.driverImpacts.slice(0, 4)) {
       const driver = this.data.drivers.find(d => d.id === impact.driverKey);
-      const driverCost = this.data.driverCosts?.[impact.driverKey] || 0;
+      const driverCost = this.data.driverCosts?.[impact.dbKey] || this.data.driverCosts?.[impact.driverKey] || 0;
       
       // Severity color
       const severityColor = impact.severityLevel === 'critical' ? [220, 38, 38] : 

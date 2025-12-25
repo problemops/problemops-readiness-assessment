@@ -309,6 +309,12 @@ export default function Results() {
         trainingType: results.trainingType,
         recommendedAreas: results.recommendedAreas,
         teamStory: results.teamStory,
+        roiData: results.roiData,
+        priorityAreas: results.priorityAreas,
+        trainingOption: results.trainingOption,
+        tcdCostComponents: results.tcdCostComponents,
+        driverCosts: results.driverCosts,
+        otherDeliverables: results.otherDeliverables,
       };
       
       const generator = new SlidePDFGenerator(pdfData);
