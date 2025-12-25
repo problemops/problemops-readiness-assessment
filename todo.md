@@ -1171,3 +1171,9 @@
 - [x] Restore correct drivers: "Coordination" and "Team Cognition"
 - [x] Verify all 7 drivers match: Trust, Psychological Safety, Communication Quality, Goal Clarity, Coordination, Transactive Memory, Team Cognition
 - [x] Test in browser to confirm correct driver names display
+
+
+## Restore Download PDF Button (URGENT)
+- [x] Add Download PDF button back to top banner on Results page
+- [x] Add Download PDF button back to bottom of Results page
+- [x] Test in browser to verify both buttons work correctly

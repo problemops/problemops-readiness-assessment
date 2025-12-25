@@ -451,6 +451,15 @@ export default function Results() {
               <UserGuideButton />
               <ThemeToggle />
               <button
+                onClick={handleDownloadPDF}
+                disabled={isGenerating}
+                aria-label="Download PDF Report"
+                title="Download PDF"
+                className="p-2 rounded-lg text-primary-foreground bg-white/10 hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Download className="w-5 h-5" />
+              </button>
+              <button
                 onClick={() => {
                   navigate('/');
                   setTimeout(() => window.scrollTo(0, 0), 0);
@@ -1512,6 +1521,14 @@ export default function Results() {
 
         {/* Bottom Action Buttons */}
         <section className="flex gap-3">
+          <button
+            onClick={handleDownloadPDF}
+            disabled={isGenerating}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Download className="w-5 h-5" />
+            <span>Download PDF</span>
+          </button>
           <button
             onClick={() => {
               navigate('/');
