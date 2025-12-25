@@ -601,8 +601,16 @@ export default function Assessment() {
       driverScores[section.id] = avgScore;
     });
     
+    // Normalize website URL - add https:// if no protocol specified
+    const normalizedCompanyInfo = {
+      ...companyInfo,
+      website: companyInfo.website && !companyInfo.website.match(/^https?:\/\//i)
+        ? `https://${companyInfo.website.replace(/^(www\.)?/, '')}`
+        : companyInfo.website
+    };
+    
     // Store data for potential retry
-    const submitData = { companyInfo, driverScores, answers };
+    const submitData = { companyInfo: normalizedCompanyInfo, driverScores, answers };
     setPendingSubmitData(submitData);
     
     // Show loading screen
